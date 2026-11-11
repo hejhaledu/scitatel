@@ -135,6 +135,9 @@ const db = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
 });
 
+// Adresa aplikace porotce (odkazy pro porotce se generují z ní)
+const JUDGE_APP_URL = "https://hejhaledu.github.io/porotce/";
+
 const DANCES = { W:"Waltz", T:"Tango", V:"Valčík", F:"Slowfox", Q:"Quickstep",
                  S:"Samba", C:"Cha-cha", R:"Rumba", P:"Paso doble", J:"Jive" };
 const STT = ["W","T","V","F","Q"], LAT = ["S","C","R","P","J"];
@@ -271,8 +274,7 @@ function renderDetail() {
   if (!r) { $("detail").innerHTML = `<div class="empty">Vyber nebo vytvoř kolo</div>`; return; }
   const total = r.judges.length * r.dances.length;
   const done = r.judges.reduce((n, j) => n + r.dances.filter(d => sheets.has(`${d}_${j}`)).length, 0);
-  const base = new URL("porotce.html", location.href);
-  base.search = "";
+  const base = new URL(JUDGE_APP_URL);
 
   $("detail").innerHTML = `
     <div class="detail-head">
