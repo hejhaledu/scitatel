@@ -4,120 +4,267 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Artimo Counter – Sčitatel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#111318;--panel:#1a1d24;--panel2:#21252e;--line:#2c313b;--text:#e8eaf0;--muted:#8b92a3;--accent:#f59e0b;--ok:#22c55e;--wait:#f59e0b;--bad:#ef4444}
+:root{
+  --navy:#0b0d45;--navy2:#13165a;--navy3:#1c206e;--navy4:#262b85;
+  --line:rgba(255,255,255,.12);--text:#ffffff;--muted:#a9aed6;
+  --accent:#f5d3a8;--ink:#0b0d45;--ok:#5ee09a;--bad:#ff7d7d;
+  --silver:#dfe2ee;--bronze:#e3ad85;
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:15px}
-header{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5;flex-wrap:wrap}
-header h1{font-size:18px;margin:0 auto 0 0;font-weight:700}
-header h1 span{color:var(--accent)}
-.conn{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--muted);display:inline-block}
-.dot.ok{background:var(--ok)}.dot.wait{background:var(--wait)}.dot.bad{background:var(--bad)}
-main{display:grid;grid-template-columns:340px 1fr;gap:20px;padding:20px;max-width:1400px;margin:0 auto}
-@media(max-width:900px){main{grid-template-columns:1fr}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:20px}
-.card h2{font-size:15px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
-input,select{width:100%;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:15px}
-button{padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:14px;cursor:pointer}
-button:hover{border-color:var(--accent)}
-button.primary{background:var(--accent);border-color:var(--accent);color:#111;font-weight:700}
-button.danger{border-color:var(--bad);color:var(--bad)}
+body{margin:0;font-family:"Outfit",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--navy);color:var(--text);font-size:15px}
+button,input,select{font-family:inherit}
+header{position:sticky;top:0;z-index:10;background:var(--navy);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:18px;padding:12px 24px;flex-wrap:wrap}
+.brand{font-weight:900;font-size:22px;letter-spacing:.02em;line-height:1}
+.brand span{color:var(--accent)}
+.brand small{display:block;font-size:12px;font-weight:500;color:var(--muted);letter-spacing:0;margin-top:3px}
+.tabs{display:flex;gap:6px;margin-left:16px}
+.tab{background:transparent;border:1px solid transparent;color:var(--muted);font-size:15px;font-weight:700;padding:10px 18px;border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.tab .n{width:24px;height:24px;border-radius:50%;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.tab:hover{color:var(--text)}
+.tab.on{background:var(--accent);color:var(--ink)}
+.tab .cnt{background:var(--bad);color:#fff;border-radius:999px;font-size:11px;padding:1px 7px}
+.conn{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%;background:#5a5f99;display:inline-block;flex:0 0 auto}
+.dot.ok{background:var(--ok)}.dot.wait{background:var(--accent)}.dot.bad{background:var(--bad)}
+.page{display:none;padding:24px;max-width:1500px;margin:0 auto}
+.page.on{display:block}
+.cols{display:grid;grid-template-columns:350px 1fr;gap:24px}
+@media(max-width:1000px){.cols{grid-template-columns:1fr}}
+.card{background:var(--navy2);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:24px}
+.card>h2,.h2{font-size:13px;margin:0 0 14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px}
+input,select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--navy3);color:var(--text);font-size:15px}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+button{padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--navy3);color:var(--text);font-size:14px;font-weight:600;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--ink);font-weight:800}
+button.ghost{background:transparent}
+button.danger{border-color:var(--bad);color:var(--bad);background:transparent}
 .row{display:flex;gap:8px;align-items:center}
 .row>*{flex:1}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{flex:0 0 auto;padding:6px 10px;border-radius:999px;font-size:13px}
-.chip.on{background:var(--accent);border-color:var(--accent);color:#111;font-weight:600}
-.hint{font-size:12px;color:var(--muted);margin-top:4px}
-.round-item{padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.chip{flex:0 0 auto;padding:6px 12px;border-radius:999px;font-size:13px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--ink)}
+.hint{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}
+.err{color:var(--bad);font-size:13px;margin-top:8px}
+.cat{margin-bottom:16px}
+.cat-name{font-weight:800;font-size:14px;margin:0 0 6px;color:var(--accent)}
+.round-item{padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center}
 .round-item:hover,.round-item.sel{border-color:var(--accent)}
-.badge{font-size:11px;padding:3px 8px;border-radius:999px;font-weight:700;text-transform:uppercase;white-space:nowrap}
-.badge.open{background:rgba(34,197,94,.15);color:var(--ok)}
-.badge.locked{background:rgba(239,68,68,.15);color:var(--bad)}
-.detail-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-.detail-head h2{margin:0;font-size:20px;text-transform:none;letter-spacing:0;color:var(--text);margin-right:auto}
-.meta{color:var(--muted);font-size:13px;margin-bottom:16px}
-.progress{font-size:28px;font-weight:800}
-.progress small{font-size:14px;color:var(--muted);font-weight:400}
+.round-item.sel{background:var(--navy3)}
+.badge{font-size:11px;padding:4px 9px;border-radius:999px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.badge.open{background:rgba(94,224,154,.15);color:var(--ok)}
+.badge.locked{background:rgba(255,125,125,.15);color:var(--bad)}
+.badge.processed{background:var(--accent);color:var(--ink)}
+.badge.done{background:var(--accent);color:var(--ink)}
+.badge.run{background:rgba(255,255,255,.1);color:var(--text)}
+.head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.head h1{margin:0;font-size:26px;font-weight:800;margin-right:auto}
+.meta{color:var(--muted);font-size:14px;margin-bottom:18px}
+.big{font-size:34px;font-weight:900;line-height:1}
+.big small{font-size:14px;color:var(--muted);font-weight:500}
+.judges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:16px 0 20px}
+.jcard{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--navy3)}
+.jcard.ready{border-color:var(--ok)}
+.jtop{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.jl{width:38px;height:38px;border-radius:10px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px}
+.jcard.ready .jl{background:var(--ok);color:var(--ink)}
+.jname{font-size:13px;color:var(--muted);line-height:1.2}
+.jrow{display:flex;align-items:center;gap:6px;font-size:13px;margin-top:3px}
 table{border-collapse:collapse;width:100%}
-th,td{border:1px solid var(--line);padding:8px;text-align:center}
-th{background:var(--panel2);font-size:13px;color:var(--muted)}
+th,td{border:1px solid var(--line);padding:8px 6px;text-align:center}
+th{background:var(--navy3);font-size:12px;color:var(--muted);font-weight:700}
 td.cell{cursor:pointer;font-size:13px}
-td.cell.ok{background:rgba(34,197,94,.12);color:var(--ok)}
+td.cell.ok{background:rgba(94,224,154,.12);color:var(--ok);font-weight:600}
 td.cell.none{color:var(--muted)}
 td.cell.sel{outline:2px solid var(--accent);outline-offset:-2px}
-td.judge{font-weight:800;font-size:16px}
-.sheet-detail{margin-top:14px;padding:12px;border-radius:8px;background:var(--panel2);font-size:14px;line-height:1.6;min-height:44px}
-.links{display:grid;gap:6px}
-.link-row{display:flex;gap:8px;align-items:center}
+td.jlet{font-weight:900;font-size:16px}
+.sheet-detail{margin-top:14px;padding:14px;border-radius:12px;background:var(--navy3);font-size:14px;line-height:1.6;min-height:48px}
+details summary{cursor:pointer;color:var(--muted);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.08em}
+.link-row{display:flex;gap:8px;align-items:center;margin-top:8px}
 .link-row b{width:24px;font-size:16px}
 .link-row input{font-size:12px}
 .link-row button{flex:0 0 auto}
-.empty{color:var(--muted);text-align:center;padding:40px 0}
-.err{color:var(--bad);font-size:13px;margin-top:8px}
-.log{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);max-height:160px;overflow:auto;white-space:pre-wrap}
+.empty{color:var(--muted);text-align:center;padding:50px 0}
+.log{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);max-height:180px;overflow:auto;white-space:pre-wrap;margin-top:10px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.step{display:inline-flex;align-items:center;gap:8px}
+/* zpracování */
+.xtab th.dance{color:var(--accent);font-size:13px}
+.xtab td{padding:6px 4px;font-size:14px}
+.xtab td.x{color:var(--accent);font-weight:900}
+.xtab td.cpl{font-weight:900;font-size:18px;width:64px}
+.xtab td.sum{font-weight:900;font-size:18px}
+.xtab tr.q td{background:rgba(245,211,168,.10)}
+.xtab tr.q td.cpl{background:var(--accent);color:var(--ink)}
+.xtab tr.cut td{border-bottom:3px solid var(--accent)}
+.xtab tr.tie td{background:rgba(255,125,125,.12)}
+.warn{border:1px solid var(--bad);background:rgba(255,125,125,.1);border-radius:12px;padding:12px 14px;margin:14px 0;font-size:14px;line-height:1.5}
+.ok-box{border:1px solid var(--ok);background:rgba(94,224,154,.08);border-radius:12px;padding:12px 14px;margin:14px 0;font-size:14px}
+.ctrl{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin:6px 0 4px}
+.ctrl input{width:110px;font-size:20px;font-weight:800;text-align:center}
+.podium{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:10px 0 24px}
+.pod{border-radius:16px;padding:16px;text-align:center;background:var(--navy3);border:1px solid var(--line)}
+.pod .pl{font-size:15px;font-weight:800;color:var(--muted)}
+.pod .cn{font-size:44px;font-weight:900;line-height:1.1}
+.pod.p1{background:var(--accent);color:var(--ink);border-color:var(--accent)}
+.pod.p1 .pl{color:var(--ink)}
+.pod.p2{border-color:var(--silver)}.pod.p2 .pl{color:var(--silver)}
+.pod.p3{border-color:var(--bronze)}.pod.p3 .pl{color:var(--bronze)}
+.sk td{font-size:14px;padding:6px 4px}
+.sk td.cpl{font-weight:900;font-size:17px}
+.sk td.dec{background:var(--accent);color:var(--ink);font-weight:800}
+.sk td.place{font-weight:900;font-size:17px;color:var(--accent)}
+.sk td.mk{color:var(--muted)}
+.sk small{font-size:11px;opacity:.75}
+.dance-block{margin-top:26px}
+.dance-block h3{margin:0 0 8px;font-size:18px}
+.legend{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+/* soutěž */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.stat{background:var(--navy3);border-radius:14px;padding:14px}
+.stat .v{font-size:22px;font-weight:800;margin-top:4px}
+.stat .l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.timeline{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.tl{border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:13px;background:var(--navy3)}
+.tl b{display:block;font-size:14px}
+.tl.processed{border-color:var(--accent)}
+.tl.open{border-color:var(--ok)}
+.jury{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.jury .row b{flex:0 0 32px;font-size:18px;font-weight:900}
+.results-list{display:grid;gap:6px;margin-top:10px}
+.res{display:flex;align-items:center;gap:14px;padding:8px 12px;border-radius:12px;background:var(--navy3)}
+.res .p{width:70px;font-weight:900;font-size:18px;color:var(--accent)}
+.res .c{font-weight:900;font-size:22px}
+.res.p1{background:var(--accent);color:var(--ink)}.res.p1 .p{color:var(--ink)}
+@media print{
+  body{background:#fff;color:#000}
+  header,.no-print,#page1,#page3,.cols>aside{display:none!important}
+  .page{display:block!important;padding:0}
+  .cols{display:block}
+  .card{background:#fff;border:none;padding:0}
+  th{background:#eee;color:#000}
+  th,td{border-color:#999}
+  .sk td.dec,.pod.p1,.res.p1,.xtab tr.q td.cpl{background:#ddd!important;color:#000!important}
+  .meta,.legend,.sk td.mk,.pod .pl{color:#333}
+}
 </style>
 </head>
 <body>
 <header>
-  <h1>Artimo Counter <span>· Sčitatel</span></h1>
-  <div class="row" style="flex:0 0 auto;gap:6px">
-    <input id="compInput" style="width:160px" title="ID soutěže">
-    <button id="compBtn" style="flex:0 0 auto">Přepnout soutěž</button>
+  <div class="bar">
+    <div class="brand">ARTIMO <span>COUNTER</span><small id="compTitle">Sčitatel</small></div>
+    <nav class="tabs">
+      <button class="tab on" data-tab="1"><span class="n">1</span>Průběh</button>
+      <button class="tab" data-tab="2"><span class="n">2</span>Zpracování <span class="cnt" id="pendingCnt" hidden></span></button>
+      <button class="tab" data-tab="3"><span class="n">3</span>Soutěž</button>
+    </nav>
+    <div class="conn"><span class="dot" id="connDot"></span><span id="connText">Připojování…</span></div>
   </div>
-  <div class="conn"><span class="dot" id="connDot"></span><span id="connText">Připojování…</span></div>
 </header>
 
-<main>
-  <aside>
-    <div class="card">
-      <h2>Nové kolo</h2>
-      <label>Název</label>
-      <input id="fName" placeholder="např. Junioři I LAT – Finále">
-      <label>Typ kola</label>
-      <select id="fType">
-        <option value="prelim">Předkolo (křížky)</option>
-        <option value="final">Finále (pořadí)</option>
-      </select>
-      <label>Tance</label>
-      <div class="row" style="margin-bottom:6px">
-        <button type="button" id="presetStt">STT</button>
-        <button type="button" id="presetLat">LAT</button>
+<!-- ============ 1 PRŮBĚH ============ -->
+<section class="page on" id="page1">
+  <div class="cols">
+    <aside>
+      <div class="card">
+        <h2>Nové kolo</h2>
+        <button type="button" id="importBtn" style="width:100%">Načíst postupující ze souboru…</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+        <div class="hint" id="importInfo"></div>
+        <label>Kategorie</label>
+        <input id="fCat" list="catList" placeholder="např. Junioři I LAT">
+        <datalist id="catList"></datalist>
+        <label>Kolo</label>
+        <input id="fLabel" list="labelList" placeholder="např. 1. kolo, Semifinále, Finále">
+        <datalist id="labelList"><option>1. kolo</option><option>2. kolo</option><option>3. kolo</option><option>Čtvrtfinále</option><option>Semifinále</option><option>Finále</option></datalist>
+        <label>Typ kola</label>
+        <select id="fType">
+          <option value="prelim">Předkolo (křížky)</option>
+          <option value="final">Finále (pořadí, skating)</option>
+        </select>
+        <label>Tance</label>
+        <div class="row" style="margin-bottom:6px">
+          <button type="button" id="presetStt">STT</button>
+          <button type="button" id="presetLat">LAT</button>
+        </div>
+        <div class="chips" id="danceChips"></div>
+        <label>Startovní čísla párů</label>
+        <input id="fCouples" placeholder="např. 1-12 nebo 4, 7, 12, 19">
+        <div class="hint" id="couplesInfo"></div>
+        <label>Porotci (písmena)</label>
+        <input id="fJudges" value="ABCDE">
+        <div id="reqWrap">
+          <label>Počet křížků (= počet postupujících)</label>
+          <input id="fRequired" type="number" min="1" value="6">
+        </div>
+        <div style="margin-top:16px"><button class="primary" id="createBtn" style="width:100%">Vytvořit a otevřít kolo</button></div>
+        <div class="err" id="createErr"></div>
       </div>
-      <div class="chips" id="danceChips"></div>
-      <label>Startovní čísla párů</label>
-      <input id="fCouples" placeholder="např. 1-12 nebo 4, 7, 12, 19">
-      <label>Porotci (písmena)</label>
-      <input id="fJudges" value="ABCDE">
-      <div id="reqWrap">
-        <label>Počet křížků na porotce</label>
-        <input id="fRequired" type="number" min="1" value="6">
+      <div class="card">
+        <h2>Kola</h2>
+        <div id="roundList"><div class="empty">Zatím žádná kola</div></div>
       </div>
-      <div style="margin-top:14px"><button class="primary" id="createBtn" style="width:100%">Vytvořit a otevřít kolo</button></div>
-      <div class="err" id="createErr"></div>
+    </aside>
+    <div>
+      <div class="card" id="detail"><div class="empty">Vyber nebo vytvoř kolo</div></div>
+      <div class="card">
+        <details><summary>Log přenosu</summary><div class="log" id="log"></div></details>
+      </div>
     </div>
+  </div>
+</section>
 
-    <div class="card">
-      <h2>Kola v soutěži</h2>
-      <div id="roundList"><div class="empty">Zatím žádná kola</div></div>
+<!-- ============ 2 ZPRACOVÁNÍ ============ -->
+<section class="page" id="page2">
+  <div class="cols">
+    <aside>
+      <div class="card">
+        <h2>Zpracovaná kola</h2>
+        <div id="procList"><div class="empty">Zatím nic nebylo odesláno ke zpracování</div></div>
+      </div>
+    </aside>
+    <div>
+      <div class="card" id="procView"><div class="empty">Vyber kolo vlevo</div></div>
     </div>
-  </aside>
+  </div>
+</section>
 
-  <section>
-    <div class="card" id="detail"><div class="empty">Vyber nebo vytvoř kolo</div></div>
+<!-- ============ 3 SOUTĚŽ ============ -->
+<section class="page" id="page3">
+  <div class="card">
+    <div class="head"><h1 id="sumTitle">Soutěž</h1><span id="sumBadge"></span></div>
+    <div class="stats" id="sumStats"></div>
+  </div>
+  <div id="sumCats"></div>
+  <div class="cols" style="grid-template-columns:1fr 1fr">
     <div class="card">
-      <h2>Log přenosu</h2>
-      <div class="log" id="log"></div>
+      <h2>Porota</h2>
+      <div class="jury" id="juryBox"></div>
+      <div class="actions" style="margin-top:12px"><button id="jurySave">Uložit jména porotců</button></div>
     </div>
-  </section>
-</main>
+    <div class="card">
+      <h2>Nastavení soutěže</h2>
+      <label>Název soutěže</label>
+      <div class="row"><input id="compName" placeholder="např. Artimo Open Cup 2026"><button id="compNameSave" style="flex:0 0 auto">Uložit</button></div>
+      <label>ID soutěže (určuje, kam se ukládají data)</label>
+      <div class="row"><input id="compInput"><button id="compBtn" style="flex:0 0 auto">Přepnout</button></div>
+      <div class="hint">Porotci musí mít odkaz se stejným ID soutěže.</div>
+      <div class="actions" style="margin-top:16px"><button id="finishBtn">Ukončit soutěž</button></div>
+    </div>
+  </div>
+</section>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
-         collection, doc, setDoc, updateDoc, onSnapshot }
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, memoryLocalCache,
+         collection, doc, setDoc, updateDoc, getDocs, onSnapshot }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -128,135 +275,331 @@ const firebaseConfig = {
   messagingSenderId: "953081589311",
   appId: "1:953081589311:web:787c967a46f3cc9c1d928a"
 };
+const JUDGE_APP_URL = "https://hejhaledu.github.io/porotce/";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
-});
+let db;
+try { db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }); }
+catch { db = initializeFirestore(app, { localCache: memoryLocalCache() }); }
 
-// Adresa aplikace porotce (odkazy pro porotce se generují z ní)
-const JUDGE_APP_URL = "https://hejhaledu.github.io/porotce/";
+// ===== SKATING SYSTEM ČSTS v5 (port referenční implementace z PDF) =====
+// marks[t][j][i] = pořadí, které rozhodčí j dal páru i v tanci t.
+// Počítá s dvojnásobky míst, aby dělená místa zůstala celočíselná.
+function skatingFinal(marks) {
+  const T = marks.length;
+  if (!T || !marks[0].length) throw new Error("Chybí tance nebo rozhodčí");
+  const X = marks[0].length, N = marks[0][0].length;
+  if (N < 2) throw new Error("Musí být alespoň dva páry");
+  for (const dance of marks) {
+    if (dance.length !== X) throw new Error("Počet rozhodčích se liší");
+    for (const judge of dance) {
+      const s = [...judge].sort((a, b) => a - b);
+      if (judge.length !== N || s.some((v, i) => v !== i + 1)) throw new Error("Každý rozhodčí musí zadat permutaci 1..N");
+    }
+  }
+  const count = (m, k) => m.reduce((a, v) => a + (v <= k ? 1 : 0), 0);
+  const total = (m, k) => m.reduce((a, v) => a + (v <= k ? v : 0), 0);
 
+  function order(group, data, k) {
+    if (group.length <= 1 || k > N) return [group];
+    const buckets = new Map();
+    for (const i of group) {
+      const key = [-count(data[i], k), total(data[i], k)];
+      const ks = key.join(",");
+      if (!buckets.has(ks)) buckets.set(ks, { key, items: [] });
+      buckets.get(ks).items.push(i);
+    }
+    const sorted = [...buckets.values()].sort((a, b) => a.key[0] - b.key[0] || a.key[1] - b.key[1]);
+    const out = [];
+    for (const b of sorted) out.push(...order(b.items, data, k + 1));
+    return out;
+  }
+
+  function danceResult(dance) {
+    const data = Array.from({ length: N }, (_, i) => dance.map(j => j[i]));
+    const majority = Math.floor(X / 2) + 1;
+    const result2 = new Array(N).fill(null), col = new Array(N).fill(null);
+    const remaining = new Set(Array.from({ length: N }, (_, i) => i));
+    let r = 1, k = 1;
+    while (remaining.size) {
+      while (k <= N && ![...remaining].some(i => count(data[i], k) >= majority)) k++;
+      if (k > N) throw new Error("Nenalezena většina v tanci");
+      const eligible = [...remaining].filter(i => count(data[i], k) >= majority);
+      for (const g of order(eligible, data, k)) {
+        for (const i of g) { result2[i] = 2 * r + g.length - 1; col[i] = k; }
+        g.forEach(i => remaining.delete(i));
+        r += g.length;
+      }
+      k++; // v5: další sloupec, NE k = r
+    }
+    return { result2, col, data, majority };
+  }
+
+  const danceRes = marks.map(danceResult);
+  const dance2 = danceRes.map(d => d.result2);
+  const sums2 = Array.from({ length: N }, (_, i) => dance2.reduce((a, d) => a + d[i], 0));
+  const allMarks = Array.from({ length: N }, (_, i) => {
+    const out = []; for (let t = 0; t < T; t++) for (let j = 0; j < X; j++) out.push(marks[t][j][i]); return out;
+  });
+  const final2 = new Array(N).fill(null), rule = new Array(N).fill(null);
+
+  function rule10(group, r) {
+    group = [...group];
+    while (group.length) {
+      if (group.length === 1) { final2[group[0]] = 2 * r; rule[group[0]] ??= "10"; return; }
+      const keys = new Map();
+      for (const i of group) {
+        const q = []; for (let t = 0; t < T; t++) if (dance2[t][i] <= 2 * r) q.push(dance2[t][i]);
+        keys.set(i, [-q.length, q.reduce((a, v) => a + v, 0)]);
+      }
+      const best = [...keys.values()].sort((a, b) => a[0] - b[0] || a[1] - b[1])[0];
+      const isBest = i => keys.get(i)[0] === best[0] && keys.get(i)[1] === best[1];
+      const B = group.filter(isBest), Z = group.filter(i => !isBest(i));
+      if (B.length === 1) { final2[B[0]] = 2 * r; rule[B[0]] ??= "10"; r += 1; }
+      else { rule11(B, r); r += B.length; }
+      group = Z;
+    }
+  }
+
+  function rule11(group, r) {
+    const majority = Math.floor(X * T / 2) + 1;
+    let k = r;
+    while (k <= N && !group.some(i => count(allMarks[i], k) >= majority)) k++;
+    if (k > N) throw new Error("Nenalezena většina v pravidle 11");
+    const eligible = group.filter(i => count(allMarks[i], k) >= majority);
+    const W = order(eligible, allMarks, k)[0];
+    for (const i of W) { final2[i] = 2 * r + W.length - 1; rule[i] = "11"; }
+    const rest = group.filter(i => !W.includes(i));
+    if (rest.length) rule10(rest, r + W.length);
+  }
+
+  const grouped = new Map();
+  sums2.forEach((s, i) => { if (!grouped.has(s)) grouped.set(s, []); grouped.get(s).push(i); });
+  let r = 1;
+  for (const s of [...grouped.keys()].sort((a, b) => a - b)) {
+    const g = grouped.get(s);
+    if (g.length === 1) rule[g[0]] = "9";
+    rule10(g, r);
+    r += g.length;
+  }
+
+  return {
+    byDance: dance2.map(d => d.map(v => v / 2)),
+    decidedCol: danceRes.map(d => d.col),
+    sums: sums2.map(v => v / 2),
+    overall: final2.map(v => v / 2),
+    rule,
+    majority: Math.floor(X / 2) + 1
+  };
+}
+// ===== /SKATING =====
+
+// ================= pomocné =================
 const DANCES = { W:"Waltz", T:"Tango", V:"Valčík", F:"Slowfox", Q:"Quickstep",
                  S:"Samba", C:"Cha-cha", R:"Rumba", P:"Paso doble", J:"Jive" };
 const STT = ["W","T","V","F","Q"], LAT = ["S","C","R","P","J"];
-
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } },
-                set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
-const fmtTime = ts => ts ? new Date(ts).toLocaleTimeString("cs-CZ") : "";
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
+const fmtTime = ms => ms ? new Date(ms).toLocaleTimeString("cs-CZ", { hour:"2-digit", minute:"2-digit" }) : "–";
+const fmtDT = ms => ms ? new Date(ms).toLocaleString("cs-CZ", { day:"numeric", month:"numeric", year:"numeric", hour:"2-digit", minute:"2-digit" }) : "–";
+const tsMs = ts => ts ? (typeof ts === "number" ? ts : ts.toMillis?.() ?? null) : null;
+const slug = s => String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const log = msg => { const el = $("log"); el.textContent = `[${new Date().toLocaleTimeString("cs-CZ")}] ${msg}\n` + el.textContent; };
+const catOf = r => r.category || "Bez kategorie";
+const labelOf = r => r.label || r.name || r.id;
+const titleOf = r => r.category ? `${r.category} · ${labelOf(r)}` : (r.name || r.id);
+const sortRounds = list => list.sort((a, b) => (a.created || 0) - (b.created || 0));
 
+// Popisky dělených míst: 2.5 -> "2.–3."
+function placeLabels(places) {
+  const cnt = new Map(); places.forEach(p => cnt.set(p, (cnt.get(p) || 0) + 1));
+  return places.map(p => { const g = cnt.get(p); if (g === 1) return `${p}.`; const from = p - (g - 1) / 2; return `${from}.–${from + g - 1}.`; });
+}
+
+// ================= stav =================
 let comp = new URLSearchParams(location.search).get("c") || store.get("ac_comp") || "test";
+let compDoc = {};
 let rounds = new Map();
-let currentRid = null;
+let presence = new Map();
+let rid = null, procRid = null, tab = "1";
 let sheets = new Map();
 let selectedCell = null;
-let unsubRounds = null, unsubSheets = null;
+let unsubs = [], unsubSheets = null;
 let selectedDances = new Set(LAT);
-const knownSheetRevs = new Map();
+const knownRevs = new Map();
+const advanceDraft = new Map(); // rid -> počet postupujících (neuložený)
+let linksOpen = false;
 
-// ---------- formulář nového kola ----------
+// ================= záložky =================
+document.querySelector(".tabs").addEventListener("click", e => {
+  const t = e.target.closest("[data-tab]"); if (t) showTab(t.dataset.tab);
+});
+function showTab(n) {
+  tab = n;
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.tab === n));
+  document.querySelectorAll(".page").forEach(p => p.classList.toggle("on", p.id === "page" + n));
+  renderAll();
+}
+
+// ================= formulář nového kola =================
 function renderDanceChips() {
   $("danceChips").innerHTML = Object.entries(DANCES).map(([k, n]) =>
     `<button type="button" class="chip ${selectedDances.has(k) ? "on" : ""}" data-d="${k}">${n}</button>`).join("");
 }
 $("danceChips").addEventListener("click", e => {
   const d = e.target.dataset.d; if (!d) return;
-  selectedDances.has(d) ? selectedDances.delete(d) : selectedDances.add(d);
-  renderDanceChips();
+  selectedDances.has(d) ? selectedDances.delete(d) : selectedDances.add(d); renderDanceChips();
 });
 $("presetStt").onclick = () => { selectedDances = new Set(STT); renderDanceChips(); };
 $("presetLat").onclick = () => { selectedDances = new Set(LAT); renderDanceChips(); };
 $("fType").onchange = () => { $("reqWrap").style.display = $("fType").value === "prelim" ? "" : "none"; };
+$("fCouples").oninput = () => { try { const c = parseCouples($("fCouples").value); $("couplesInfo").textContent = c.length ? pary(c.length) : ""; } catch (e) { $("couplesInfo").textContent = e.message; } };
 renderDanceChips();
 
 function parseCouples(str) {
   const out = new Set();
   for (const part of str.split(/[,;\s]+/).filter(Boolean)) {
     const m = part.match(/^(\d+)-(\d+)$/);
-    if (m) { const a = +m[1], b = +m[2]; for (let i = Math.min(a,b); i <= Math.max(a,b); i++) out.add(i); }
+    if (m) { const a = +m[1], b = +m[2]; for (let i = Math.min(a, b); i <= Math.max(a, b); i++) out.add(i); }
     else if (/^\d+$/.test(part)) out.add(+part);
     else throw new Error(`Neplatné číslo páru: „${part}“`);
   }
   return [...out].sort((a, b) => a - b);
 }
 
+function prefillNextRound({ category, couples, dances, judges, fromLabel }) {
+  $("fCat").value = category || "";
+  $("fCouples").value = couples.join(", ");
+  $("fCouples").oninput();
+  if (dances?.length) { selectedDances = new Set(dances); renderDanceChips(); }
+  if (judges?.length) $("fJudges").value = judges.join("");
+  const isFinal = couples.length <= 8;
+  $("fType").value = isFinal ? "final" : "prelim"; $("fType").onchange();
+  $("fLabel").value = isFinal ? "Finále" : (couples.length <= 16 ? "Semifinále" : "");
+  if (!isFinal) $("fRequired").value = couples.length <= 16 ? 6 : Math.round(couples.length / 2);
+  $("importInfo").textContent = `Načteno: ${category} – postupující z kola „${fromLabel}“ (${pary(couples.length)}).`;
+  showTab("1");
+  $("fLabel").focus();
+}
+
+$("importBtn").onclick = () => $("importFile").click();
+$("importFile").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = "";
+  if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    if (data.format !== "artimo-counter/postup" || !Array.isArray(data.couples)) throw new Error("Soubor není seznam postupujících z Artimo Counter.");
+    if (data.competition && data.competition !== comp && !confirm(`Soubor je ze soutěže „${data.competition}“, aktuální je „${comp}“. Pokračovat?`)) return;
+    prefillNextRound({ category: data.category, couples: data.couples, dances: data.dances, judges: data.judges, fromLabel: data.fromRound });
+    log(`Načten soubor ${f.name}`);
+  } catch (err) { $("importInfo").textContent = "Chyba: " + err.message; }
+};
+
 $("createBtn").onclick = async () => {
   $("createErr").textContent = "";
   try {
-    const name = $("fName").value.trim();
+    const category = $("fCat").value.trim();
+    const label = $("fLabel").value.trim();
     const type = $("fType").value;
     const dances = Object.keys(DANCES).filter(d => selectedDances.has(d));
     const couples = parseCouples($("fCouples").value);
     const judges = [...new Set($("fJudges").value.toUpperCase().replace(/[^A-Z]/g, "").split(""))];
     const required = type === "prelim" ? parseInt($("fRequired").value, 10) : null;
-    if (!name) throw new Error("Vyplň název kola.");
+    if (!category) throw new Error("Vyplň kategorii.");
+    if (!label) throw new Error("Vyplň název kola.");
     if (!dances.length) throw new Error("Vyber alespoň jeden tanec.");
     if (couples.length < 2) throw new Error("Zadej alespoň 2 páry.");
     if (!judges.length) throw new Error("Zadej písmena porotců.");
     if (type === "prelim" && (!required || required >= couples.length)) throw new Error("Počet křížků musí být menší než počet párů.");
     if (type === "final" && couples.length > 8) throw new Error("Finále může mít nejvýše 8 párů.");
+    const dup = [...rounds.values()].find(r => r.category === category && labelOf(r) === label);
+    if (dup && !confirm(`Kolo „${category} · ${label}“ už existuje. Vytvořit další?`)) return;
 
-    const rid = Date.now().toString(36);
-    await setDoc(doc(db, "competitions", comp, "rounds", rid), {
-      name, type, dances, couples, judges, required, status: "open", created: Date.now()
+    const id = Date.now().toString(36);
+    await setDoc(doc(db, "competitions", comp, "rounds", id), {
+      category, label, name: `${category} · ${label}`, type, dances, couples, judges, required,
+      status: "open", created: Date.now()
     });
-    log(`Kolo „${name}“ vytvořeno (${rid})`);
-    selectRound(rid);
-  } catch (e) {
-    $("createErr").textContent = e.message;
-    log("CHYBA při vytváření kola: " + e.message);
-  }
+    await setDoc(doc(db, "competitions", comp), { startedAt: compDoc.startedAt || Date.now() }, { merge: true });
+    log(`Kolo „${category} · ${label}“ vytvořeno`);
+    $("importInfo").textContent = "";
+    selectRound(id);
+  } catch (e) { $("createErr").textContent = e.message; log("CHYBA při vytváření kola: " + e.message); }
 };
 
-// ---------- seznam kol ----------
-function startRounds() {
-  unsubRounds?.(); unsubSheets?.();
-  rounds.clear(); currentRid = null; sheets.clear(); knownSheetRevs.clear();
-  $("compInput").value = comp;
+// ================= listenery =================
+function startComp() {
+  unsubs.forEach(u => u()); unsubs = []; unsubSheets?.(); unsubSheets = null;
+  rounds.clear(); presence.clear(); sheets.clear(); knownRevs.clear(); compDoc = {};
+  rid = null; procRid = null;
   store.set("ac_comp", comp);
-  renderDetail();
-  unsubRounds = onSnapshot(collection(db, "competitions", comp, "rounds"), { includeMetadataChanges: true }, snap => {
+  $("compInput").value = comp;
+  unsubs.push(onSnapshot(doc(db, "competitions", comp), snap => {
+    compDoc = snap.data() || {};
+    if (document.activeElement !== $("compName")) $("compName").value = compDoc.name || "";
+    renderAll();
+  }));
+  unsubs.push(onSnapshot(collection(db, "competitions", comp, "rounds"), { includeMetadataChanges: true }, snap => {
     setConn(snap.metadata.fromCache ? "wait" : "ok", snap.metadata.fromCache ? "Offline / připojování" : "Připojeno");
     rounds = new Map(snap.docs.map(d => [d.id, { id: d.id, ...d.data() }]));
-    renderRoundList();
-    if (currentRid) renderDetail();
-  }, err => { setConn("bad", "Chyba: " + err.code); log("CHYBA čtení kol: " + err.message); });
+    renderAll();
+  }, err => { setConn("bad", "Chyba: " + err.code); log("CHYBA čtení kol: " + err.message); }));
+  unsubs.push(onSnapshot(collection(db, "competitions", comp, "judges"), snap => {
+    presence = new Map(snap.docs.map(d => [d.id, d.data({ serverTimestamps: "estimate" })]));
+    if (tab === "1") renderDetail();
+  }));
+  renderAll();
 }
+setInterval(() => { if (tab === "1") renderDetail(); }, 15000); // obnova stavu online/offline
+
+function renderAll() {
+  const comps = compDoc.name || comp;
+  $("compTitle").textContent = `${comps} · sčitatel`;
+  $("catList").innerHTML = [...new Set([...rounds.values()].map(catOf))].map(c => `<option>${esc(c)}</option>`).join("");
+  const pending = [...rounds.values()].filter(r => r.status === "processed" && r.type === "prelim" && !r.qualified).length;
+  $("pendingCnt").hidden = !pending; $("pendingCnt").textContent = pending;
+  if (tab === "1") { renderRoundList(); renderDetail(); }
+  if (tab === "2") { renderProcList(); renderProc(); }
+  if (tab === "3") renderSummary();
+}
+
+// ================= 1 PRŮBĚH =================
+function groupedByCat(filter = () => true) {
+  const g = new Map();
+  for (const r of sortRounds([...rounds.values()].filter(filter))) { if (!g.has(catOf(r))) g.set(catOf(r), []); g.get(catOf(r)).push(r); }
+  return g;
+}
+const statusText = s => ({ open: "otevřeno", locked: "uzamčeno", processed: "zpracováno" }[s] || s);
 
 function renderRoundList() {
-  const list = [...rounds.values()].sort((a, b) => b.created - a.created);
-  $("roundList").innerHTML = list.length ? list.map(r => `
-    <div class="round-item ${r.id === currentRid ? "sel" : ""}" data-rid="${r.id}">
-      <div><b>${esc(r.name)}</b><div class="hint">${r.type === "final" ? "Finále" : "Předkolo"} · ${r.couples.length} párů · ${r.judges.length} porotců</div></div>
-      <span class="badge ${r.status}">${r.status === "open" ? "otevřeno" : "uzamčeno"}</span>
-    </div>`).join("") : `<div class="empty">Zatím žádná kola</div>`;
+  const g = groupedByCat();
+  $("roundList").innerHTML = g.size ? [...g].map(([cat, list]) => `
+    <div class="cat"><div class="cat-name">${esc(cat)}</div>
+    ${list.map(r => `<div class="round-item ${r.id === rid ? "sel" : ""}" data-rid="${r.id}">
+      <div><b>${esc(labelOf(r))}</b><div class="hint">${r.type === "final" ? "Finále" : "Předkolo"} · ${r.couples.length} párů · ${r.judges.length} porotců</div></div>
+      <span class="badge ${r.status}">${statusText(r.status)}</span></div>`).join("")}</div>`).join("")
+    : `<div class="empty">Zatím žádná kola</div>`;
 }
-$("roundList").addEventListener("click", e => {
-  const item = e.target.closest("[data-rid]"); if (item) selectRound(item.dataset.rid);
-});
+$("roundList").addEventListener("click", e => { const it = e.target.closest("[data-rid]"); if (it) selectRound(it.dataset.rid); });
 
-// ---------- detail kola ----------
-function selectRound(rid) {
-  currentRid = rid; selectedCell = null; sheets.clear();
+function selectRound(id) {
+  rid = id; selectedCell = null; sheets.clear();
   unsubSheets?.();
-  unsubSheets = onSnapshot(collection(db, "competitions", comp, "rounds", rid, "sheets"), snap => {
+  unsubSheets = onSnapshot(collection(db, "competitions", comp, "rounds", id, "sheets"), snap => {
     sheets = new Map(snap.docs.map(d => [d.id, d.data()]));
     for (const ch of snap.docChanges()) {
-      const s = ch.doc.data();
-      const prev = knownSheetRevs.get(rid + ch.doc.id);
+      const s = ch.doc.data(), key = id + ch.doc.id, prev = knownRevs.get(key);
       if (ch.type !== "removed" && prev !== s.rev) {
-        knownSheetRevs.set(rid + ch.doc.id, s.rev);
+        knownRevs.set(key, s.rev);
         if (prev !== undefined || !snap.metadata.fromCache) {
           const delay = s.sentAt && s.clientAt ? ((s.sentAt.toMillis() - s.clientAt) / 1000).toFixed(1) + " s" : "?";
-          log(`Porotce ${s.judge} · ${DANCES[s.dance]} · verze ${s.rev} (odesláno ${fmtTime(s.clientAt)}, na serveru za ${delay})`);
+          log(`Porotce ${s.judge} · ${DANCES[s.dance]} · verze ${s.rev} (na serveru za ${delay})`);
         }
       }
     }
-    renderDetail();
+    if (tab === "1") renderDetail();
   }, err => log("CHYBA čtení lístků: " + err.message));
   renderRoundList(); renderDetail();
 }
@@ -265,63 +608,344 @@ function sheetText(r, s) {
   if (!s) return "Lístek zatím nedorazil.";
   const head = `<b>Porotce ${s.judge} · ${DANCES[s.dance]}</b> · verze ${s.rev} · přijato ${s.sentAt ? s.sentAt.toDate().toLocaleTimeString("cs-CZ") : "…"}<br>`;
   if (r.type === "prelim") return head + `Křížky (${s.marks.length}): <b>${s.marks.join(", ")}</b>`;
-  const order = Object.entries(s.placings).sort((a, b) => a[1] - b[1]);
-  return head + order.map(([c, p]) => `${p}. místo – pár <b>${c}</b>`).join(" &nbsp;·&nbsp; ");
+  return head + Object.entries(s.placings).sort((a, b) => a[1] - b[1]).map(([c, p]) => `${p}. – <b>${c}</b>`).join(" &nbsp;·&nbsp; ");
 }
 
 function renderDetail() {
-  const r = rounds.get(currentRid);
+  const r = rounds.get(rid);
   if (!r) { $("detail").innerHTML = `<div class="empty">Vyber nebo vytvoř kolo</div>`; return; }
   const total = r.judges.length * r.dances.length;
   const done = r.judges.reduce((n, j) => n + r.dances.filter(d => sheets.has(`${d}_${j}`)).length, 0);
-  const base = new URL(JUDGE_APP_URL);
+  const complete = done === total;
+  const now = Date.now();
+  const jury = compDoc.jury || {};
+  const readyCount = r.judges.filter(j => presence.get(j)?.readyFor === r.id).length;
+
+  let actions = "";
+  if (r.status === "processed") actions = `<button class="primary" data-act="goProc">Zobrazit zpracování →</button>`;
+  else actions = `
+    <button data-act="toggleLock" class="${r.status === "open" ? "danger" : ""}">${r.status === "open" ? "Uzavřít kolo" : "Znovu otevřít"}</button>
+    <button class="primary" data-act="process" ${complete ? "" : "disabled"} title="${complete ? "" : "Čeká se na všechny lístky"}">Odeslat ke zpracování →</button>`;
 
   $("detail").innerHTML = `
-    <div class="detail-head">
-      <h2>${esc(r.name)}</h2>
-      <span class="badge ${r.status}">${r.status === "open" ? "otevřeno" : "uzamčeno"}</span>
-      <button id="lockBtn" class="${r.status === "open" ? "danger" : ""}">${r.status === "open" ? "Uzamknout kolo" : "Znovu otevřít"}</button>
-    </div>
-    <div class="meta">${r.type === "final" ? "Finále – pořadí" : `Předkolo – ${r.required} křížků`} · páry: ${r.couples.join(", ")}</div>
-    <div class="progress">${done} / ${total} <small>lístků odevzdáno</small></div>
+    <div class="head"><h1>${esc(titleOf(r))}</h1><span class="badge ${r.status}">${statusText(r.status)}</span></div>
+    <div class="meta">${r.type === "final" ? "Finále – pořadí" : `Předkolo – ${r.required} křížků`} · ${r.couples.length} párů: ${r.couples.join(", ")}</div>
+    <div class="actions">${actions}</div>
+
+    <div class="h2" style="margin-top:22px">Porota · připraveno ${readyCount} / ${r.judges.length}</div>
+    <div class="judges">${r.judges.map(j => {
+      const p = presence.get(j), seen = tsMs(p?.lastSeen);
+      const online = seen && now - seen < 90000, ready = p?.readyFor === r.id;
+      const n = r.dances.filter(d => sheets.has(`${d}_${j}`)).length;
+      return `<div class="jcard ${ready ? "ready" : ""}">
+        <div class="jtop"><div class="jl">${j}</div><div class="jname">${esc(jury[j] || "")}</div></div>
+        <div class="jrow"><span class="dot ${online ? "ok" : (seen ? "bad" : "")}"></span>${online ? "Přihlášen" : (seen ? "Offline od " + fmtTime(seen) : "Nepřihlášen")}</div>
+        <div class="jrow">${ready ? "✓ Připraven" : "· Čeká na potvrzení"}</div>
+        <div class="jrow"><b>${n} / ${r.dances.length}</b>&nbsp;lístků</div></div>`;
+    }).join("")}</div>
+
+    <div class="big">${done} / ${total} <small>lístků odevzdáno</small></div>
     <table style="margin-top:12px">
       <tr><th>Porotce</th>${r.dances.map(d => `<th>${DANCES[d]}</th>`).join("")}</tr>
-      ${r.judges.map(j => `<tr><td class="judge">${j}</td>${r.dances.map(d => {
-        const s = sheets.get(`${d}_${j}`); const key = `${d}_${j}`;
+      ${r.judges.map(j => `<tr><td class="jlet">${j}</td>${r.dances.map(d => {
+        const key = `${d}_${j}`, s = sheets.get(key);
         return `<td class="cell ${s ? "ok" : "none"} ${selectedCell === key ? "sel" : ""}" data-key="${key}">${s ? "✓ " + (s.sentAt ? s.sentAt.toDate().toLocaleTimeString("cs-CZ") : "…") + (s.rev > 1 ? ` (v${s.rev})` : "") : "—"}</td>`;
       }).join("")}</tr>`).join("")}
     </table>
     <div class="sheet-detail">${selectedCell ? sheetText(r, sheets.get(selectedCell)) : `<span class="hint">Klikni na buňku pro zobrazení lístku.</span>`}</div>
-    <h2 style="margin-top:22px">Odkazy pro porotce</h2>
-    <div class="links">${r.judges.map(j => {
-      const u = new URL(base); u.searchParams.set("c", comp); u.searchParams.set("j", j);
-      return `<div class="link-row"><b>${j}</b><input readonly value="${esc(u.href)}"><button data-copy="${esc(u.href)}">Kopírovat</button></div>`;
-    }).join("")}</div>
-    <div class="hint" style="margin-top:6px">Odkaz platí pro celou soutěž – porotce v něm uvidí všechna kola, ve kterých je zapsaný.</div>`;
 
-  $("lockBtn").onclick = async () => {
-    const next = r.status === "open" ? "locked" : "open";
-    try { await updateDoc(doc(db, "competitions", comp, "rounds", r.id), { status: next }); log(`Kolo „${r.name}“ ${next === "locked" ? "uzamčeno" : "otevřeno"}`); }
-    catch (e) { log("CHYBA: " + e.message); }
-  };
+    <details id="linksBox" style="margin-top:20px" ${linksOpen ? "open" : ""}><summary>Odkazy pro porotce</summary>
+      ${r.judges.map(j => { const u = new URL(JUDGE_APP_URL); u.searchParams.set("c", comp); u.searchParams.set("j", j);
+        return `<div class="link-row"><b>${j}</b><input readonly value="${esc(u.href)}"><button data-copy="${esc(u.href)}">Kopírovat</button></div>`; }).join("")}
+      <div class="hint" style="margin-top:6px">Odkaz platí pro celou soutěž – porotce v něm uvidí všechna kola, ve kterých je zapsaný.</div>
+    </details>`;
 }
-$("detail").addEventListener("click", e => {
+
+$("detail").addEventListener("toggle", e => { if (e.target.id === "linksBox") linksOpen = e.target.open; }, true);
+$("detail").addEventListener("click", async e => {
   const cell = e.target.closest("[data-key]");
   if (cell) { selectedCell = cell.dataset.key; renderDetail(); return; }
   const c = e.target.dataset.copy;
-  if (c) navigator.clipboard?.writeText(c).then(() => { e.target.textContent = "Zkopírováno"; setTimeout(() => e.target.textContent = "Kopírovat", 1200); });
+  if (c) { navigator.clipboard?.writeText(c).then(() => { e.target.textContent = "Zkopírováno"; setTimeout(() => e.target.textContent = "Kopírovat", 1200); }); return; }
+  const act = e.target.closest("[data-act]")?.dataset.act;
+  const r = rounds.get(rid); if (!act || !r) return;
+  if (act === "toggleLock") {
+    const next = r.status === "open" ? "locked" : "open";
+    try { await updateDoc(doc(db, "competitions", comp, "rounds", r.id), { status: next, ...(next === "locked" ? { lockedAt: Date.now() } : {}) }); log(`Kolo ${titleOf(r)}: ${statusText(next)}`); }
+    catch (err) { log("CHYBA: " + err.message); }
+  }
+  if (act === "process") processRound(r);
+  if (act === "goProc") { procRid = r.id; showTab("2"); }
 });
 
-// ---------- připojení ----------
-function setConn(cls, text) { $("connDot").className = "dot " + cls; $("connText").textContent = text; }
+// ----- odeslání ke zpracování -----
+async function processRound(r) {
+  try {
+    if (r.status === "open" && !confirm("Kolo je otevřené. Uzavřít ho a odeslat ke zpracování?")) return;
+    const snap = await getDocs(collection(db, "competitions", comp, "rounds", r.id, "sheets"));
+    const sh = new Map(snap.docs.map(d => [d.id, d.data()]));
+    const missing = [];
+    for (const j of r.judges) for (const d of r.dances) if (!sh.has(`${d}_${j}`)) missing.push(`${j}/${DANCES[d]}`);
+    if (missing.length) { alert("Chybí lístky: " + missing.join(", ")); return; }
+
+    let result;
+    if (r.type === "prelim") {
+      const crosses = {}, totals = {};
+      for (const c of r.couples) { crosses[c] = {}; totals[c] = 0; for (const d of r.dances) crosses[c][d] = ""; }
+      for (const d of r.dances) for (const j of r.judges) for (const c of sh.get(`${d}_${j}`).marks) {
+        if (crosses[c] === undefined) continue;
+        crosses[c][d] += j; totals[c]++;
+      }
+      result = { kind: "prelim", crosses, totals };
+    } else {
+      const marks = {};
+      for (const d of r.dances) { marks[d] = {}; for (const c of r.couples) marks[d][c] = r.judges.map(j => sh.get(`${d}_${j}`).placings[String(c)]); }
+      const sk = runSkating(r, marks);
+      const overall = {}, rule = {};
+      r.couples.forEach((c, i) => { overall[c] = sk.overall[i]; rule[c] = sk.rule[i]; });
+      result = { kind: "final", marks, overall, rule };
+    }
+    await updateDoc(doc(db, "competitions", comp, "rounds", r.id), {
+      status: "processed", processedAt: Date.now(), lockedAt: r.lockedAt || Date.now(), result
+    });
+    log(`Kolo ${titleOf(r)} odesláno ke zpracování`);
+    procRid = r.id; showTab("2");
+  } catch (err) { alert("Zpracování selhalo: " + err.message); log("CHYBA zpracování: " + err.message); }
+}
+
+// marks[d][c] = [známky v pořadí r.judges] -> skatingFinal(marks[t][j][i])
+function runSkating(r, marks) {
+  const m = r.dances.map(d => r.judges.map((_, j) => r.couples.map(c => marks[d][c][j])));
+  return skatingFinal(m);
+}
+
+// ================= 2 ZPRACOVÁNÍ =================
+function renderProcList() {
+  const g = groupedByCat(r => r.status === "processed");
+  if (!procRid || !rounds.has(procRid)) {
+    const all = [...rounds.values()].filter(r => r.status === "processed").sort((a, b) => (b.processedAt || 0) - (a.processedAt || 0));
+    procRid = all[0]?.id || null;
+  }
+  $("procList").innerHTML = g.size ? [...g].map(([cat, list]) => `
+    <div class="cat"><div class="cat-name">${esc(cat)}</div>
+    ${list.map(r => `<div class="round-item ${r.id === procRid ? "sel" : ""}" data-rid="${r.id}">
+      <div><b>${esc(labelOf(r))}</b><div class="hint">${r.type === "final" ? "Finále · skating" : (r.qualified ? `Postupuje ${r.qualified.length} z ${r.couples.length}` : "Postup neuložen")}</div></div>
+      ${r.type === "prelim" && !r.qualified ? `<span class="badge locked">k řešení</span>` : `<span class="badge processed">hotovo</span>`}</div>`).join("")}</div>`).join("")
+    : `<div class="empty">Zatím nic nebylo odesláno ke zpracování</div>`;
+}
+$("procList").addEventListener("click", e => { const it = e.target.closest("[data-rid]"); if (it) { procRid = it.dataset.rid; renderProcList(); renderProc(); } });
+
+function renderProc() {
+  const r = rounds.get(procRid);
+  if (!r || !r.result) { $("procView").innerHTML = `<div class="empty">Vyber kolo vlevo. Kolo se sem dostane tlačítkem „Odeslat ke zpracování“ v záložce Průběh.</div>`; return; }
+  const head = `<div class="head"><h1>${esc(titleOf(r))}</h1>
+    <button class="ghost no-print" data-act="print">Tisk</button>
+    <button class="ghost no-print" data-act="reopen">Vrátit do průběhu</button></div>
+    <div class="meta">${r.type === "final" ? "Finále" : "Předkolo"} · porota ${r.judges.join(" ")} · zpracováno ${fmtDT(r.processedAt)}</div>`;
+  $("procView").innerHTML = head + (r.type === "prelim" ? prelimView(r) : finalView(r));
+}
+
+// ----- předkolo -----
+function prelimSorted(r) {
+  const t = r.result.totals;
+  return [...r.couples].sort((a, b) => (t[b] || 0) - (t[a] || 0) || a - b);
+}
+function prelimCut(r, n) {
+  const sorted = prelimSorted(r), t = r.result.totals;
+  n = Math.max(1, Math.min(n, sorted.length));
+  const v = t[sorted[n - 1]], next = sorted[n] !== undefined ? t[sorted[n]] : null;
+  const tie = next !== null && next === v;
+  const down = sorted.filter(c => t[c] > v).length;
+  const up = sorted.filter(c => t[c] >= v).length;
+  return { sorted, n, tie, down, up, value: v };
+}
+
+function prelimView(r) {
+  const saved = r.qualified ? r.qualified.length : null;
+  const n = advanceDraft.get(r.id) ?? saved ?? r.required;
+  const cut = prelimCut(r, n);
+  const t = r.result.totals, cr = r.result.crosses;
+  const qualified = new Set(cut.tie ? cut.sorted.slice(0, cut.down) : cut.sorted.slice(0, cut.n));
+  const tieSet = new Set(cut.tie ? cut.sorted.filter(c => t[c] === cut.value) : []);
+  const isSaved = saved !== null && saved === cut.n && !cut.tie && r.qualified.every(c => qualified.has(c));
+
+  let box = "";
+  if (cut.tie) box = `<div class="warn"><b>Shoda na hranici postupu.</b> Páry ${[...tieSet].join(", ")} mají shodně ${cut.value} křížků. Zvol, kolik párů postoupí:
+      <div class="actions" style="margin-top:10px">
+        ${cut.down > 0 ? `<button data-n="${cut.down}">Postoupí ${pary(cut.down)} (bez shodných)</button>` : ""}
+        <button data-n="${cut.up}">Postoupí ${pary(cut.up)} (včetně shodných)</button></div></div>`;
+  else if (isSaved) box = `<div class="ok-box">✓ Postup uložen: <b>${pary(r.qualified.length)}</b> – ${r.qualified.join(", ")}</div>`;
+
+  const judges = r.judges;
+  return `
+    <div class="ctrl no-print">
+      <div><label style="margin-top:0">Postupuje párů</label><input type="number" id="advN" min="1" max="${r.couples.length}" value="${cut.n}"></div>
+      <div class="actions">
+        <button class="primary" data-act="saveQual" ${cut.tie ? "disabled" : ""}>Uložit postup</button>
+        <button data-act="download" ${isSaved ? "" : "disabled"} title="${isSaved ? "" : "Nejdřív ulož postup"}">Stáhnout soubor postupujících</button>
+        <button data-act="nextRound" ${isSaved ? "" : "disabled"}>Vytvořit další kolo →</button>
+      </div>
+    </div>
+    <div class="hint no-print">Porotci dávali ${r.required} křížků. Řádky jsou seřazené podle počtu křížků; zvýrazněné páry postupují.</div>
+    ${box}
+    <div style="overflow-x:auto;margin-top:12px"><table class="xtab">
+      <tr><th rowspan="2">#</th><th rowspan="2">Pár</th>${r.dances.map(d => `<th class="dance" colspan="${judges.length}">${DANCES[d]}</th>`).join("")}<th rowspan="2">Σ</th><th rowspan="2">Postup</th></tr>
+      <tr>${r.dances.map(() => judges.map(j => `<th>${j}</th>`).join("")).join("")}</tr>
+      ${cut.sorted.map((c, i) => {
+        const q = qualified.has(c), isCut = !cut.tie && i === cut.n - 1;
+        return `<tr class="${q ? "q" : ""} ${isCut ? "cut" : ""} ${tieSet.has(c) ? "tie" : ""}">
+          <td>${i + 1}</td><td class="cpl">${c}</td>
+          ${r.dances.map(d => judges.map(j => `<td class="x">${(cr[c]?.[d] || "").includes(j) ? "✕" : ""}</td>`).join("")).join("")}
+          <td class="sum">${t[c] || 0}</td><td>${q ? "✓" : (tieSet.has(c) ? "?" : "")}</td></tr>`;
+      }).join("")}
+    </table></div>`;
+}
+
+// ----- finále -----
+function finalView(r) {
+  const sk = runSkating(r, r.result.marks);
+  const N = r.couples.length, X = r.judges.length;
+  const labels = placeLabels(sk.overall);
+  const order = r.couples.map((c, i) => ({ c, i, p: sk.overall[i], l: labels[i] })).sort((a, b) => a.p - b.p || a.c - b.c);
+  const podiumCls = p => p === 1 ? "p1" : p <= 2.5 && p > 1 ? "p2" : p <= 3.5 && p > 2 ? "p3" : "";
+  const ruleTxt = { "9": "", "10": "pr. 10", "11": "pr. 11" };
+
+  let html = `<div class="h2">Výsledky finále</div>
+    <div class="podium">${order.map(o => `<div class="pod ${podiumCls(o.p)}"><div class="pl">${o.l} místo</div><div class="cn">${o.c}</div></div>`).join("")}</div>
+    <div class="h2">Celkové pořadí (pravidla 9–11)</div>
+    <table class="sk"><tr><th>Pár</th>${r.dances.map(d => `<th>${DANCES[d]}</th>`).join("")}<th>Součet</th><th>Rozhodlo</th><th>Místo</th></tr>
+    ${order.map(o => `<tr><td class="cpl">${o.c}</td>${r.dances.map((d, t) => `<td>${fmtNum(sk.byDance[t][o.i])}</td>`).join("")}
+      <td><b>${fmtNum(sk.sums[o.i])}</b></td><td class="mk">${ruleTxt[sk.rule[o.i]] ?? ""}</td><td class="place">${o.l}</td></tr>`).join("")}
+    </table>
+    <div class="legend">Pravidlo 9: nižší součet umístění. Pravidlo 10: při shodě součtu rozhoduje počet tanců s umístěním na hledané místo nebo lepší, pak jejich součet. Pravidlo 11: rozhodnutí podle spojených známek ze všech tanců.</div>`;
+
+  r.dances.forEach((d, t) => {
+    const pl = placeLabels(sk.byDance[t]);
+    const ord = r.couples.map((c, i) => ({ c, i })).sort((a, b) => sk.byDance[t][a.i] - sk.byDance[t][b.i] || a.c - b.c);
+    html += `<div class="dance-block"><h3>${DANCES[d]}</h3><div style="overflow-x:auto"><table class="sk">
+      <tr><th>Pár</th>${r.judges.map(j => `<th>${j}</th>`).join("")}${Array.from({ length: N }, (_, k) => `<th>${k === 0 ? "1" : "1–" + (k + 1)}</th>`).join("")}<th>Místo</th></tr>
+      ${ord.map(({ c, i }) => {
+        const m = r.result.marks[d][c], dec = sk.decidedCol[t][i];
+        return `<tr><td class="cpl">${c}</td>${m.map(v => `<td>${v}</td>`).join("")}
+          ${Array.from({ length: N }, (_, k) => {
+            const col = k + 1; if (col > dec) return `<td></td>`;
+            const cnt = m.filter(v => v <= col).length, sum = m.filter(v => v <= col).reduce((a, v) => a + v, 0);
+            const txt = cnt >= sk.majority ? `${cnt}<small> (${sum})</small>` : (cnt ? cnt : "–");
+            return `<td class="${col === dec ? "dec" : "mk"}">${txt}</td>`;
+          }).join("")}
+          <td class="place">${pl[i]}</td></tr>`;
+      }).join("")}
+    </table></div></div>`;
+  });
+  html += `<div class="legend">Většina = ${sk.majority} z ${X} rozhodčích. Ve sloupci „1–k“ je počet známek k a lepších, v závorce jejich součet. Zvýrazněný sloupec rozhodl o umístění.</div>`;
+  return html;
+}
+const pary = n => `${n} ${n === 1 ? "pár" : n >= 2 && n <= 4 ? "páry" : "párů"}`;
+const fmtNum = v => Number.isInteger(v) ? String(v) : String(v).replace(".", ",");
+
+$("procView").addEventListener("input", e => {
+  if (e.target.id === "advN") { advanceDraft.set(procRid, parseInt(e.target.value, 10) || 1); const pos = e.target.selectionStart; renderProc(); const el = $("advN"); el.focus(); try { el.setSelectionRange(pos, pos); } catch {} }
+});
+$("procView").addEventListener("click", async e => {
+  const r = rounds.get(procRid); if (!r) return;
+  const n = e.target.closest("[data-n]")?.dataset.n;
+  if (n) { advanceDraft.set(r.id, +n); renderProc(); return; }
+  const act = e.target.closest("[data-act]")?.dataset.act;
+  if (act === "print") window.print();
+  if (act === "reopen") {
+    if (!confirm("Vrátit kolo do průběhu? Výsledek zpracování se smaže a kolo bude uzavřené (lze ho znovu otevřít).")) return;
+    await updateDoc(doc(db, "competitions", comp, "rounds", r.id), { status: "locked", result: null, qualified: null, processedAt: null });
+    rid = r.id; showTab("1"); selectRound(r.id);
+  }
+  if (act === "saveQual") {
+    const cut = prelimCut(r, advanceDraft.get(r.id) ?? r.qualified?.length ?? r.required);
+    if (cut.tie) return;
+    const qualified = cut.sorted.slice(0, cut.n).sort((a, b) => a - b);
+    await updateDoc(doc(db, "competitions", comp, "rounds", r.id), { qualified, qualifiedAt: Date.now() });
+    advanceDraft.delete(r.id);
+    log(`Postup uložen: ${titleOf(r)} – ${qualified.length} párů`);
+  }
+  if (act === "download") {
+    const data = { format: "artimo-counter/postup", version: 1, competition: comp, category: catOf(r), fromRound: labelOf(r), fromRoundId: r.id,
+                   createdAt: new Date().toISOString(), dances: r.dances, judges: r.judges, couples: r.qualified };
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+    a.download = `postup_${slug(catOf(r))}_${slug(labelOf(r))}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  if (act === "nextRound") prefillNextRound({ category: catOf(r), couples: r.qualified, dances: r.dances, judges: r.judges, fromLabel: labelOf(r) });
+});
+
+// ================= 3 SOUTĚŽ =================
+function renderSummary() {
+  const list = [...rounds.values()];
+  const name = compDoc.name || comp;
+  $("sumTitle").textContent = name;
+  const start = compDoc.startedAt || Math.min(...list.map(r => r.created || Infinity));
+  const finished = compDoc.finishedAt;
+  $("sumBadge").innerHTML = finished ? `<span class="badge done">Ukončeno</span>` : list.length ? `<span class="badge run">Probíhá</span>` : "";
+  $("finishBtn").textContent = finished ? "Znovu otevřít soutěž" : "Ukončit soutěž";
+  const cats = groupedByCat();
+  const finalsDone = [...cats.values()].filter(rs => rs.some(r => r.type === "final" && r.status === "processed")).length;
+  const sheetsTotal = list.reduce((n, r) => n + r.judges.length * r.dances.length, 0);
+  $("sumStats").innerHTML = [
+    ["Začátek", Number.isFinite(start) ? fmtDT(start) : "–"],
+    ["Konec", finished ? fmtDT(finished) : "probíhá"],
+    ["Kategorie", `${finalsDone} / ${cats.size} dokončeno`],
+    ["Kola", `${list.filter(r => r.status === "processed").length} / ${list.length} zpracováno`],
+    ["Lístků celkem", sheetsTotal],
+    ["ID soutěže", esc(comp)]
+  ].map(([l, v]) => `<div class="stat"><div class="l">${l}</div><div class="v">${v}</div></div>`).join("");
+
+  $("sumCats").innerHTML = cats.size ? [...cats].map(([cat, rs]) => {
+    const fin = rs.find(r => r.type === "final" && r.status === "processed");
+    const first = rs[0], last = rs[rs.length - 1];
+    let res = "";
+    if (fin) {
+      const sk = runSkating(fin, fin.result.marks), lab = placeLabels(sk.overall);
+      const ord = fin.couples.map((c, i) => ({ c, p: sk.overall[i], l: lab[i] })).sort((a, b) => a.p - b.p || a.c - b.c);
+      res = `<div class="h2" style="margin-top:16px">Konečné pořadí</div><div class="results-list">${ord.map(o =>
+        `<div class="res ${o.p === 1 ? "p1" : ""}"><span class="p">${o.l}</span><span class="c">${o.c}</span></div>`).join("")}</div>`;
+    } else {
+      const lastProc = [...rs].reverse().find(r => r.status === "processed" && r.qualified);
+      res = lastProc ? `<div class="h2" style="margin-top:16px">Průběžně · postupující z kola ${esc(labelOf(lastProc))}</div>
+        <div class="chips">${lastProc.qualified.map(c => `<span class="chip on">${c}</span>`).join("")}</div>` : "";
+    }
+    return `<div class="card"><div class="head"><h1 style="font-size:22px">${esc(cat)}</h1>
+      <span class="badge ${fin ? "done" : "run"}">${fin ? "Dokončeno" : "Probíhá"}</span></div>
+      <div class="meta">${fmtTime(first.created)} – ${fin ? fmtTime(fin.processedAt) : "…"} · tance: ${last.dances.map(d => DANCES[d]).join(", ")} · porota: ${[...new Set(rs.flatMap(r => r.judges))].join(" ")}</div>
+      <div class="timeline">${rs.map(r => `<div class="tl ${r.status}"><b>${esc(labelOf(r))}</b>${r.couples.length} párů · ${statusText(r.status)}${r.qualified ? ` · postup ${r.qualified.length}` : ""}<br><span class="hint">${fmtTime(r.created)}${r.processedAt ? " – " + fmtTime(r.processedAt) : ""}</span></div>`).join("")}</div>
+      ${res}</div>`;
+  }).join("") : `<div class="card"><div class="empty">Soutěž zatím nemá žádná kola</div></div>`;
+
+  if (!$("juryBox").contains(document.activeElement)) {
+    const letters = [...new Set(list.flatMap(r => r.judges))].sort();
+    const jury = compDoc.jury || {};
+    $("juryBox").innerHTML = letters.length ? letters.map(j => `<div class="row"><b>${j}</b><input data-j="${j}" value="${esc(jury[j] || "")}" placeholder="Jméno porotce"></div>`).join("")
+      : `<div class="hint">Porotci se objeví po vytvoření prvního kola.</div>`;
+  }
+}
+
+$("jurySave").onclick = async () => {
+  const jury = { ...(compDoc.jury || {}) };
+  document.querySelectorAll("#juryBox [data-j]").forEach(i => { jury[i.dataset.j] = i.value.trim(); });
+  await setDoc(doc(db, "competitions", comp), { jury }, { merge: true });
+  $("jurySave").textContent = "Uloženo ✓"; setTimeout(() => $("jurySave").textContent = "Uložit jména porotců", 1500);
+};
+$("compNameSave").onclick = () => setDoc(doc(db, "competitions", comp), { name: $("compName").value.trim() }, { merge: true });
+$("finishBtn").onclick = async () => {
+  if (compDoc.finishedAt) await setDoc(doc(db, "competitions", comp), { finishedAt: null }, { merge: true });
+  else if (confirm("Ukončit soutěž? Uloží se čas konce.")) await setDoc(doc(db, "competitions", comp), { finishedAt: Date.now() }, { merge: true });
+};
 $("compBtn").onclick = () => {
   const v = $("compInput").value.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
-  if (v) { comp = v; startRounds(); log(`Přepnuto na soutěž „${comp}“`); }
+  if (v && v !== comp) { comp = v; startComp(); log(`Přepnuto na soutěž „${comp}“`); }
 };
 
-onAuthStateChanged(auth, user => {
-  if (user && !unsubRounds) { log("Přihlášeno (anonymně)"); startRounds(); }
-});
+// ================= připojení =================
+function setConn(cls, text) { $("connDot").className = "dot " + cls; $("connText").textContent = text; }
+let started = false;
+onAuthStateChanged(auth, user => { if (user && !started) { started = true; log("Přihlášeno (anonymně)"); startComp(); } });
 signInAnonymously(auth).catch(e => { setConn("bad", "Přihlášení selhalo"); log("CHYBA přihlášení: " + e.code + " – " + e.message); });
 </script>
 </body>
