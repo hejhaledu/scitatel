@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artimo Counter – Sčitatel</title>
+<style>
+:root{--bg:#111318;--panel:#1a1d24;--panel2:#21252e;--line:#2c313b;--text:#e8eaf0;--muted:#8b92a3;--accent:#f59e0b;--ok:#22c55e;--wait:#f59e0b;--bad:#ef4444}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:15px}
+header{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5;flex-wrap:wrap}
+header h1{font-size:18px;margin:0 auto 0 0;font-weight:700}
+header h1 span{color:var(--accent)}
+.conn{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted);display:inline-block}
+.dot.ok{background:var(--ok)}.dot.wait{background:var(--wait)}.dot.bad{background:var(--bad)}
+main{display:grid;grid-template-columns:340px 1fr;gap:20px;padding:20px;max-width:1400px;margin:0 auto}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:20px}
+.card h2{font-size:15px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+input,select{width:100%;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:15px}
+button{padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:14px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#111;font-weight:700}
+button.danger{border-color:var(--bad);color:var(--bad)}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{flex:0 0 auto;padding:6px 10px;border-radius:999px;font-size:13px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#111;font-weight:600}
+.hint{font-size:12px;color:var(--muted);margin-top:4px}
+.round-item{padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.round-item:hover,.round-item.sel{border-color:var(--accent)}
+.badge{font-size:11px;padding:3px 8px;border-radius:999px;font-weight:700;text-transform:uppercase;white-space:nowrap}
+.badge.open{background:rgba(34,197,94,.15);color:var(--ok)}
+.badge.locked{background:rgba(239,68,68,.15);color:var(--bad)}
+.detail-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.detail-head h2{margin:0;font-size:20px;text-transform:none;letter-spacing:0;color:var(--text);margin-right:auto}
+.meta{color:var(--muted);font-size:13px;margin-bottom:16px}
+.progress{font-size:28px;font-weight:800}
+.progress small{font-size:14px;color:var(--muted);font-weight:400}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--line);padding:8px;text-align:center}
+th{background:var(--panel2);font-size:13px;color:var(--muted)}
+td.cell{cursor:pointer;font-size:13px}
+td.cell.ok{background:rgba(34,197,94,.12);color:var(--ok)}
+td.cell.none{color:var(--muted)}
+td.cell.sel{outline:2px solid var(--accent);outline-offset:-2px}
+td.judge{font-weight:800;font-size:16px}
+.sheet-detail{margin-top:14px;padding:12px;border-radius:8px;background:var(--panel2);font-size:14px;line-height:1.6;min-height:44px}
+.links{display:grid;gap:6px}
+.link-row{display:flex;gap:8px;align-items:center}
+.link-row b{width:24px;font-size:16px}
+.link-row input{font-size:12px}
+.link-row button{flex:0 0 auto}
+.empty{color:var(--muted);text-align:center;padding:40px 0}
+.err{color:var(--bad);font-size:13px;margin-top:8px}
+.log{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);max-height:160px;overflow:auto;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header>
+  <h1>Artimo Counter <span>· Sčitatel</span></h1>
+  <div class="row" style="flex:0 0 auto;gap:6px">
+    <input id="compInput" style="width:160px" title="ID soutěže">
+    <button id="compBtn" style="flex:0 0 auto">Přepnout soutěž</button>
+  </div>
+  <div class="conn"><span class="dot" id="connDot"></span><span id="connText">Připojování…</span></div>
+</header>
+
+<main>
+  <aside>
+    <div class="card">
+      <h2>Nové kolo</h2>
+      <label>Název</label>
+      <input id="fName" placeholder="např. Junioři I LAT – Finále">
+      <label>Typ kola</label>
+      <select id="fType">
+        <option value="prelim">Předkolo (křížky)</option>
+        <option value="final">Finále (pořadí)</option>
+      </select>
+      <label>Tance</label>
+      <div class="row" style="margin-bottom:6px">
+        <button type="button" id="presetStt">STT</button>
+        <button type="button" id="presetLat">LAT</button>
+      </div>
+      <div class="chips" id="danceChips"></div>
+      <label>Startovní čísla párů</label>
+      <input id="fCouples" placeholder="např. 1-12 nebo 4, 7, 12, 19">
+      <label>Porotci (písmena)</label>
+      <input id="fJudges" value="ABCDE">
+      <div id="reqWrap">
+        <label>Počet křížků na porotce</label>
+        <input id="fRequired" type="number" min="1" value="6">
+      </div>
+      <div style="margin-top:14px"><button class="primary" id="createBtn" style="width:100%">Vytvořit a otevřít kolo</button></div>
+      <div class="err" id="createErr"></div>
+    </div>
+
+    <div class="card">
+      <h2>Kola v soutěži</h2>
+      <div id="roundList"><div class="empty">Zatím žádná kola</div></div>
+    </div>
+  </aside>
+
+  <section>
+    <div class="card" id="detail"><div class="empty">Vyber nebo vytvoř kolo</div></div>
+    <div class="card">
+      <h2>Log přenosu</h2>
+      <div class="log" id="log"></div>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
+         collection, doc, setDoc, updateDoc, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDDyx-mv5Ugi-5xEkUtPnWjGl_RuyHOwDI",
+  authDomain: "artimo-counter.firebaseapp.com",
+  projectId: "artimo-counter",
+  storageBucket: "artimo-counter.firebasestorage.app",
+  messagingSenderId: "953081589311",
+  appId: "1:953081589311:web:787c967a46f3cc9c1d928a"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+});
+
+const DANCES = { W:"Waltz", T:"Tango", V:"Valčík", F:"Slowfox", Q:"Quickstep",
+                 S:"Samba", C:"Cha-cha", R:"Rumba", P:"Paso doble", J:"Jive" };
+const STT = ["W","T","V","F","Q"], LAT = ["S","C","R","P","J"];
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } },
+                set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
+const fmtTime = ts => ts ? new Date(ts).toLocaleTimeString("cs-CZ") : "";
+const log = msg => { const el = $("log"); el.textContent = `[${new Date().toLocaleTimeString("cs-CZ")}] ${msg}\n` + el.textContent; };
+
+let comp = new URLSearchParams(location.search).get("c") || store.get("ac_comp") || "test";
+let rounds = new Map();
+let currentRid = null;
+let sheets = new Map();
+let selectedCell = null;
+let unsubRounds = null, unsubSheets = null;
+let selectedDances = new Set(LAT);
+const knownSheetRevs = new Map();
+
+// ---------- formulář nového kola ----------
+function renderDanceChips() {
+  $("danceChips").innerHTML = Object.entries(DANCES).map(([k, n]) =>
+    `<button type="button" class="chip ${selectedDances.has(k) ? "on" : ""}" data-d="${k}">${n}</button>`).join("");
+}
+$("danceChips").addEventListener("click", e => {
+  const d = e.target.dataset.d; if (!d) return;
+  selectedDances.has(d) ? selectedDances.delete(d) : selectedDances.add(d);
+  renderDanceChips();
+});
+$("presetStt").onclick = () => { selectedDances = new Set(STT); renderDanceChips(); };
+$("presetLat").onclick = () => { selectedDances = new Set(LAT); renderDanceChips(); };
+$("fType").onchange = () => { $("reqWrap").style.display = $("fType").value === "prelim" ? "" : "none"; };
+renderDanceChips();
+
+function parseCouples(str) {
+  const out = new Set();
+  for (const part of str.split(/[,;\s]+/).filter(Boolean)) {
+    const m = part.match(/^(\d+)-(\d+)$/);
+    if (m) { const a = +m[1], b = +m[2]; for (let i = Math.min(a,b); i <= Math.max(a,b); i++) out.add(i); }
+    else if (/^\d+$/.test(part)) out.add(+part);
+    else throw new Error(`Neplatné číslo páru: „${part}“`);
+  }
+  return [...out].sort((a, b) => a - b);
+}
+
+$("createBtn").onclick = async () => {
+  $("createErr").textContent = "";
+  try {
+    const name = $("fName").value.trim();
+    const type = $("fType").value;
+    const dances = Object.keys(DANCES).filter(d => selectedDances.has(d));
+    const couples = parseCouples($("fCouples").value);
+    const judges = [...new Set($("fJudges").value.toUpperCase().replace(/[^A-Z]/g, "").split(""))];
+    const required = type === "prelim" ? parseInt($("fRequired").value, 10) : null;
+    if (!name) throw new Error("Vyplň název kola.");
+    if (!dances.length) throw new Error("Vyber alespoň jeden tanec.");
+    if (couples.length < 2) throw new Error("Zadej alespoň 2 páry.");
+    if (!judges.length) throw new Error("Zadej písmena porotců.");
+    if (type === "prelim" && (!required || required >= couples.length)) throw new Error("Počet křížků musí být menší než počet párů.");
+    if (type === "final" && couples.length > 8) throw new Error("Finále může mít nejvýše 8 párů.");
+
+    const rid = Date.now().toString(36);
+    await setDoc(doc(db, "competitions", comp, "rounds", rid), {
+      name, type, dances, couples, judges, required, status: "open", created: Date.now()
+    });
+    log(`Kolo „${name}“ vytvořeno (${rid})`);
+    selectRound(rid);
+  } catch (e) {
+    $("createErr").textContent = e.message;
+    log("CHYBA při vytváření kola: " + e.message);
+  }
+};
+
+// ---------- seznam kol ----------
+function startRounds() {
+  unsubRounds?.(); unsubSheets?.();
+  rounds.clear(); currentRid = null; sheets.clear(); knownSheetRevs.clear();
+  $("compInput").value = comp;
+  store.set("ac_comp", comp);
+  renderDetail();
+  unsubRounds = onSnapshot(collection(db, "competitions", comp, "rounds"), { includeMetadataChanges: true }, snap => {
+    setConn(snap.metadata.fromCache ? "wait" : "ok", snap.metadata.fromCache ? "Offline / připojování" : "Připojeno");
+    rounds = new Map(snap.docs.map(d => [d.id, { id: d.id, ...d.data() }]));
+    renderRoundList();
+    if (currentRid) renderDetail();
+  }, err => { setConn("bad", "Chyba: " + err.code); log("CHYBA čtení kol: " + err.message); });
+}
+
+function renderRoundList() {
+  const list = [...rounds.values()].sort((a, b) => b.created - a.created);
+  $("roundList").innerHTML = list.length ? list.map(r => `
+    <div class="round-item ${r.id === currentRid ? "sel" : ""}" data-rid="${r.id}">
+      <div><b>${esc(r.name)}</b><div class="hint">${r.type === "final" ? "Finále" : "Předkolo"} · ${r.couples.length} párů · ${r.judges.length} porotců</div></div>
+      <span class="badge ${r.status}">${r.status === "open" ? "otevřeno" : "uzamčeno"}</span>
+    </div>`).join("") : `<div class="empty">Zatím žádná kola</div>`;
+}
+$("roundList").addEventListener("click", e => {
+  const item = e.target.closest("[data-rid]"); if (item) selectRound(item.dataset.rid);
+});
+
+// ---------- detail kola ----------
+function selectRound(rid) {
+  currentRid = rid; selectedCell = null; sheets.clear();
+  unsubSheets?.();
+  unsubSheets = onSnapshot(collection(db, "competitions", comp, "rounds", rid, "sheets"), snap => {
+    sheets = new Map(snap.docs.map(d => [d.id, d.data()]));
+    for (const ch of snap.docChanges()) {
+      const s = ch.doc.data();
+      const prev = knownSheetRevs.get(rid + ch.doc.id);
+      if (ch.type !== "removed" && prev !== s.rev) {
+        knownSheetRevs.set(rid + ch.doc.id, s.rev);
+        if (prev !== undefined || !snap.metadata.fromCache) {
+          const delay = s.sentAt && s.clientAt ? ((s.sentAt.toMillis() - s.clientAt) / 1000).toFixed(1) + " s" : "?";
+          log(`Porotce ${s.judge} · ${DANCES[s.dance]} · verze ${s.rev} (odesláno ${fmtTime(s.clientAt)}, na serveru za ${delay})`);
+        }
+      }
+    }
+    renderDetail();
+  }, err => log("CHYBA čtení lístků: " + err.message));
+  renderRoundList(); renderDetail();
+}
+
+function sheetText(r, s) {
+  if (!s) return "Lístek zatím nedorazil.";
+  const head = `<b>Porotce ${s.judge} · ${DANCES[s.dance]}</b> · verze ${s.rev} · přijato ${s.sentAt ? s.sentAt.toDate().toLocaleTimeString("cs-CZ") : "…"}<br>`;
+  if (r.type === "prelim") return head + `Křížky (${s.marks.length}): <b>${s.marks.join(", ")}</b>`;
+  const order = Object.entries(s.placings).sort((a, b) => a[1] - b[1]);
+  return head + order.map(([c, p]) => `${p}. místo – pár <b>${c}</b>`).join(" &nbsp;·&nbsp; ");
+}
+
+function renderDetail() {
+  const r = rounds.get(currentRid);
+  if (!r) { $("detail").innerHTML = `<div class="empty">Vyber nebo vytvoř kolo</div>`; return; }
+  const total = r.judges.length * r.dances.length;
+  const done = r.judges.reduce((n, j) => n + r.dances.filter(d => sheets.has(`${d}_${j}`)).length, 0);
+  const base = new URL("porotce.html", location.href);
+  base.search = "";
+
+  $("detail").innerHTML = `
+    <div class="detail-head">
+      <h2>${esc(r.name)}</h2>
+      <span class="badge ${r.status}">${r.status === "open" ? "otevřeno" : "uzamčeno"}</span>
+      <button id="lockBtn" class="${r.status === "open" ? "danger" : ""}">${r.status === "open" ? "Uzamknout kolo" : "Znovu otevřít"}</button>
+    </div>
+    <div class="meta">${r.type === "final" ? "Finále – pořadí" : `Předkolo – ${r.required} křížků`} · páry: ${r.couples.join(", ")}</div>
+    <div class="progress">${done} / ${total} <small>lístků odevzdáno</small></div>
+    <table style="margin-top:12px">
+      <tr><th>Porotce</th>${r.dances.map(d => `<th>${DANCES[d]}</th>`).join("")}</tr>
+      ${r.judges.map(j => `<tr><td class="judge">${j}</td>${r.dances.map(d => {
+        const s = sheets.get(`${d}_${j}`); const key = `${d}_${j}`;
+        return `<td class="cell ${s ? "ok" : "none"} ${selectedCell === key ? "sel" : ""}" data-key="${key}">${s ? "✓ " + (s.sentAt ? s.sentAt.toDate().toLocaleTimeString("cs-CZ") : "…") + (s.rev > 1 ? ` (v${s.rev})` : "") : "—"}</td>`;
+      }).join("")}</tr>`).join("")}
+    </table>
+    <div class="sheet-detail">${selectedCell ? sheetText(r, sheets.get(selectedCell)) : `<span class="hint">Klikni na buňku pro zobrazení lístku.</span>`}</div>
+    <h2 style="margin-top:22px">Odkazy pro porotce</h2>
+    <div class="links">${r.judges.map(j => {
+      const u = new URL(base); u.searchParams.set("c", comp); u.searchParams.set("j", j);
+      return `<div class="link-row"><b>${j}</b><input readonly value="${esc(u.href)}"><button data-copy="${esc(u.href)}">Kopírovat</button></div>`;
+    }).join("")}</div>
+    <div class="hint" style="margin-top:6px">Odkaz platí pro celou soutěž – porotce v něm uvidí všechna kola, ve kterých je zapsaný.</div>`;
+
+  $("lockBtn").onclick = async () => {
+    const next = r.status === "open" ? "locked" : "open";
+    try { await updateDoc(doc(db, "competitions", comp, "rounds", r.id), { status: next }); log(`Kolo „${r.name}“ ${next === "locked" ? "uzamčeno" : "otevřeno"}`); }
+    catch (e) { log("CHYBA: " + e.message); }
+  };
+}
+$("detail").addEventListener("click", e => {
+  const cell = e.target.closest("[data-key]");
+  if (cell) { selectedCell = cell.dataset.key; renderDetail(); return; }
+  const c = e.target.dataset.copy;
+  if (c) navigator.clipboard?.writeText(c).then(() => { e.target.textContent = "Zkopírováno"; setTimeout(() => e.target.textContent = "Kopírovat", 1200); });
+});
+
+// ---------- připojení ----------
+function setConn(cls, text) { $("connDot").className = "dot " + cls; $("connText").textContent = text; }
+$("compBtn").onclick = () => {
+  const v = $("compInput").value.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
+  if (v) { comp = v; startRounds(); log(`Přepnuto na soutěž „${comp}“`); }
+};
+
+onAuthStateChanged(auth, user => {
+  if (user && !unsubRounds) { log("Přihlášeno (anonymně)"); startRounds(); }
+});
+signInAnonymously(auth).catch(e => { setConn("bad", "Přihlášení selhalo"); log("CHYBA přihlášení: " + e.code + " – " + e.message); });
+</script>
+</body>
+</html>
