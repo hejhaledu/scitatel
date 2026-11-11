@@ -38,6 +38,11 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 .issues .ok{padding:7px 9px;border-radius:8px;background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.3);margin-top:6px}
 .issues .ed{padding:7px 9px;border-radius:8px;background:rgba(255,159,10,.08);border:1px solid rgba(255,159,10,.35);margin-top:6px}
 .stale{opacity:.55}
+.drop{margin-top:8px;padding:16px 10px;border:1.5px dashed var(--stroke2);border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:12px;color:var(--text2);transition:background .15s,border-color .15s}
+.drop b{color:var(--text);font-weight:600}
+.drop span{color:var(--text3);font-size:11px}
+.drop.over{border-color:var(--blue);background:rgba(91,140,255,.12)}
+.credit{text-align:center;font-size:11px;color:var(--text3);padding:6px 0 18px;letter-spacing:.02em}
 .mrow{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--stroke)}
 .mrow:first-child{border-top:none}
 .mrow .nm{flex:1;min-width:0}
@@ -292,7 +297,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
       <summary>Offline přenos (QR)</summary>
       <div class="sect-body">
         <div class="hint" style="margin-top:0">Nahrajte fotky QR kódů z telefonů porotců. Hodnocení se zapíše do příslušného kola.</div>
-        <button class="btn sm full" id="qrUploadBtn" style="margin-top:8px">Nahrát fotky QR kódů…</button>
+        <div class="drop" id="qrDrop"><b>Přetáhněte sem fotky QR kódů</b><span>nebo</span><button class="btn sm" id="qrUploadBtn">Vybrat soubory…</button></div>
         <input type="file" id="qrFiles" accept="image/*" multiple hidden>
         <div class="qrlog" id="qrLog"></div>
       </div>
@@ -319,6 +324,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
   <main class="main"><div class="card pad" id="evalMain"></div></main>
 </div>
 
+<div class="credit">ArtimoCounter, created by Martin Hejhal, 2026</div>
 <div id="modalRoot"></div>
 
 <script type="module">
@@ -478,14 +484,17 @@ const byCreated = (a, b) => (a.created || 0) - (b.created || 0);
 const nextId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
 const lettersOf = jury => Object.keys(jury || {}).sort();
 
+// Rozepíše zápis „1-12, 15“ na čísla. Stejné číslo dvakrát v jedné kategorii/kole je chyba.
 function parseCouples(str) {
-  const out = new Set();
+  const out = new Set(), dup = new Set();
+  const add = n => { if (out.has(n)) dup.add(n); out.add(n); };
   for (const part of String(str).split(/[,;\s]+/).filter(Boolean)) {
     const m = part.match(/^(\d+)-(\d+)$/);
-    if (m) { const a = +m[1], b = +m[2]; for (let i = Math.min(a, b); i <= Math.max(a, b); i++) out.add(i); }
-    else if (/^\d+$/.test(part)) out.add(+part);
+    if (m) { const a = +m[1], b = +m[2]; for (let i = Math.min(a, b); i <= Math.max(a, b); i++) add(i); }
+    else if (/^\d+$/.test(part)) add(+part);
     else throw new Error(`Neplatné číslo páru: „${part}“`);
   }
+  if (dup.size) { const d = [...dup].sort((a, b) => a - b); throw new Error(`${d.length === 1 ? "Číslo páru" : "Čísla párů"} ${d.join(", ")} ${d.length === 1 ? "je zadané" : "jsou zadaná"} vícekrát.`); }
   return [...out].sort((a, b) => a - b);
 }
 // zkrácený zápis 1-12, 15, 20-24
@@ -1076,8 +1085,18 @@ $("runMain").addEventListener("click", async e => {
 
 // ===================== OFFLINE QR IMPORT =====================
 $("qrUploadBtn").onclick = () => $("qrFiles").click();
-$("qrFiles").onchange = async e => {
-  const files = [...e.target.files]; e.target.value = "";
+$("qrFiles").onchange = e => { const files = [...e.target.files]; e.target.value = ""; processQrFiles(files); };
+const drop = $("qrDrop");
+["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "dragend"].forEach(ev => drop.addEventListener(ev, e => { if (!drop.contains(e.relatedTarget)) drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => {
+  e.preventDefault(); drop.classList.remove("over");
+  const files = [...(e.dataTransfer?.files || [])].filter(f => f.type.startsWith("image/"));
+  if (files.length) processQrFiles(files); else $("qrLog").insertAdjacentHTML("afterbegin", `<div style="color:#ff8a8d">Přetažené soubory nejsou obrázky.</div>`);
+});
+// zabránit, aby prohlížeč obrázek puštěný mimo zónu otevřel místo aplikace
+["dragover", "drop"].forEach(ev => window.addEventListener(ev, e => { if (!drop.contains(e.target)) e.preventDefault(); }));
+async function processQrFiles(files) {
   if (!files.length) return;
   const logEl = $("qrLog");
   for (const f of files) {
