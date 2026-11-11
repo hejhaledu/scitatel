@@ -23,6 +23,21 @@ html,body{margin:0}
 body{font-family:var(--font);font-size:13px;color:var(--text);background:radial-gradient(1200px 700px at 0% -20%,#111766 0%,transparent 60%),radial-gradient(900px 600px at 110% 120%,#0d1250 0%,transparent 60%),var(--bg);background-attachment:fixed;min-height:100vh;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 ::selection{background:rgba(91,140,255,.4)}
+*{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.14) transparent}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.22);background-clip:padding-box;border:2px solid transparent}
+::-webkit-scrollbar-corner{background:transparent}
+.logo{height:30px;width:auto;display:block}
+.jchip{height:30px;padding:0 10px 0 4px;border-radius:15px;display:inline-flex;align-items:center;gap:6px}
+.jchip i{font-style:normal;width:22px;height:22px;border-radius:11px;background:rgba(255,255,255,.12);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--text)}
+.chip.on.jchip i{background:rgba(255,255,255,.25)}
+.issues{margin-top:12px;font-size:12px;line-height:1.5}
+.issues .it{padding:7px 9px;border-radius:8px;background:rgba(255,90,95,.1);border:1px solid rgba(255,90,95,.3);margin-top:6px}
+.issues .ok{padding:7px 9px;border-radius:8px;background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.3);margin-top:6px}
+.issues .ed{padding:7px 9px;border-radius:8px;background:rgba(255,159,10,.08);border:1px solid rgba(255,159,10,.35);margin-top:6px}
+.stale{opacity:.55}
 
 /* ---- ovládací prvky (jednotný jazyk) ---- */
 .btn{height:30px;padding:0 12px;border-radius:8px;border:none;background:var(--glass2);color:var(--text);font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;transition:background .15s,transform .1s,opacity .15s}
@@ -216,6 +231,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
 </head>
 <body>
 <header>
+  <img class="logo" src="data:image/png;base64,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" alt="Artimo">
   <div class="brand">ARTIMO <span>COUNTER</span><small id="compTitle">Sčitatel</small></div>
   <div class="seg lg" id="pageSeg">
     <button data-page="run" class="on">Průběh soutěže</button>
@@ -273,10 +289,6 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
       </div>
     </details>
 
-    <details class="sect">
-      <summary>Nastavení pro porotce</summary>
-      <div class="sect-body" id="settingsList"></div>
-    </details>
 
     <details class="sect">
       <summary>Log přenosu</summary>
@@ -292,6 +304,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
     <div class="sect" style="padding:12px 14px">
       <div class="sec-t" style="margin-top:0">Kola k vyhodnocení</div>
       <div id="evalList"></div>
+      <div class="issues" id="evalIssues"></div>
     </div>
   </aside>
   <main class="main"><div class="card pad" id="evalMain"></div></main>
@@ -439,13 +452,6 @@ function skatingFinal(marks) {
 const DANCES = { W:"Waltz", T:"Tango", V:"Valčík", F:"Slowfox", Q:"Quickstep",
                  S:"Samba", C:"Cha-cha", R:"Rumba", P:"Paso doble", J:"Jive", K:"Polka" };
 const STT = ["W","T","V","F","Q"], LAT = ["S","C","R","P","J"];
-const SETTINGS = [
-  ["hints", "Nápověda pro porotce", "Vysvětlující texty v aplikaci porotce", true],
-  ["requireReady", "Potvrzení připravenosti", "Porotce před kolem stiskne „Jsem připraven/a“", true],
-  ["qr", "Offline přenos přes QR", "Porotce může vygenerovat QR kód celého kola", true],
-  ["colorMarks", "Barevné značení párů", "Swipe doleva/doprava označí pár červeně/zeleně", true],
-  ["autoNext", "Automaticky další tanec", "Po odeslání přeskočí na další tanec", true]
-];
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
@@ -532,7 +538,7 @@ let selectedCell = null, editMode = false;
 let unsubs = [];
 const knownRevs = new Map();
 const advanceDraft = new Map();
-const settings = () => Object.fromEntries(SETTINGS.map(([k, , , d]) => [k, compDoc.settings?.[k] ?? d]));
+const lastSk = new Map();          // poslední platný výsledek finále (aby tabulka při úpravě neposkakovala)
 const compRef = () => doc(db, "competitions", comp);
 const roundRef = id => doc(db, "competitions", comp, "rounds", id);
 const sheetRef = (rid, d, j) => doc(db, "competitions", comp, "rounds", rid, "sheets", `${d}_${j}`);
@@ -640,11 +646,6 @@ function renderSide() {
       <button class="btn icon sm" data-jdel="${j}" title="Odebrat">✕</button></div>`).join("")
       : `<div class="hint" style="margin-top:0">Přidejte porotce. Písmena se přidělují automaticky.</div>`;
   }
-
-  // nastavení
-  const st = settings();
-  $("settingsList").innerHTML = SETTINGS.map(([k, t, d]) => `<div class="set-row"><div class="t">${t}<small>${d}</small></div>
-    <label class="switch"><input type="checkbox" data-set="${k}" ${st[k] ? "checked" : ""}><span></span></label></div>`).join("");
 }
 
 $("catList").addEventListener("click", e => {
@@ -657,10 +658,6 @@ function selectRound(rid) {
 }
 
 $("compName").addEventListener("change", () => saveComp({ name: $("compName").value.trim() }));
-$("settingsList").addEventListener("change", e => {
-  const k = e.target.dataset.set; if (!k) return;
-  saveComp({ settings: { ...settings(), [k]: e.target.checked } });
-});
 
 // ----- porota -----
 $("addJudgeBtn").onclick = () => {
@@ -722,7 +719,7 @@ $("newCompBtn").onclick = () => modal("Nová soutěž",
     if (ex.exists()) throw new Error("Soutěž s tímto ID už existuje. Zvolte jiné ID, nebo ji otevřete přes Přepnout.");
     const letters = [...new Set(root.querySelector("#mJ").value.toUpperCase().replace(/[^A-Z]/g, "").split(""))].sort();
     const jury = Object.fromEntries(letters.map(l => [l, ""]));
-    await setDoc(doc(db, "competitions", id), { name: root.querySelector("#mName").value.trim(), createdAt: Date.now(), jury, settings: Object.fromEntries(SETTINGS.map(s => [s[0], s[3]])) });
+    await setDoc(doc(db, "competitions", id), { name: root.querySelector("#mName").value.trim(), createdAt: Date.now(), jury });
     comp = id; startComp(); log(`Založena soutěž ${id}`);
   } }]);
 
@@ -780,7 +777,8 @@ function danceChipsHtml(sel) {
 function judgeChipsHtml(sel) {
   const letters = lettersOf(compDoc.jury);
   if (!letters.length) return `<div class="hint">Nejdřív přidejte porotce v levém panelu.</div>`;
-  return `<div class="chips" data-chips="judge">${letters.map(l => `<button type="button" class="chip ${sel.includes(l) ? "on" : ""}" data-v="${l}" title="${esc(compDoc.jury[l])}">${l}</button>`).join("")}</div>`;
+  return `<div class="chips" data-chips="judge">${letters.map(l => `<button type="button" class="chip jchip ${sel.includes(l) ? "on" : ""}" data-v="${l}"><i>${l}</i>${esc(compDoc.jury[l] || "Porotce " + l)}</button>`).join("")}</div>
+    <div class="row" style="margin-top:6px"><button type="button" class="btn sm plain" data-alljudges="1">Vybrat všechny</button><button type="button" class="btn sm plain" data-alljudges="0">Zrušit výběr</button></div>`;
 }
 function segHtml(name, opts, val) {
   return `<div class="seg" data-seg="${name}">${opts.map(([v, t]) => `<button type="button" data-v="${v}" class="${String(v) === String(val) ? "on" : ""}">${t}</button>`).join("")}</div>`;
@@ -790,6 +788,8 @@ $("modalRoot").addEventListener("click", e => {
   const chip = e.target.closest("[data-chips] .chip"); if (chip) { chip.classList.toggle("on"); return; }
   const sb = e.target.closest("[data-seg] button");
   if (sb) { sb.parentElement.querySelectorAll("button").forEach(b => b.classList.toggle("on", b === sb)); sb.parentElement.dispatchEvent(new Event("segchange", { bubbles: true })); return; }
+  const aj = e.target.closest("[data-alljudges]");
+  if (aj) { aj.closest(".mb").querySelectorAll('[data-chips="judge"] .chip').forEach(c => c.classList.toggle("on", aj.dataset.alljudges === "1")); return; }
   const pr = e.target.closest("[data-preset]");
   if (pr) { const set = pr.dataset.preset === "stt" ? STT : LAT; pr.closest(".mb").querySelectorAll('[data-chips="dance"] .chip').forEach(c => c.classList.toggle("on", set.includes(c.dataset.v))); }
 });
@@ -799,7 +799,7 @@ const segVal = (root, name) => root.querySelector(`[data-seg="${name}"] button.o
 $("addCatBtn").onclick = () => editCategory(null);
 function editCategory(cid) {
   if (!compExists) { alertBox("Nejdřív založte soutěž (Nová soutěž…) nebo ji načtěte importem."); return; }
-  const c = cid ? cats.get(cid) : { name: "", dances: LAT, couples: [], key: [], groups: 1, judges: lettersOf(compDoc.jury) };
+  const c = cid ? cats.get(cid) : { name: "", dances: LAT, couples: [], key: [], groups: 1, judges: [] };
   const hasRounds = cid && roundsOfCat(cid).length;
   const buttons = [{ label: "Zrušit" }];
   if (cid && !hasRounds) buttons.unshift({ label: "Smazat", cls: "danger", action: async () => {
@@ -819,7 +819,7 @@ function editCategory(cid) {
     if (couples.length < 2) throw new Error("Zadejte alespoň 2 páry.");
     for (let i = 1; i < key.length; i++) if (key[i] >= key[i - 1]) throw new Error("Postupový klíč musí klesat (např. 24, 12, 6).");
     if (key.length && key[0] >= couples.length) throw new Error(`První číslo klíče (${key[0]}) musí být menší než počet párů (${couples.length}).`);
-    if (!judges.length) throw new Error("Vyberte porotce.");
+    if (!judges.length) throw new Error("Vyberte porotce, kteří kategorii hodnotí.");
     const id = cid || nextId();
     await setDoc(doc(db, "competitions", comp, "categories", id), { name, dances, couples, key, groups, judges, created: c.created || Date.now(), order: c.order ?? cats.size });
     selCat = id; selRound = null;
@@ -1081,7 +1081,7 @@ $("evalList").addEventListener("click", e => { const it = e.target.closest("[dat
 
 function renderEvalMain() {
   const r = rounds.get(evalRid), el = $("evalMain");
-  if (!r) { el.innerHTML = `<div class="empty">Vyberte kolo vlevo. Kolo se sem dostane tlačítkem „Odeslat k vyhodnocení“.</div>`; return; }
+  if (!r) { el.innerHTML = `<div class="empty">Vyberte kolo vlevo. Kolo se sem dostane tlačítkem „Odeslat k vyhodnocení“.</div>`; $("evalIssues").innerHTML = ""; return; }
   const scrollY = window.scrollY, focusKey = document.activeElement?.dataset?.edit, selStart = document.activeElement?.selectionStart;
   const canEdit = r.status !== "evaluated";
   el.innerHTML = `
@@ -1090,9 +1090,11 @@ function renderEvalMain() {
       ${r.status === "evaluated" ? `<button class="btn no-print" data-act="unEval">Upravit znovu</button>` : ""}
       <button class="btn no-print" data-act="print">Tisk</button></div>
     <div class="meta">${r.type === "final" ? "Finále" : `Postupové kolo · porotci dávali ${r.required} křížků`} · ${pary(r.couples.length)} · porota ${r.judges.map(j => compDoc.jury?.[j] ? `${j} (${esc(compDoc.jury[j])})` : j).join(", ")}${r.evaluatedAt ? ` · vyhodnoceno ${fmtDT(r.evaluatedAt)}` : ""}</div>
-    ${r.status === "open" ? `<div class="infobox">Kolo ještě probíhá – data se průběžně doplňují.</div>` : ""}
-    ${editMode ? `<div class="infobox" style="border:1px solid rgba(255,159,10,.4)">Režim ručních úprav: ${r.type === "prelim" ? "kliknutím do tabulky přidáte nebo odeberete křížek porotce" : "přepište umístění v tabulce tance"}. Změny se ukládají okamžitě a lístek se označí ✎.</div>` : ""}
     ${r.type === "prelim" ? prelimView(r) : finalView(r)}`;
+  const issues = r.type === "prelim" ? prelimData(r).issues : finalData(r).issues;
+  $("evalIssues").innerHTML = (r.status === "open" ? `<div class="ed">Kolo ještě probíhá – lístky se průběžně doplňují.</div>` : "")
+    + (editMode ? `<div class="ed"><b>Ruční úpravy zapnuté.</b><br>${r.type === "prelim" ? "Kliknutím do tabulky přidáte nebo odeberete křížek." : "Přepište umístění v tabulce tance (Tab = další buňka)."} Změny se ukládají hned, lístek se označí ✎.</div>` : "")
+    + (issues.length ? `<div class="sec-t" style="margin:14px 0 0">Kontrola lístků</div>` + issues.map(i => `<div class="it">${i}</div>`).join("") : `<div class="ok">✓ Všechny lístky jsou v pořádku</div>`);
   if (focusKey) { const inp = el.querySelector(`[data-edit="${focusKey}"]`); if (inp) { inp.focus(); try { inp.setSelectionRange(selStart, selStart); } catch {} } }
   window.scrollTo(0, scrollY);
 }
@@ -1130,7 +1132,6 @@ function prelimView(r) {
   if (evaluated) box = `<div class="okbox">✓ Postupuje <b>${pary(r.qualified.length)}</b>: ${fmtCouples(r.qualified)}</div>`;
   else if (cut.tie) box = `<div class="warn"><b>Shoda na hranici postupu.</b> Páry ${[...tieSet].join(", ")} mají shodně ${cut.value} křížků. Kolik párů postoupí?
       <div class="row" style="margin-top:8px">${cut.down > 0 ? `<button class="btn" data-n="${cut.down}">${pary(cut.down)} (bez shodných)</button>` : ""}<button class="btn" data-n="${cut.up}">${pary(cut.up)} (včetně shodných)</button></div></div>`;
-  const issuesBox = issues.length ? `<div class="warn"><b>Kontrola lístků:</b><br>${issues.join("<br>")}</div>` : "";
 
   return `
     <div class="ctrl no-print" style="margin-top:14px">
@@ -1140,7 +1141,7 @@ function prelimView(r) {
           : `<button class="btn primary" data-act="saveQual" ${cut.tie ? "disabled" : ""}>Potvrdit postup ${cut.tie ? "" : `(${cut.n})`}</button>`}
       </div>
     </div>
-    ${issuesBox}${box}
+    ${box}
     <div style="overflow-x:auto;margin-top:12px"><table class="tbl xtab">
       <tr><th>#</th><th>Pár</th>${multiG ? "<th>Sk.</th>" : ""}${r.dances.map(d => `<th class="d" colspan="${r.judges.length}">${DANCES[d]}</th>`).join("")}<th>Σ</th><th></th></tr>
       <tr><th></th><th></th>${multiG ? "<th></th>" : ""}${r.dances.map(d => r.judges.map((j, i) => `<th class="${i === 0 ? "d" : ""}" style="${i === 0 ? "" : "border-left:none"}">${j}${edited.has(`${d}_${j}`) ? '<span class="tag ed">✎</span>' : ""}</th>`).join("")).join("")}<th></th><th></th></tr>
@@ -1167,28 +1168,29 @@ function finalData(r) {
       if (sorted.length !== r.couples.length || sorted.some((v, i) => v !== i + 1)) { issues.push(`${j} · ${DANCES[d]}: pořadí není 1–${r.couples.length} bez opakování`); badCols.add(`${d}_${j}`); }
     }
   }
-  let sk = null;
+  let sk = null, stale = false;
   if (!issues.length) { try { sk = skatingFinal(r.dances.map(d => r.judges.map((_, j) => r.couples.map(c => marks[d][c][j])))); } catch (e) { issues.push(e.message); } }
-  return { marks, issues, badCols, sk };
+  if (sk) lastSk.set(r.id, sk); else if (lastSk.has(r.id)) { sk = lastSk.get(r.id); stale = true; }
+  return { marks, issues, badCols, sk, stale };
 }
 function finalView(r) {
-  const { marks, issues, badCols, sk } = finalData(r);
+  const { marks, issues, badCols, sk, stale } = finalData(r);
   const N = r.couples.length, evaluated = r.status === "evaluated";
   const edited = new Set([...evalSheets.values()].filter(s => s.edited || s.source === "manual").map(s => `${s.dance}_${s.judge}`));
   let html = "";
-  if (issues.length) html += `<div class="warn"><b>Výsledek nelze spočítat:</b><br>${issues.join("<br>")}</div>`;
+  if (!sk) html += `<div class="infobox">Výsledek zatím nelze spočítat – chyby jsou vypsané vlevo.</div>`;
   if (sk) {
     const labels = placeLabels(sk.overall);
     const order = r.couples.map((c, i) => ({ c, i, p: sk.overall[i], l: labels[i] })).sort((a, b) => a.p - b.p || a.c - b.c);
     const pc = p => p === 1 ? "p1" : p > 1 && p <= 2.5 ? "p2" : p > 2 && p <= 3.5 ? "p3" : "";
-    html += `<div class="row no-print" style="margin-top:14px">${evaluated ? `<div class="okbox" style="margin:0;flex:1">✓ Výsledky potvrzeny ${fmtDT(r.evaluatedAt)}</div>` : `<button class="btn primary" data-act="confirmFinal">Potvrdit výsledky finále</button>`}</div>
-      <div class="sec-t">Výsledky</div>
+    html += `<div class="row no-print" style="margin-top:14px">${evaluated ? `<div class="okbox" style="margin:0;flex:1">✓ Výsledky potvrzeny ${fmtDT(r.evaluatedAt)}</div>` : `<button class="btn primary" data-act="confirmFinal" ${stale ? "disabled" : ""}>Potvrdit výsledky finále</button>${stale ? `<span class="muted">Zobrazen poslední platný výsledek – opravte chyby vlevo.</span>` : ""}`}</div>
+      <div class="${stale ? "stale" : ""}"><div class="sec-t">Výsledky</div>
       <div class="podium">${order.map(o => `<div class="pod ${pc(o.p)}"><div class="pl">${o.l} místo</div><div class="cn">${o.c}</div></div>`).join("")}</div>
       <div class="sec-t">Celkové pořadí</div>
       <table class="tbl sk"><tr><th>Pár</th>${r.dances.map(d => `<th>${DANCES[d]}</th>`).join("")}<th>Součet</th><th>Rozhodlo</th><th>Místo</th></tr>
       ${order.map(o => `<tr><td class="cpl">${o.c}</td>${r.dances.map((d, t) => `<td>${fmtNum(sk.byDance[t][o.i])}</td>`).join("")}<td><b>${fmtNum(sk.sums[o.i])}</b></td>
         <td class="mk">${{ "9": "", "10": "pravidlo 10", "11": "pravidlo 11" }[sk.rule[o.i]] ?? ""}</td><td class="place">${o.l}</td></tr>`).join("")}</table>
-      <div class="legend">Pravidlo 9: nižší součet umístění. Pravidlo 10: při shodě rozhoduje počet tanců s umístěním na hledané místo nebo lepší, pak jejich součet. Pravidlo 11: spojené známky ze všech tanců.</div>`;
+      <div class="legend">Pravidlo 9: nižší součet umístění. Pravidlo 10: při shodě rozhoduje počet tanců s umístěním na hledané místo nebo lepší, pak jejich součet. Pravidlo 11: spojené známky ze všech tanců.</div></div>`;
   }
   r.dances.forEach((d, t) => {
     const pl = sk ? placeLabels(sk.byDance[t]) : null;
@@ -1205,8 +1207,8 @@ function finalView(r) {
         if (sk) {
           const dec = sk.decidedCol[t][i];
           skc = Array.from({ length: N }, (_, k) => { const col = k + 1; if (col > dec) return `<td></td>`;
-            const cnt = m.filter(v => v <= col).length, sum = m.filter(v => v <= col).reduce((a, v) => a + v, 0);
-            return `<td class="${col === dec ? "dec" : "mk"}">${cnt >= sk.majority ? `${cnt}<small> (${sum})</small>` : cnt || "–"}</td>`; }).join("") + `<td class="place">${pl[i]}</td>`;
+            const cnt = m.filter(v => v != null && v <= col).length, sum = m.filter(v => v != null && v <= col).reduce((a, v) => a + v, 0);
+            return `<td class="${col === dec ? "dec" : "mk"} ${stale ? "stale" : ""}">${cnt >= sk.majority ? `${cnt}<small> (${sum})</small>` : cnt || "–"}</td>`; }).join("") + `<td class="place">${pl[i]}</td>`;
         }
         return `<tr><td class="cpl">${c}</td>${cells}${skc}</tr>`;
       }).join("")}
