@@ -38,6 +38,13 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 .issues .ok{padding:7px 9px;border-radius:8px;background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.3);margin-top:6px}
 .issues .ed{padding:7px 9px;border-radius:8px;background:rgba(255,159,10,.08);border:1px solid rgba(255,159,10,.35);margin-top:6px}
 .stale{opacity:.55}
+.mrow{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--stroke)}
+.mrow:first-child{border-top:none}
+.mrow .nm{flex:1;min-width:0}
+.mrow .nm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mrow .nm small{color:var(--text3);font-size:11px}
+.mrow.cur{background:rgba(91,140,255,.08);border-radius:10px;padding-left:8px;padding-right:8px}
+.modal.wide{width:min(720px,100%)}
 
 /* ---- ovládací prvky (jednotný jazyk) ---- */
 .btn{height:30px;padding:0 12px;border-radius:8px;border:none;background:var(--glass2);color:var(--text);font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;transition:background .15s,transform .1s,opacity .15s}
@@ -254,7 +261,9 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
           <button class="btn sm" id="switchBtn">Přepnout…</button>
         </div>
         <div class="hint" id="compTimes"></div>
-        <div class="row wrap" style="margin-top:10px">
+        <div class="row wrap" style="margin-top:10px" id="compStateRow"></div>
+        <div class="row wrap" style="margin-top:8px">
+          <button class="btn sm" id="managerBtn">Správce soutěží…</button>
           <button class="btn sm" id="newCompBtn">Nová soutěž…</button>
           <button class="btn sm" id="exportBtn">Export</button>
           <button class="btn sm" id="importBtn">Import</button>
@@ -620,6 +629,9 @@ function renderSide() {
   $("compIdShow").textContent = comp;
   const list = [...rounds.values()];
   const start = compDoc.startedAt, end = compDoc.finishedAt;
+  const cst = compExists ? (end ? "done" : start ? "live" : "ready") : null;
+  $("compStateRow").innerHTML = !compExists ? "" : `<span class="badge ${cst === "live" ? "open" : cst === "done" ? "done" : "ready"}">${{ live: "probíhá", done: "ukončená", ready: "připravená" }[cst]}</span>
+    ${cst === "ready" ? `<button class="btn sm" data-cstate="start">Zahájit soutěž</button>` : cst === "live" ? `<button class="btn sm" data-cstate="finish">Ukončit soutěž</button>` : `<button class="btn sm" data-cstate="reopen">Znovu otevřít</button>`}`;
   $("compTimes").innerHTML = compExists
     ? `Začátek: ${start ? fmtDT(start) : "zatím nezačala"}${end ? ` · Konec: ${fmtDT(end)}` : ""} · ${list.filter(r => r.status === "evaluated").length}/${list.length} kol vyhodnoceno`
     : `<span style="color:var(--orange)">Soutěž s tímto ID zatím neexistuje.</span> Založte ji tlačítkem „Nová soutěž…“ nebo ji načtěte importem.`;
@@ -658,6 +670,70 @@ function selectRound(rid) {
 }
 
 $("compName").addEventListener("change", () => saveComp({ name: $("compName").value.trim() }));
+$("compStateRow").addEventListener("click", e => { const a = e.target.closest("[data-cstate]")?.dataset.cstate; if (a) setCompState(comp, a); });
+async function setCompState(id, a) {
+  const ref = doc(db, "competitions", id);
+  if (a === "start") await updateDoc(ref, { startedAt: Date.now(), finishedAt: null });
+  if (a === "finish") { if (!await confirmBox("Ukončit soutěž? Porotcům zmizí z nabídky.", "Ukončit")) return false; await updateDoc(ref, { finishedAt: Date.now() }); }
+  if (a === "reopen") await updateDoc(ref, { finishedAt: null });
+  log(`Soutěž ${id}: ${a}`); return true;
+}
+
+// ===================== SPRÁVCE SOUTĚŽÍ =====================
+$("managerBtn").onclick = () => openManager();
+async function deleteCompData(id) {
+  const rs = await getDocs(collection(db, "competitions", id, "rounds"));
+  for (const r of rs.docs) {
+    const sh = await getDocs(collection(db, "competitions", id, "rounds", r.id, "sheets"));
+    for (const x of sh.docs) await deleteDoc(doc(db, "competitions", id, "rounds", r.id, "sheets", x.id));
+    await deleteDoc(doc(db, "competitions", id, "rounds", r.id));
+  }
+  for (const sub of ["categories", "judges"]) {
+    const d = await getDocs(collection(db, "competitions", id, sub));
+    for (const x of d.docs) await deleteDoc(doc(db, "competitions", id, sub, x.id));
+  }
+  await deleteDoc(doc(db, "competitions", id));
+  log(`Smazána soutěž ${id}`);
+}
+async function openManager() {
+  const root = $("modalRoot");
+  const snap = await getDocs(collection(db, "competitions"));
+  const list = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => (b.startedAt || b.createdAt || 0) - (a.startedAt || a.createdAt || 0));
+  const st = c => c.finishedAt ? "done" : c.startedAt ? "live" : "ready";
+  root.innerHTML = `<div class="backdrop"><div class="modal wide"><div class="mh">Správce soutěží</div><div class="mb">
+    <div class="hint" style="margin-top:0">Porotcům se v aplikaci nabízejí soutěže, které nejsou ukončené a mají je v porotě. Probíhající soutěž se jim zvýrazní.</div>
+    <div style="margin-top:10px">${list.length ? list.map(c => `<div class="mrow ${c.id === comp ? "cur" : ""}">
+      <div class="nm"><b>${esc(c.name || c.id)}</b><small>ID ${esc(c.id)} · založeno ${fmtDT(c.createdAt)}${c.startedAt ? ` · zahájeno ${fmtDT(c.startedAt)}` : ""}${c.finishedAt ? ` · ukončeno ${fmtDT(c.finishedAt)}` : ""} · porota ${Object.keys(c.jury || {}).sort().join("") || "–"}</small></div>
+      <span class="badge ${st(c) === "live" ? "open" : st(c) === "done" ? "done" : "ready"}">${{ live: "probíhá", done: "ukončená", ready: "připravená" }[st(c)]}</span>
+      ${st(c) === "ready" ? `<button class="btn sm" data-m="start" data-id="${esc(c.id)}">Zahájit</button>` : st(c) === "live" ? `<button class="btn sm" data-m="finish" data-id="${esc(c.id)}">Ukončit</button>` : `<button class="btn sm" data-m="reopen" data-id="${esc(c.id)}">Otevřít</button>`}
+      <button class="btn sm" data-m="open" data-id="${esc(c.id)}" ${c.id === comp ? "disabled" : ""}>${c.id === comp ? "Otevřená" : "Přepnout"}</button>
+      <button class="btn sm danger" data-m="del" data-id="${esc(c.id)}">Smazat</button></div>`).join("") : `<div class="hint">Žádné soutěže.</div>`}</div>
+    <div class="sec-t">Zbytková data</div>
+    <div class="hint" style="margin-top:0">Starší testovací data bez záznamu soutěže (např. ID „test“ z první verze) smažete podle ID.</div>
+    <div class="row" style="margin-top:6px"><input class="in" id="mDelId" placeholder="ID soutěže"><button class="btn sm danger" data-m="delid">Smazat data</button></div>
+    <div class="merr err"></div></div>
+    <div class="mf"><button class="btn primary" data-m="close">Zavřít</button></div></div></div>`;
+  const close = () => { root.innerHTML = ""; };
+  root.querySelector(".backdrop").onmousedown = e => { if (e.target.classList.contains("backdrop")) close(); };
+  root.querySelector(".modal").onclick = async e => {
+    const b = e.target.closest("[data-m]"); if (!b) return;
+    const m = b.dataset.m, id = b.dataset.id;
+    if (m === "close") return close();
+    if (m === "open") { comp = id; startComp(); return close(); }
+    if (["start", "finish", "reopen"].includes(m)) { close(); await setCompState(id, m); return openManager(); }
+    if (m === "del" || m === "delid") {
+      const did = m === "del" ? id : root.querySelector("#mDelId").value.trim().toLowerCase();
+      if (!did) return;
+      const c = list.find(x => x.id === did);
+      close();
+      if (!await confirmBox(`Opravdu smazat soutěž <b>${esc(c?.name || did)}</b> (ID ${esc(did)}) včetně všech kategorií, kol a hodnocení? Tuto akci nelze vrátit. Pokud ji chcete zachovat, nejdřív ji exportujte.`, "Smazat natrvalo", "danger")) return openManager();
+      await deleteCompData(did);
+      if (did === comp) startComp();
+      return openManager();
+    }
+  };
+}
 
 // ----- porota -----
 $("addJudgeBtn").onclick = () => {
