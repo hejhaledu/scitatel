@@ -38,6 +38,10 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 .issues .ok{padding:7px 9px;border-radius:8px;background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.3);margin-top:6px}
 .issues .ed{padding:7px 9px;border-radius:8px;background:rgba(255,159,10,.08);border:1px solid rgba(255,159,10,.35);margin-top:6px}
 .stale{opacity:.55}
+.toasts{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:8px;width:min(560px,calc(100% - 32px));pointer-events:none}
+.toast{pointer-events:auto;padding:11px 14px;border-radius:12px;background:#3a1420;border:1px solid rgba(255,90,95,.55);color:#ffd5d6;box-shadow:0 12px 30px rgba(0,0,0,.45);font-size:13px;line-height:1.45;cursor:pointer;animation:pop .18s}
+.toast.ok{background:#0f2e1c;border-color:rgba(52,199,89,.55);color:#c8f5d6}
+.toast b{display:block;margin-bottom:2px}
 .drop{margin-top:8px;padding:16px 10px;border:1.5px dashed var(--stroke2);border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:12px;color:var(--text2);transition:background .15s,border-color .15s}
 .drop b{color:var(--text);font-weight:600}
 .drop span{color:var(--text3);font-size:11px}
@@ -305,6 +309,12 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
 
 
     <details class="sect">
+      <summary>Kontrolní testy</summary>
+      <div class="sect-body"><div class="hint" style="margin-top:0">Ověří výpočty (skating, postup, shody, skupiny) a kontroly vstupů proti známým výsledkům. Nic nezapisuje do databáze.</div>
+        <button class="btn sm full" id="selfTestBtn" style="margin-top:8px">Spustit testy</button></div>
+    </details>
+
+    <details class="sect">
       <summary>Log přenosu</summary>
       <div class="sect-body"><div id="log" style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--text2);white-space:pre-wrap;max-height:200px;overflow:auto"></div></div>
     </details>
@@ -326,12 +336,13 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
 
 <div class="credit">ArtimoCounter, created by Martin Hejhal, 2026</div>
 <div id="modalRoot"></div>
+<div class="toasts" id="toasts"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, memoryLocalCache,
-         collection, doc, setDoc, updateDoc, deleteDoc, getDocs, getDoc, onSnapshot, serverTimestamp }
+         collection, doc, setDoc, updateDoc, deleteDoc, getDocs, getDoc, onSnapshot, serverTimestamp, writeBatch }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -484,14 +495,22 @@ const byCreated = (a, b) => (a.created || 0) - (b.created || 0);
 const nextId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
 const lettersOf = jury => Object.keys(jury || {}).sort();
 
+// ===================== LOGIKA (bez vazby na UI) =====================
+const MAX_COUPLE = 9999, MAX_COUPLES = 1000, MAX_FINAL = 12;
 // Rozepíše zápis „1-12, 15“ na čísla. Stejné číslo dvakrát v jedné kategorii/kole je chyba.
+// Limity chrání před zamrznutím prohlížeče při překlepu (např. „1-99999999“).
 function parseCouples(str) {
   const out = new Set(), dup = new Set();
-  const add = n => { if (out.has(n)) dup.add(n); out.add(n); };
+  const add = n => { if (out.has(n)) dup.add(n); out.add(n); if (out.size > MAX_COUPLES) throw new Error(`Nejvýše ${MAX_COUPLES} párů.`); };
+  const num = t => { const n = Number(t); if (!Number.isInteger(n) || n < 1 || n > MAX_COUPLE) throw new Error(`Číslo páru „${t}“ musí být 1–${MAX_COUPLE}.`); return n; };
   for (const part of String(str).split(/[,;\s]+/).filter(Boolean)) {
     const m = part.match(/^(\d+)-(\d+)$/);
-    if (m) { const a = +m[1], b = +m[2]; for (let i = Math.min(a, b); i <= Math.max(a, b); i++) add(i); }
-    else if (/^\d+$/.test(part)) add(+part);
+    if (m) {
+      const a = num(m[1]), b = num(m[2]), lo = Math.min(a, b), hi = Math.max(a, b);
+      if (hi - lo + 1 > MAX_COUPLES) throw new Error(`Rozsah ${part} je příliš velký (nejvýše ${MAX_COUPLES} párů).`);
+      for (let i = lo; i <= hi; i++) add(i);
+    }
+    else if (/^\d+$/.test(part)) add(num(part));
     else throw new Error(`Neplatné číslo páru: „${part}“`);
   }
   if (dup.size) { const d = [...dup].sort((a, b) => a - b); throw new Error(`${d.length === 1 ? "Číslo páru" : "Čísla párů"} ${d.join(", ")} ${d.length === 1 ? "je zadané" : "jsou zadaná"} vícekrát.`); }
@@ -525,20 +544,153 @@ function plain(v) {
   return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, plain(x)]));
 }
 
+const isIntArr = (a, max = MAX_COUPLE) => Array.isArray(a) && a.every(n => Number.isInteger(n) && n >= 1 && n <= max);
+const isLetter = l => typeof l === "string" && /^[A-Z]$/.test(l);
+// Kontrola jednoho lístku vůči kolu; vrací text chyby, nebo null.
+function sheetError(r, sh) {
+  if (!sh || typeof sh !== "object") return "prázdný záznam";
+  if (!r.dances?.includes(sh.dance)) return "neznámý tanec";
+  if (!r.judges?.includes(sh.judge)) return "porotce není v kole";
+  if (sh.id && sh.id !== `${sh.dance}_${sh.judge}`) return "nesouhlasí ID lístku";
+  if (r.type === "prelim") {
+    if (!isIntArr(sh.marks)) return "chybí nebo jsou neplatné křížky";
+    if (new Set(sh.marks).size !== sh.marks.length) return "duplicitní křížek";
+    if (sh.marks.some(c => !r.couples.includes(c))) return "křížek u páru mimo kolo";
+  } else {
+    if (!sh.placings || typeof sh.placings !== "object" || Array.isArray(sh.placings)) return "chybí umístění";
+    for (const [c, pl] of Object.entries(sh.placings)) {
+      if (!r.couples.includes(+c)) return "pár mimo kolo";
+      if (!Number.isInteger(pl) || pl < 1 || pl > r.couples.length) return "neplatné umístění";
+    }
+  }
+  return null;
+}
+// Úplná kontrola souboru exportu před zápisem čehokoli do databáze.
+function validateExport(d) {
+  const E = [], DK = Object.keys(DANCES), c = d?.competition;
+  if (!c || typeof c.id !== "string" || !/^[a-z0-9-]{3,40}$/.test(c.id)) E.push("Chybí nebo je neplatné ID soutěže.");
+  if (c && c.jury != null && (typeof c.jury !== "object" || Object.keys(c.jury).some(l => !isLetter(l)))) E.push("Neplatná porota soutěže.");
+  if (!Array.isArray(d?.categories)) E.push("Chybí seznam kategorií.");
+  if (!Array.isArray(d?.rounds)) E.push("Chybí seznam kol.");
+  if (E.length) return E;
+  const catIds = new Set();
+  d.categories.forEach((k, i) => {
+    const w = `Kategorie ${i + 1}${k?.name ? ` (${k.name})` : ""}`;
+    if (!k || typeof k.id !== "string" || !k.id) { E.push(`${w}: chybí ID.`); return; }
+    if (catIds.has(k.id)) E.push(`${w}: duplicitní ID.`); catIds.add(k.id);
+    if (typeof k.name !== "string" || !k.name.trim()) E.push(`${w}: chybí název.`);
+    if (!Array.isArray(k.dances) || !k.dances.length || k.dances.some(x => !DK.includes(x))) E.push(`${w}: neplatné tance.`);
+    if (!isIntArr(k.couples) || k.couples.length > MAX_COUPLES || new Set(k.couples).size !== k.couples.length) E.push(`${w}: neplatná nebo duplicitní čísla párů.`);
+    if (k.key != null && !isIntArr(k.key, MAX_COUPLES)) E.push(`${w}: neplatný postupový klíč.`);
+    if (k.judges != null && (!Array.isArray(k.judges) || k.judges.some(l => !isLetter(l)))) E.push(`${w}: neplatná porota.`);
+  });
+  const roundIds = new Set();
+  d.rounds.forEach((r, i) => {
+    const w = `Kolo ${i + 1}${r?.label ? ` (${r.label})` : ""}`;
+    if (!r || typeof r.id !== "string" || !r.id) { E.push(`${w}: chybí ID.`); return; }
+    if (roundIds.has(r.id)) E.push(`${w}: duplicitní ID.`); roundIds.add(r.id);
+    if (!["prelim", "final"].includes(r.type)) E.push(`${w}: neplatný typ kola.`);
+    if (!["open", "locked", "evaluated"].includes(r.status)) E.push(`${w}: neplatný stav.`);
+    if (!Array.isArray(r.dances) || !r.dances.length || r.dances.some(x => !DK.includes(x))) E.push(`${w}: neplatné tance.`);
+    if (!isIntArr(r.couples) || r.couples.length < 2 || new Set(r.couples).size !== r.couples.length) E.push(`${w}: neplatná čísla párů.`);
+    if (!Array.isArray(r.judges) || !r.judges.length || r.judges.some(l => !isLetter(l))) E.push(`${w}: neplatná porota.`);
+    if (r.type === "prelim" && !(Number.isInteger(r.required) && r.required >= 1)) E.push(`${w}: chybí počet postupujících.`);
+    if (r.groups != null && (!Array.isArray(r.groups) || r.groups.some(g => !isIntArr(g?.couples)))) E.push(`${w}: neplatné skupiny.`);
+    if (r.qualified != null && !isIntArr(r.qualified)) E.push(`${w}: neplatný seznam postupujících.`);
+    if (r.categoryId != null && !catIds.has(r.categoryId)) E.push(`${w}: odkazuje na neexistující kategorii.`);
+    if (r.sheets != null && !Array.isArray(r.sheets)) { E.push(`${w}: neplatné lístky.`); return; }
+    if (E.length > 200) return;
+    for (const sh of r.sheets || []) { const e = sheetError(r, sh); if (e) E.push(`${w}, lístek ${sh?.id || "?"}: ${e}.`); }
+  });
+  return E;
+}
+// Rozbor QR kódu porotce: AC2;c=<soutěž>;r=<kolo>;j=<porotce>;t=p|f;ts=<ms>;S=1.4.7;…
+function parseQr(text) {
+  const parts = String(text).trim().split(";");
+  if (parts[0] !== "AC2") throw new Error("Není to QR kód z aplikace porotce.");
+  const kv = {};
+  for (const p of parts.slice(1)) { const i = p.indexOf("="); if (i < 1) throw new Error("Poškozený QR kód."); kv[p.slice(0, i)] = p.slice(i + 1); }
+  if (!kv.c || !kv.r) throw new Error("QR kód neobsahuje soutěž nebo kolo.");
+  if (!isLetter(kv.j)) throw new Error("QR kód neobsahuje platné písmeno porotce.");
+  if (!["p", "f"].includes(kv.t)) throw new Error("QR kód neobsahuje typ kola.");
+  return kv;
+}
+// Převod QR na lístky; při jakékoli chybě se nezapíše nic.
+function qrToSheets(kv, r) {
+  if ((kv.t === "f") !== (r.type === "final")) throw new Error("Typ kola v QR nesouhlasí.");
+  if (!r.judges.includes(kv.j)) throw new Error(`Porotce ${kv.j} v kole „${r.label}“ nehodnotí.`);
+  const missing = r.dances.filter(d => kv[d] == null);
+  if (missing.length) throw new Error(`QR neobsahuje tance: ${missing.map(d => DANCES[d]).join(", ")}.`);
+  return r.dances.map(d => {
+    const raw = kv[d] ? kv[d].split(".") : [];
+    const nums = raw.map(x => { const n = Number(x); if (!Number.isInteger(n) || !r.couples.includes(n)) throw new Error(`Neplatné číslo páru „${x}“ v tanci ${DANCES[d]}.`); return n; });
+    if (new Set(nums).size !== nums.length) throw new Error(`Opakované číslo páru v tanci ${DANCES[d]}.`);
+    if (r.type === "final" && nums.length !== r.couples.length) throw new Error(`Ve finále (${DANCES[d]}) chybí umístění některých párů.`);
+    return r.type === "prelim" ? { dance: d, marks: [...nums].sort((a, b) => a - b) } : { dance: d, placings: Object.fromEntries(nums.map((c, i) => [String(c), i + 1])) };
+  });
+}
+
+// ===================== CHYBY A OCHRANA PROTI DVOJÍMU KLIKNUTÍ =====================
+const FB_ERR = {
+  "permission-denied": "Databáze odmítla operaci (chybí oprávnění).",
+  "unavailable": "Databáze je nedostupná – zkontrolujte internet.",
+  "resource-exhausted": "Byl vyčerpán denní limit Firebase. Zkuste to po 9:00.",
+  "deadline-exceeded": "Databáze neodpověděla včas – zkuste to znovu.",
+  "not-found": "Záznam v databázi neexistuje.",
+  "failed-precondition": "Operaci teď nelze provést.",
+  "aborted": "Operace byla přerušena – zkuste ji znovu.",
+  "invalid-argument": "Neplatná data pro databázi."
+};
+const errText = e => (e && FB_ERR[e.code]) || e?.message || String(e);
+function toast(title, msg = "", kind = "bad") {
+  const el = document.createElement("div"); el.className = "toast " + (kind === "ok" ? "ok" : "");
+  el.innerHTML = `<b>${esc(title)}</b>${esc(msg)}`; el.onclick = () => el.remove();
+  $("toasts").appendChild(el); setTimeout(() => el.remove(), kind === "ok" ? 3500 : 9000);
+}
+function showError(e, ctx = "Chyba") { const m = errText(e); log(`CHYBA ${ctx}: ${m}`); toast(ctx, m); }
+addEventListener("unhandledrejection", e => { showError(e.reason, "Neočekávaná chyba"); e.preventDefault(); });
+addEventListener("error", e => { if (e.error) showError(e.error, "Neočekávaná chyba"); });
+// Akce s klíčem běží jen jednou naráz; tlačítko je po dobu zápisu zablokované.
+const locks = new Set();
+async function runAction(key, btn, fn, ctx = "Akce se nezdařila") {
+  if (locks.has(key)) return;
+  locks.add(key); if (btn) btn.disabled = true;
+  try { return await fn(); }
+  catch (e) { showError(e, ctx); }
+  finally { locks.delete(key); if (btn && btn.isConnected) btn.disabled = false; }
+}
+// Zápis po dávkách (max. 450 operací), každá dávka je atomická.
+async function commitOps(ops) {
+  for (let i = 0; i < ops.length; i += 450) {
+    const b = writeBatch(db);
+    for (const o of ops.slice(i, i + 450)) o.del ? b.delete(o.ref) : b.set(o.ref, o.data);
+    await b.commit();
+  }
+}
+
 // ----- modální okna -----
-function modal(title, bodyHtml, buttons) {
+// onOpen(root) se zavolá hned po vykreslení – žádné opožděné hledání prvků.
+function modal(title, bodyHtml, buttons, onOpen) {
   return new Promise(resolve => {
     const root = $("modalRoot");
     root.innerHTML = `<div class="backdrop"><div class="modal"><div class="mh">${title}</div><div class="mb">${bodyHtml}</div>
       <div class="mf">${buttons.map((b, i) => `<button class="btn ${b.cls || ""}" data-i="${i}">${b.label}</button>`).join("")}</div></div></div>`;
-    const close = v => { root.innerHTML = ""; resolve(v); };
-    root.querySelector(".backdrop").addEventListener("mousedown", e => { if (e.target.classList.contains("backdrop")) close(null); });
-    root.querySelectorAll("[data-i]").forEach(btn => btn.onclick = async () => {
+    const box = root.querySelector(".backdrop");
+    let busy = false, closed = false;
+    const close = v => { if (closed) return; closed = true; if (root.contains(box)) root.innerHTML = ""; resolve(v); };
+    box.addEventListener("mousedown", e => { if (e.target === box && !busy) close(null); });
+    box.querySelectorAll("[data-i]").forEach(btn => btn.onclick = async () => {
+      if (busy) return;
       const b = buttons[+btn.dataset.i];
-      if (b.action) { try { const res = await b.action(root); if (res === false) return; close(res ?? b.value ?? true); } catch (e) { const er = root.querySelector(".merr"); if (er) er.textContent = e.message; } }
-      else close(b.value ?? null);
+      if (!b.action) { close(b.value ?? null); return; }
+      busy = true; box.querySelectorAll("[data-i]").forEach(x => x.disabled = true);
+      const er = box.querySelector(".merr"); if (er) er.textContent = "";
+      try { const res = await b.action(root); if (res === false) return; close(res ?? b.value ?? true); }
+      catch (e) { if (er) er.textContent = errText(e); else showError(e); }
+      finally { busy = false; if (!closed) box.querySelectorAll("[data-i]").forEach(x => x.disabled = false); }
     });
-    setTimeout(() => root.querySelector("input.in")?.focus(), 30);
+    try { onOpen?.(root); } catch (e) { showError(e); }
+    box.querySelector("input.in")?.focus();
   });
 }
 const confirmBox = (text, okLabel = "Pokračovat", cls = "primary") => modal("Potvrzení", `<p style="line-height:1.5;margin:4px 0 0">${text}</p>`, [{ label: "Zrušit", value: false }, { label: okLabel, cls, value: true }]);
@@ -562,7 +714,10 @@ const roundRef = id => doc(db, "competitions", comp, "rounds", id);
 const sheetRef = (rid, d, j) => doc(db, "competitions", comp, "rounds", rid, "sheets", `${d}_${j}`);
 const roundsOfCat = cid => [...rounds.values()].filter(r => r.categoryId === cid).sort(byCreated);
 async function saveComp(fields) {
-  try { await updateDoc(compRef(), fields); } catch { await setDoc(compRef(), fields, { merge: true }); }
+  try {
+    try { await updateDoc(compRef(), fields); }
+    catch (e) { if (e?.code === "not-found") await setDoc(compRef(), fields, { merge: true }); else throw e; }
+  } catch (e) { showError(e, "Uložení soutěže se nezdařilo"); }
 }
 
 // ===================== PŘEPÍNÁNÍ STRÁNEK =====================
@@ -581,10 +736,11 @@ function startComp() {
   compDoc = {}; compExists = false; cats.clear(); rounds.clear(); presence.clear(); runSheets.clear(); evalSheets.clear(); knownRevs.clear();
   selCat = selRound = evalRid = null; editMode = false;
   store.set("ac_comp", comp);
-  unsubs.push(onSnapshot(compRef(), snap => { compExists = snap.exists(); compDoc = snap.data() || {}; renderAll(); }));
+  const lerr = e => showError(e, "Načítání dat");
+  unsubs.push(onSnapshot(compRef(), snap => { compExists = snap.exists(); compDoc = snap.data() || {}; renderAll(); }, lerr));
   unsubs.push(onSnapshot(collection(db, "competitions", comp, "categories"), snap => {
     cats = new Map(snap.docs.map(d => [d.id, { id: d.id, ...d.data() }])); renderAll();
-  }));
+  }, lerr));
   unsubs.push(onSnapshot(collection(db, "competitions", comp, "rounds"), { includeMetadataChanges: true }, snap => {
     setConn(snap.metadata.fromCache ? "wait" : "ok", snap.metadata.fromCache ? "Offline / připojování" : "Připojeno");
     rounds = new Map(snap.docs.map(d => [d.id, { id: d.id, ...d.data() }])); renderAll();
@@ -592,7 +748,7 @@ function startComp() {
   unsubs.push(onSnapshot(collection(db, "competitions", comp, "judges"), snap => {
     presence = new Map(snap.docs.map(d => [d.id, d.data({ serverTimestamps: "estimate" })]));
     if (page === "run" && selRound) renderRunMain();
-  }));
+  }, lerr));
   renderAll();
 }
 setInterval(() => { if (page === "run" && selRound) renderRunMain(); }, 15000);
@@ -613,7 +769,7 @@ function watchRunSheets(rid) {
       }
     }
     if (page === "run") renderRunMain();
-  });
+  }, e => showError(e, "Načítání lístků"));
 }
 function watchEvalSheets(rid) {
   unsubEval?.(); evalSheets.clear();
@@ -621,7 +777,7 @@ function watchEvalSheets(rid) {
   unsubEval = onSnapshot(collection(db, "competitions", comp, "rounds", rid, "sheets"), snap => {
     evalSheets = new Map(snap.docs.map(d => [d.id, d.data()]));
     if (page === "eval") renderEvalMain();
-  });
+  }, e => showError(e, "Načítání lístků"));
 }
 
 function renderAll() {
@@ -679,7 +835,7 @@ function selectRound(rid) {
 }
 
 $("compName").addEventListener("change", () => saveComp({ name: $("compName").value.trim() }));
-$("compStateRow").addEventListener("click", e => { const a = e.target.closest("[data-cstate]")?.dataset.cstate; if (a) setCompState(comp, a); });
+$("compStateRow").addEventListener("click", e => { const b = e.target.closest("[data-cstate]"); if (b) runAction("cstate", b, () => setCompState(comp, b.dataset.cstate), "Změna stavu soutěže"); });
 async function setCompState(id, a) {
   const ref = doc(db, "competitions", id);
   if (a === "start") await updateDoc(ref, { startedAt: Date.now(), finishedAt: null });
@@ -691,22 +847,25 @@ async function setCompState(id, a) {
 // ===================== SPRÁVCE SOUTĚŽÍ =====================
 $("managerBtn").onclick = () => openManager();
 async function deleteCompData(id) {
+  const ops = [];
   const rs = await getDocs(collection(db, "competitions", id, "rounds"));
   for (const r of rs.docs) {
     const sh = await getDocs(collection(db, "competitions", id, "rounds", r.id, "sheets"));
-    for (const x of sh.docs) await deleteDoc(doc(db, "competitions", id, "rounds", r.id, "sheets", x.id));
-    await deleteDoc(doc(db, "competitions", id, "rounds", r.id));
+    for (const x of sh.docs) ops.push({ del: true, ref: doc(db, "competitions", id, "rounds", r.id, "sheets", x.id) });
+    ops.push({ del: true, ref: doc(db, "competitions", id, "rounds", r.id) });
   }
   for (const sub of ["categories", "judges"]) {
     const d = await getDocs(collection(db, "competitions", id, sub));
-    for (const x of d.docs) await deleteDoc(doc(db, "competitions", id, sub, x.id));
+    for (const x of d.docs) ops.push({ del: true, ref: doc(db, "competitions", id, sub, x.id) });
   }
-  await deleteDoc(doc(db, "competitions", id));
-  log(`Smazána soutěž ${id}`);
+  ops.push({ del: true, ref: doc(db, "competitions", id) });
+  await commitOps(ops);
+  log(`Smazána soutěž ${id} (${ops.length} záznamů)`);
 }
 async function openManager() {
   const root = $("modalRoot");
-  const snap = await getDocs(collection(db, "competitions"));
+  let snap;
+  try { snap = await getDocs(collection(db, "competitions")); } catch (e) { showError(e, "Seznam soutěží se nenačetl"); return; }
   const list = snap.docs.map(d => ({ id: d.id, ...d.data() }))
     .sort((a, b) => (b.startedAt || b.createdAt || 0) - (a.startedAt || a.createdAt || 0));
   const st = c => c.finishedAt ? "done" : c.startedAt ? "live" : "ready";
@@ -725,27 +884,32 @@ async function openManager() {
     <div class="mf"><button class="btn primary" data-m="close">Zavřít</button></div></div></div>`;
   const close = () => { root.innerHTML = ""; };
   root.querySelector(".backdrop").onmousedown = e => { if (e.target.classList.contains("backdrop")) close(); };
-  root.querySelector(".modal").onclick = async e => {
+  root.querySelector(".modal").onclick = e => {
     const b = e.target.closest("[data-m]"); if (!b) return;
+    runAction("manager", b, () => managerAction(b), "Správce soutěží");
+  };
+  async function managerAction(b) {
     const m = b.dataset.m, id = b.dataset.id;
     if (m === "close") return close();
     if (m === "open") { comp = id; startComp(); return close(); }
-    if (["start", "finish", "reopen"].includes(m)) { close(); await setCompState(id, m); return openManager(); }
+    if (["start", "finish", "reopen"].includes(m)) { close(); try { await setCompState(id, m); } finally { openManager(); } return; }
     if (m === "del" || m === "delid") {
       const did = m === "del" ? id : root.querySelector("#mDelId").value.trim().toLowerCase();
       if (!did) return;
       const c = list.find(x => x.id === did);
       close();
       if (!await confirmBox(`Opravdu smazat soutěž <b>${esc(c?.name || did)}</b> (ID ${esc(did)}) včetně všech kategorií, kol a hodnocení? Tuto akci nelze vrátit. Pokud ji chcete zachovat, nejdřív ji exportujte.`, "Smazat natrvalo", "danger")) return openManager();
-      await deleteCompData(did);
+      try { await deleteCompData(did); } catch (e) { showError(e, "Mazání se nezdařilo – část dat mohla zůstat, zkuste to znovu"); return openManager(); }
+      toast("Soutěž smazána", did, "ok");
       if (did === comp) startComp();
       return openManager();
     }
-  };
+  }
 }
 
 // ----- porota -----
 $("addJudgeBtn").onclick = () => {
+  if (!compExists) { alertBox("Nejdřív založte soutěž."); return; }
   const jury = { ...(compDoc.jury || {}) };
   const free = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").find(l => !(l in jury));
   if (!free) return;
@@ -809,7 +973,7 @@ $("newCompBtn").onclick = () => modal("Nová soutěž",
   } }]);
 
 // ----- export / import -----
-$("exportBtn").onclick = async () => {
+$("exportBtn").onclick = e => runAction("export", e.currentTarget, async () => {
   const data = { format: "artimo-counter/soutez", version: 2, exportedAt: new Date().toISOString(),
     competition: { id: comp, ...plain(compDoc) }, categories: [], rounds: [] };
   for (const c of cats.values()) data.categories.push(plain(c));
@@ -820,13 +984,21 @@ $("exportBtn").onclick = async () => {
   const t = new Date(), stamp = `${t.getFullYear()}${String(t.getMonth() + 1).padStart(2, "0")}${String(t.getDate()).padStart(2, "0")}-${String(t.getHours()).padStart(2, "0")}${String(t.getMinutes()).padStart(2, "0")}`;
   download(`soutez_${comp}_${stamp}.json`, data);
   log(`Export soutěže ${comp}: ${data.categories.length} kategorií, ${data.rounds.length} kol`);
-};
+}, "Export se nezdařil");
 $("importBtn").onclick = () => $("importFile").click();
-$("importFile").onchange = async e => {
+$("importFile").onchange = e => {
   const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  runAction("import", $("importBtn"), () => importCompetition(f), "Import se nezdařil");
+};
+async function importCompetition(f) {
   let data;
-  try { data = JSON.parse(await f.text()); if (data.format !== "artimo-counter/soutez") throw 0; }
-  catch { alertBox("Soubor není export soutěže z Artimo Counter."); return; }
+  try { data = JSON.parse(await f.text()); } catch { await alertBox("Soubor není platný JSON."); return; }
+  if (data?.format !== "artimo-counter/soutez") { await alertBox("Soubor není export soutěže z Artimo Counter."); return; }
+  const errs = validateExport(data);
+  if (errs.length) {
+    await alertBox(`Soubor obsahuje chyby, <b>nic nebylo načteno</b>:<br>• ${errs.slice(0, 12).map(esc).join("<br>• ")}${errs.length > 12 ? `<br>… a dalších ${errs.length - 12}` : ""}`);
+    return;
+  }
   const id = data.competition.id;
   const existing = await getDoc(doc(db, "competitions", id));
   const exRounds = await getDocs(collection(db, "competitions", id, "rounds"));
@@ -835,24 +1007,27 @@ $("importFile").onchange = async e => {
   const ok = await confirmBox(`Načíst soutěž <b>${esc(data.competition.name || id)}</b> (ID ${esc(id)}): ${data.categories.length} kategorií, ${data.rounds.length} kol.` +
     (hasData ? `<br><br><b style="color:#ff8a8d">Soutěž s tímto ID už v databázi je. Její data budou nahrazena obsahem souboru.</b>` : ""), "Načíst", hasData ? "danger" : "primary");
   if (!ok) return;
-  try {
-    for (const r of exRounds.docs) {
-      const sh = await getDocs(collection(db, "competitions", id, "rounds", r.id, "sheets"));
-      for (const s of sh.docs) await deleteDoc(doc(db, "competitions", id, "rounds", r.id, "sheets", s.id));
-      await deleteDoc(doc(db, "competitions", id, "rounds", r.id));
-    }
-    for (const c of exCats.docs) await deleteDoc(doc(db, "competitions", id, "categories", c.id));
-    const { id: _, ...compData } = data.competition;
-    await setDoc(doc(db, "competitions", id), compData);
-    for (const c of data.categories) { const { id: cid, ...cd } = c; await setDoc(doc(db, "competitions", id, "categories", cid), cd); }
-    for (const r of data.rounds) {
-      const { id: rid, sheets, ...rd } = r;
-      await setDoc(doc(db, "competitions", id, "rounds", rid), rd);
-      for (const s of sheets || []) { const { id: sid, ...sd } = s; await setDoc(doc(db, "competitions", id, "rounds", rid, "sheets", sid), sd); }
-    }
-    comp = id; startComp(); log(`Import soutěže ${id} dokončen`);
-  } catch (err) { alertBox("Import selhal: " + esc(err.message)); }
-};
+  // nejdřív zápisy, potom mazání starých záznamů, které v souboru nejsou
+  const ops = [], keep = new Set();
+  const put = (ref, data) => { ops.push({ ref, data }); keep.add(ref.path); };
+  const { id: _, ...compData } = data.competition;
+  put(doc(db, "competitions", id), compData);
+  for (const c of data.categories) { const { id: cid, ...cd } = c; put(doc(db, "competitions", id, "categories", cid), cd); }
+  for (const r of data.rounds) {
+    const { id: rid, sheets, ...rd } = r;
+    put(doc(db, "competitions", id, "rounds", rid), rd);
+    for (const sh of sheets || []) { const { id: sid, ...sd } = sh; put(doc(db, "competitions", id, "rounds", rid, "sheets", sid || `${sd.dance}_${sd.judge}`), sd); }
+  }
+  for (const r of exRounds.docs) {
+    const sh = await getDocs(collection(db, "competitions", id, "rounds", r.id, "sheets"));
+    for (const x of sh.docs) { const ref = doc(db, "competitions", id, "rounds", r.id, "sheets", x.id); if (!keep.has(ref.path)) ops.push({ del: true, ref }); }
+    const ref = doc(db, "competitions", id, "rounds", r.id); if (!keep.has(ref.path)) ops.push({ del: true, ref });
+  }
+  for (const c of exCats.docs) { const ref = doc(db, "competitions", id, "categories", c.id); if (!keep.has(ref.path)) ops.push({ del: true, ref }); }
+  await commitOps(ops);
+  comp = id; startComp(); log(`Import soutěže ${id} dokončen (${ops.length} operací)`);
+  toast("Import dokončen", `${data.categories.length} kategorií, ${data.rounds.length} kol`, "ok");
+}
 
 // ===================== KATEGORIE =====================
 function danceChipsHtml(sel) {
@@ -896,7 +1071,8 @@ function editCategory(cid) {
     const dances = Object.keys(DANCES).filter(d => chipVals(root, "dance").includes(d));
     const couples = parseCouples(root.querySelector("#cCouples").value);
     const keyStr = root.querySelector("#cKey").value.trim();
-    const key = keyStr ? keyStr.split(/[,;\s–-]+/).filter(Boolean).map(x => { const n = parseInt(x, 10); if (!(n > 0)) throw new Error(`Neplatné číslo v klíči: „${x}“`); return n; }) : [];
+    const key = keyStr ? keyStr.split(/[,;\s–-]+/).filter(Boolean).map(x => { const n = Number(x); if (!Number.isInteger(n) || n < 1 || n > MAX_COUPLES) throw new Error(`Neplatné číslo v klíči: „${x}“`); return n; }) : [];
+    if (key.length > 10) throw new Error("Postupový klíč může mít nejvýše 10 kol.");
     const groups = parseInt(segVal(root, "groups"), 10) || 1;
     const judges = chipVals(root, "judge");
     if (!name) throw new Error("Vyplňte název kategorie.");
@@ -919,13 +1095,15 @@ function editCategory(cid) {
     <label class="lbl">Skupiny v postupových kolech</label>${segHtml("groups", [[1, "Bez skupin"], [2, "2 skupiny"], [3, "3 skupiny"], [4, "4 skupiny"]], c.groups || 1)}
     <label class="lbl">Porota kategorie</label>${judgeChipsHtml(c.judges || [])}
     ${hasRounds ? `<div class="hint" style="color:var(--orange)">Kategorie už má spuštěná kola – změny se projeví až v dalších kolech.</div>` : ""}
-    <div class="merr err"></div>`, buttons).then(() => renderAll());
-  setTimeout(() => { const inp = $("cCouples"); if (inp) inp.oninput = () => { try { const n = parseCouples(inp.value).length; $("cCoupleInfo").textContent = n ? pary(n) : ""; } catch (er) { $("cCoupleInfo").textContent = er.message; } }; }, 40);
+    <div class="merr err"></div>`, buttons, root => {
+      const inp = root.querySelector("#cCouples"), info = root.querySelector("#cCoupleInfo");
+      inp.oninput = () => { try { const n = parseCouples(inp.value).length; info.textContent = n ? pary(n) : ""; } catch (er) { info.textContent = er.message; } };
+    }).then(() => renderAll());
 }
 
 // plán dalšího kola podle postupového klíče
-function planNext(cat) {
-  const rs = roundsOfCat(cat.id), last = rs[rs.length - 1];
+function planNext(cat, rs = roundsOfCat(cat.id)) {
+  const last = rs[rs.length - 1];
   if (last && last.type === "final") return { blocked: last.status === "evaluated" ? "Kategorie je dokončená." : "Finále probíhá." };
   if (last && last.status !== "evaluated") return { blocked: `Nejdřív vyhodnoťte kolo „${last.label}“.` };
   const couples = last ? (last.qualified || []) : cat.couples;
@@ -967,27 +1145,32 @@ function startRoundModal(cat) {
     if (!dances.length) throw new Error("Vyberte tance.");
     if (!judges.length) throw new Error("Vyberte porotce.");
     if (type === "prelim" && (!required || required >= couples.length)) throw new Error("Počet postupujících musí být menší než počet párů.");
-    if (type === "final" && couples.length > 12) throw new Error("Finále může mít nejvýše 12 párů.");
+    if (type === "final" && couples.length > MAX_FINAL) throw new Error(`Finále může mít nejvýše ${MAX_FINAL} párů.`);
+    if (judges.some(j => !(j in (compDoc.jury || {})))) throw new Error("Vybraný porotce už v porotě soutěže není.");
     const id = nextId();
     await setDoc(roundRef(id), { categoryId: cat.id, category: cat.name, label, keyIndex: p.keyIndex, type, dances, couples, judges, required,
       groups: splitGroups(couples, g), status: "open", created: Date.now() });
     if (!compDoc.startedAt) saveComp({ startedAt: Date.now() });
     log(`Spuštěno kolo ${cat.name} · ${label}`);
     showPage("run"); selectRound(id);
-  } }]);
-  setTimeout(() => {
-    const root = $("modalRoot");
-    root.querySelector('[data-seg="type"]')?.addEventListener("segchange", () => { $("rPrelim").style.display = segVal(root, "type") === "final" ? "none" : ""; });
-    $("rCouples").oninput = () => { try { $("rInfo").textContent = pary(parseCouples($("rCouples").value).length); } catch (er) { $("rInfo").textContent = er.message; } };
-    $("rImport").onclick = () => {
+  } }], root => {
+    const q = sel => root.querySelector(sel), cIn = q("#rCouples"), info = q("#rInfo");
+    q('[data-seg="type"]').addEventListener("segchange", () => { q("#rPrelim").style.display = segVal(root, "type") === "final" ? "none" : ""; });
+    cIn.oninput = () => { try { info.textContent = pary(parseCouples(cIn.value).length); } catch (er) { info.textContent = er.message; } };
+    q("#rImport").onclick = () => {
       const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json";
       inp.onchange = async () => {
-        try { const d = JSON.parse(await inp.files[0].text()); if (d.format !== "artimo-counter/postup") throw 0; $("rCouples").value = fmtCouples(d.couples); $("rCouples").oninput(); }
-        catch { $("rInfo").textContent = "Soubor není seznam postupujících."; }
+        try {
+          const d = JSON.parse(await inp.files[0].text());
+          if (d.format !== "artimo-counter/postup" || !Array.isArray(d.couples)) throw new Error("Soubor není seznam postupujících.");
+          const list = parseCouples(d.couples.join(","));
+          if (!cIn.isConnected) return;
+          cIn.value = fmtCouples(list); cIn.oninput();
+        } catch (er) { if (info.isConnected) info.textContent = er.message || "Soubor není seznam postupujících."; }
       };
       inp.click();
     };
-  }, 40);
+  });
 }
 
 // ===================== HLAVNÍ PANEL – PRŮBĚH =====================
@@ -1057,30 +1240,33 @@ function roundDetailHtml(r) {
 function sheetText(r, s) {
   if (!s) return `<span class="faint">Lístek zatím nedorazil.</span>`;
   const head = `<b>Porotce ${s.judge} · ${DANCES[s.dance]}</b> <span class="faint">· verze ${s.rev} · ${fmtTimeS(tsMs(s.sentAt))}${s.source === "qr" ? " · QR" : ""}${s.edited ? " · upraveno sčitatelem" : ""}</span><br>`;
-  if (r.type === "prelim") return head + `Křížky (${s.marks.length}): <b>${s.marks.join(", ")}</b>`;
-  return head + Object.entries(s.placings).sort((a, b) => a[1] - b[1]).map(([c, p]) => `${p}. <b>${c}</b>`).join(" &nbsp;·&nbsp; ");
+  const err = sheetError(r, s);
+  if (r.type === "prelim") return head + `Křížky (${(s.marks || []).length}): <b>${esc((s.marks || []).join(", "))}</b>${err ? ` <span style="color:#ff8a8d">– ${err}</span>` : ""}`;
+  return head + Object.entries(s.placings || {}).sort((a, b) => a[1] - b[1]).map(([c, p]) => `${esc(p)}. <b>${esc(c)}</b>`).join(" &nbsp;·&nbsp; ") + (err ? ` <span style="color:#ff8a8d">– ${err}</span>` : "");
 }
 
-$("runMain").addEventListener("click", async e => {
+$("runMain").addEventListener("click", e => {
   const cell = e.target.closest("[data-key]");
   if (cell) { selectedCell = cell.dataset.key; renderRunMain(); return; }
   const open = e.target.closest("[data-open]"); if (open) { selectRound(open.dataset.open); return; }
-  const act = e.target.closest("[data-act]")?.dataset.act; if (!act) return;
-  if (act === "editCat") editCategory(selCat);
-  if (act === "startRound") startRoundModal(cats.get(selCat));
+  const btn = e.target.closest("button"), act = e.target.closest("[data-act]")?.dataset.act; if (!act) return;
+  if (act === "editCat") { editCategory(selCat); return; }
+  if (act === "startRound") { startRoundModal(cats.get(selCat)); return; }
   const r = rounds.get(selRound); if (!r) return;
-  if (act === "toggleLock") {
-    const next = r.status === "open" ? "locked" : "open";
-    await updateDoc(roundRef(r.id), { status: next, ...(next === "locked" ? { lockedAt: Date.now() } : {}) });
-    log(`${titleOf(r)}: ${statusText(next)}`);
-  }
-  if (act === "toEval") {
-    const total = r.judges.length * r.dances.length, done = r.judges.reduce((n, j) => n + r.dances.filter(d => runSheets.has(`${d}_${j}`)).length, 0);
-    if (done < total && !await confirmBox(`Chybí ${total - done} z ${total} lístků. Kolo se uzavře a chybějící hodnocení můžete doplnit ručně ve Vyhodnocení.`, "Uzavřít a vyhodnotit")) return;
-    if (r.status === "open") await updateDoc(roundRef(r.id), { status: "locked", lockedAt: Date.now() });
-    openEval(r.id);
-  }
-  if (act === "goEval") openEval(r.id);
+  if (act === "goEval") { openEval(r.id); return; }
+  runAction(`round:${r.id}`, btn, async () => {
+    if (act === "toggleLock") {
+      const next = r.status === "open" ? "locked" : "open";
+      await updateDoc(roundRef(r.id), { status: next, ...(next === "locked" ? { lockedAt: Date.now() } : {}) });
+      log(`${titleOf(r)}: ${statusText(next)}`);
+    }
+    if (act === "toEval") {
+      const total = r.judges.length * r.dances.length, done = r.judges.reduce((n, j) => n + r.dances.filter(d => runSheets.has(`${d}_${j}`)).length, 0);
+      if (done < total && !await confirmBox(`Chybí ${total - done} z ${total} lístků. Kolo se uzavře a chybějící hodnocení můžete doplnit ručně ve Vyhodnocení.`, "Uzavřít a vyhodnotit")) return;
+      if (r.status === "open") await updateDoc(roundRef(r.id), { status: "locked", lockedAt: Date.now() });
+      openEval(r.id);
+    }
+  }, "Změna kola se nezdařila");
 });
 
 // ===================== OFFLINE QR IMPORT =====================
@@ -1096,19 +1282,26 @@ drop.addEventListener("drop", e => {
 });
 // zabránit, aby prohlížeč obrázek puštěný mimo zónu otevřel místo aplikace
 ["dragover", "drop"].forEach(ev => window.addEventListener(ev, e => { if (!drop.contains(e.target)) e.preventDefault(); }));
-async function processQrFiles(files) {
+function processQrFiles(files) { return runAction("qr", $("qrUploadBtn"), () => processQrFilesInner(files), "Zpracování QR"); }
+async function processQrFilesInner(files) {
   if (!files.length) return;
   const logEl = $("qrLog");
   for (const f of files) {
     const row = document.createElement("div"); row.textContent = `${f.name}: čtu…`; logEl.prepend(row);
     try { const text = await decodeQrFile(f); row.innerHTML = `${esc(f.name)}: ${await applyQrPayload(text)}`; }
-    catch (err) { row.innerHTML = `${esc(f.name)}: <span style="color:#ff8a8d">${esc(err.message)}</span>`; }
+    catch (err) { row.innerHTML = `${esc(f.name)}: <span style="color:#ff8a8d">${esc(errText(err))}</span>`; log(`QR ${f.name}: ${errText(err)}`); }
   }
 };
 let jsqrPromise = null;
 function loadJsQR() {
   if (window.jsQR) return Promise.resolve();
-  return jsqrPromise ??= new Promise((res, rej) => { const s = document.createElement("script"); s.src = JSQR_URL; s.onload = res; s.onerror = () => rej(new Error("Nepodařilo se načíst čtečku QR (chybí internet?).")); document.head.appendChild(s); });
+  // neúspěšný pokus se nepamatuje – další soubor zkusí knihovnu načíst znovu
+  return jsqrPromise ??= new Promise((res, rej) => {
+    const sc = document.createElement("script"); sc.src = JSQR_URL;
+    sc.onload = () => window.jsQR ? res() : (jsqrPromise = null, sc.remove(), rej(new Error("Čtečka QR se nenačetla správně.")));
+    sc.onerror = () => { jsqrPromise = null; sc.remove(); rej(new Error("Nepodařilo se načíst čtečku QR (chybí internet?). Zkuste to znovu.")); };
+    document.head.appendChild(sc);
+  });
 }
 async function decodeQrFile(file) {
   const url = URL.createObjectURL(file);
@@ -1129,32 +1322,27 @@ async function decodeQrFile(file) {
     throw new Error("QR kód se v obrázku nepodařilo najít. Zkuste ostřejší fotku.");
   } finally { URL.revokeObjectURL(url); }
 }
-// formát: AC2;c=<soutěž>;r=<kolo>;j=<porotce>;t=p|f;ts=<ms>;S=1.4.7;C=...
 async function applyQrPayload(text) {
-  const parts = text.split(";");
-  if (parts[0] !== "AC2") throw new Error("Není to QR kód z aplikace porotce.");
-  const kv = Object.fromEntries(parts.slice(1).map(p => { const i = p.indexOf("="); return [p.slice(0, i), p.slice(i + 1)]; }));
+  const kv = parseQr(text);
   if (kv.c !== comp) throw new Error(`QR patří k soutěži „${kv.c}“, otevřená je „${comp}“.`);
   const r = rounds.get(kv.r); if (!r) throw new Error("Kolo z QR kódu v soutěži neexistuje.");
-  if (!r.judges.includes(kv.j)) throw new Error(`Porotce ${kv.j} v kole „${r.label}“ nehodnotí.`);
   if (r.status === "evaluated") throw new Error(`Kolo „${r.label}“ je už vyhodnocené.`);
+  const list = qrToSheets(kv, r);               // celé QR se zkontroluje dřív, než se cokoli zapíše
   const existing = await getDocs(collection(db, "competitions", comp, "rounds", r.id, "sheets"));
   const ex = new Map(existing.docs.map(d => [d.id, d.data()]));
-  let written = 0, same = 0;
-  for (const d of r.dances) {
-    if (kv[d] == null) continue;
-    const nums = kv[d] ? kv[d].split(".").map(Number) : [];
-    if (nums.some(n => !r.couples.includes(n))) throw new Error(`Neplatné číslo páru v tanci ${DANCES[d]}.`);
-    const prev = ex.get(`${d}_${kv.j}`);
-    const data = { judge: kv.j, dance: d, type: r.type, uid: null, clientAt: +kv.ts || Date.now(), sentAt: serverTimestamp(), source: "qr", rev: (prev?.rev || 0) + 1 };
-    if (r.type === "prelim") data.marks = [...nums].sort((a, b) => a - b);
-    else data.placings = Object.fromEntries(nums.map((c, i) => [String(c), i + 1]));
-    const sameAsPrev = prev && (r.type === "prelim" ? JSON.stringify(prev.marks) === JSON.stringify(data.marks) : JSON.stringify(Object.entries(prev.placings).sort()) === JSON.stringify(Object.entries(data.placings).sort()));
-    if (sameAsPrev) { same++; continue; }
-    await setDoc(sheetRef(r.id, d, kv.j), data); written++;
+  const ops = []; let same = 0;
+  for (const it of list) {
+    const prev = ex.get(`${it.dance}_${kv.j}`);
+    const isSame = prev && (r.type === "prelim"
+      ? JSON.stringify([...(prev.marks || [])].sort((a, b) => a - b)) === JSON.stringify(it.marks)
+      : JSON.stringify(Object.entries(prev.placings || {}).sort()) === JSON.stringify(Object.entries(it.placings).sort()));
+    if (isSame) { same++; continue; }
+    ops.push({ ref: sheetRef(r.id, it.dance, kv.j), data: { judge: kv.j, dance: it.dance, type: r.type, uid: null, clientAt: Number(kv.ts) || Date.now(),
+      sentAt: serverTimestamp(), source: "qr", rev: (prev?.rev || 0) + 1, ...(r.type === "prelim" ? { marks: it.marks } : { placings: it.placings }) } });
   }
-  log(`QR: porotce ${kv.j} · ${titleOf(r)} · zapsáno ${written}, beze změny ${same}`);
-  return `<b>${kv.j}</b> · ${esc(titleOf(r))} – zapsáno ${written}${same ? `, beze změny ${same}` : ""} ✓`;
+  await commitOps(ops);
+  log(`QR: porotce ${kv.j} · ${titleOf(r)} · zapsáno ${ops.length}, beze změny ${same}`);
+  return `<b>${kv.j}</b> · ${esc(titleOf(r))} – zapsáno ${ops.length}${same ? `, beze změny ${same}` : ""} ✓`;
 }
 
 // ===================== VYHODNOCENÍ =====================
@@ -1174,10 +1362,18 @@ function renderEvalList() {
 }
 $("evalList").addEventListener("click", e => { const it = e.target.closest("[data-rid]"); if (it) { evalRid = it.dataset.rid; editMode = false; watchEvalSheets(evalRid); renderAll(); } });
 
-function renderEvalMain() {
+// Při psaní do buňky (ruční úpravy) se tabulka nepřekresluje – dorovná se, až uživatel buňky opustí.
+let evalPending = false;
+const typingInEval = () => { const a = document.activeElement; return !!a && a.classList?.contains("mk-in") && $("evalMain").contains(a); };
+$("evalMain").addEventListener("focusout", () => setTimeout(() => { if (evalPending && !typingInEval()) renderEvalMain(); }, 0));
+function renderEvalMain(force) {
+  if (!force && typingInEval()) { evalPending = true; return; }
+  evalPending = false;
   const r = rounds.get(evalRid), el = $("evalMain");
   if (!r) { el.innerHTML = `<div class="empty">Vyberte kolo vlevo. Kolo se sem dostane tlačítkem „Odeslat k vyhodnocení“.</div>`; $("evalIssues").innerHTML = ""; return; }
-  const scrollY = window.scrollY, focusKey = document.activeElement?.dataset?.edit, selStart = document.activeElement?.selectionStart;
+  const ae = document.activeElement, scrollY = window.scrollY;
+  const focusKey = ae && el.contains(ae) ? (ae.dataset?.edit ? `[data-edit="${ae.dataset.edit}"]` : ae.id ? `#${ae.id}` : null) : null;
+  let selStart = null; try { selStart = ae?.selectionStart ?? null; } catch {}
   const canEdit = r.status !== "evaluated";
   el.innerHTML = `
     <div class="head"><h1>${esc(r.category || "")} <span class="faint">·</span> ${esc(r.label)}</h1><span class="badge ${r.status}">${statusText(r.status)}</span><span class="sp"></span>
@@ -1188,21 +1384,30 @@ function renderEvalMain() {
     ${r.type === "prelim" ? prelimView(r) : finalView(r)}`;
   const issues = r.type === "prelim" ? prelimData(r).issues : finalData(r).issues;
   $("evalIssues").innerHTML = (r.status === "open" ? `<div class="ed">Kolo ještě probíhá – lístky se průběžně doplňují.</div>` : "")
-    + (editMode ? `<div class="ed"><b>Ruční úpravy zapnuté.</b><br>${r.type === "prelim" ? "Kliknutím do tabulky přidáte nebo odeberete křížek." : "Přepište umístění v tabulce tance (Tab = další buňka)."} Změny se ukládají hned, lístek se označí ✎.</div>` : "")
+    + (editMode ? `<div class="ed"><b>Ruční úpravy zapnuté.</b><br>${r.type === "prelim" ? "Kliknutím do tabulky přidáte nebo odeberete křížek." : "Přepište umístění v tabulce tance (Tab = další pár téhož porotce)."} Změny se ukládají hned, lístek se označí ✎.</div>` : "")
     + (issues.length ? `<div class="sec-t" style="margin:14px 0 0">Kontrola lístků</div>` + issues.map(i => `<div class="it">${i}</div>`).join("") : `<div class="ok">✓ Všechny lístky jsou v pořádku</div>`);
-  if (focusKey) { const inp = el.querySelector(`[data-edit="${focusKey}"]`); if (inp) { inp.focus(); try { inp.setSelectionRange(selStart, selStart); } catch {} } }
+  if (focusKey) { const inp = el.querySelector(focusKey); if (inp) { inp.focus(); if (selStart != null) try { inp.setSelectionRange(selStart, selStart); } catch {} } }
   window.scrollTo(0, scrollY);
 }
 
 // ----- postupové kolo -----
-function prelimData(r) {
+function prelimData(r, sh = evalSheets) {
   const crosses = {}, totals = {}, issues = [];
   for (const c of r.couples) { crosses[c] = {}; totals[c] = 0; for (const d of r.dances) crosses[c][d] = new Set(); }
   for (const d of r.dances) for (const j of r.judges) {
-    const s = evalSheets.get(`${d}_${j}`);
-    if (!s) { issues.push(`${j} · ${DANCES[d]}: chybí lístek`); continue; }
-    if (s.marks.length !== r.required) issues.push(`${j} · ${DANCES[d]}: ${s.marks.length} křížků místo ${r.required}`);
-    for (const c of s.marks) if (crosses[c]) { crosses[c][d].add(j); totals[c]++; }
+    const s = sh.get(`${d}_${j}`);
+    const w = `${j} · ${DANCES[d]}`;
+    if (!s) { issues.push(`${w}: chybí lístek`); continue; }
+    if (!Array.isArray(s.marks)) { issues.push(`${w}: lístek nemá křížky`); continue; }
+    const valid = s.marks.filter(c => Number.isInteger(c));
+    const uniq = [...new Set(valid)];
+    if (valid.length !== s.marks.length) issues.push(`${w}: neplatný údaj v křížcích (vynechán)`);
+    if (uniq.length !== valid.length) issues.push(`${w}: duplicitní křížek (započítán jednou)`);
+    const outside = uniq.filter(c => !crosses[c]);
+    if (outside.length) issues.push(`${w}: křížek u párů mimo kolo (${outside.join(", ")}) – nezapočítán`);
+    const counted = uniq.filter(c => crosses[c]);
+    if (counted.length !== r.required) issues.push(`${w}: ${counted.length} křížků místo ${r.required}`);
+    for (const c of counted) { crosses[c][d].add(j); totals[c]++; }
   }
   return { crosses, totals, issues };
 }
@@ -1230,7 +1435,7 @@ function prelimView(r) {
 
   return `
     <div class="ctrl no-print" style="margin-top:14px">
-      ${evaluated ? "" : `<div><div class="lbl" style="margin-top:0">Postupuje párů</div><div class="stepper"><button data-step="-1">−</button><input id="advN" value="${cut.n}"><button data-step="1">+</button></div></div>`}
+      ${evaluated ? "" : `<div><div class="lbl" style="margin-top:0">Postupuje párů</div><div class="stepper"><button data-step="-1">−</button><input id="advN" inputmode="numeric" value="${cut.n}"><button data-step="1">+</button></div></div>`}
       <div class="row wrap">
         ${evaluated ? `<button class="btn primary" data-act="nextRound">Spustit další kolo →</button><button class="btn" data-act="dlQual">Stáhnout postupující</button>`
           : `<button class="btn primary" data-act="saveQual" ${cut.tie ? "disabled" : ""}>Potvrdit postup ${cut.tie ? "" : `(${cut.n})`}</button>`}
@@ -1250,22 +1455,24 @@ function prelimView(r) {
 }
 
 // ----- finále -----
-function finalData(r) {
+function finalData(r, sh = evalSheets, cache = lastSk) {
   const marks = {}, issues = [], badCols = new Set();
   for (const d of r.dances) {
     marks[d] = {}; for (const c of r.couples) marks[d][c] = [];
     for (const j of r.judges) {
-      const s = evalSheets.get(`${d}_${j}`);
-      const vals = r.couples.map(c => s?.placings?.[String(c)] ?? null);
+      const s = sh.get(`${d}_${j}`);
+      const pl = s?.placings && typeof s.placings === "object" ? s.placings : null;
+      const vals = r.couples.map(c => { const v = pl?.[String(c)]; return Number.isInteger(v) ? v : null; });
       r.couples.forEach((c, i) => marks[d][c].push(vals[i]));
       if (!s) { issues.push(`${j} · ${DANCES[d]}: chybí lístek`); badCols.add(`${d}_${j}`); continue; }
+      if (!pl) { issues.push(`${j} · ${DANCES[d]}: lístek nemá umístění`); badCols.add(`${d}_${j}`); continue; }
       const sorted = vals.filter(v => v != null).sort((a, b) => a - b);
       if (sorted.length !== r.couples.length || sorted.some((v, i) => v !== i + 1)) { issues.push(`${j} · ${DANCES[d]}: pořadí není 1–${r.couples.length} bez opakování`); badCols.add(`${d}_${j}`); }
     }
   }
   let sk = null, stale = false;
   if (!issues.length) { try { sk = skatingFinal(r.dances.map(d => r.judges.map((_, j) => r.couples.map(c => marks[d][c][j])))); } catch (e) { issues.push(e.message); } }
-  if (sk) lastSk.set(r.id, sk); else if (lastSk.has(r.id)) { sk = lastSk.get(r.id); stale = true; }
+  if (sk) cache.set(r.id, sk); else if (cache.has(r.id)) { sk = cache.get(r.id); stale = true; }
   return { marks, issues, badCols, sk, stale };
 }
 function finalView(r) {
@@ -1296,7 +1503,7 @@ function finalView(r) {
       ${ord.map(({ c, i }) => {
         const m = marks[d][c];
         const cells = r.judges.map((j, k) => editMode
-          ? `<td><input class="mk-in ${badCols.has(`${d}_${j}`) ? "bad" : ""}" data-edit="${c}|${d}|${j}" value="${m[k] ?? ""}" inputmode="numeric"></td>`
+          ? `<td><input class="mk-in ${badCols.has(`${d}_${j}`) ? "bad" : ""}" data-edit="${c}|${d}|${j}" value="${m[k] ?? ""}" inputmode="numeric" tabindex="${1 + t * 1000 + k * 50 + r.couples.indexOf(c)}"></td>`
           : `<td>${m[k] ?? "–"}</td>`).join("");
         let skc = "";
         if (sk) {
@@ -1317,61 +1524,144 @@ function finalView(r) {
 async function writeEdited(r, d, j, patch) {
   const prev = evalSheets.get(`${d}_${j}`);
   const base = prev || { judge: j, dance: d, type: r.type, uid: null, clientAt: Date.now(), sentAt: serverTimestamp(), source: "manual", rev: 0 };
-  if (r.type === "prelim" && !base.marks) base.marks = [];
-  if (r.type === "final" && !base.placings) base.placings = {};
-  await setDoc(sheetRef(r.id, d, j), { ...base, ...patch, edited: true, editedAt: Date.now(), rev: (base.rev || 0) + 1 });
+  if (r.type === "prelim" && !Array.isArray(base.marks)) base.marks = [];
+  if (r.type === "final" && (!base.placings || typeof base.placings !== "object")) base.placings = {};
+  const data = { ...base, ...patch, edited: true, editedAt: Date.now(), rev: (base.rev || 0) + 1 };
+  // lokálně hned, aby další rychlá úprava navazovala na tuto (a nepřepsala ji starším stavem)
+  if (evalRid === r.id) evalSheets.set(`${d}_${j}`, data);
+  await setDoc(sheetRef(r.id, d, j), data);
 }
-$("evalMain").addEventListener("change", async e => {
-  if (e.target.id === "editSw") { editMode = e.target.checked; renderEvalMain(); return; }
+$("evalMain").addEventListener("change", e => {
+  if (e.target.id === "editSw") { editMode = e.target.checked; renderEvalMain(true); return; }
   const ed = e.target.dataset.edit; if (!ed) return;
-  const r = rounds.get(evalRid); const [c, d, j] = ed.split("|");
-  const prev = evalSheets.get(`${d}_${j}`);
-  const placings = { ...(prev?.placings || {}) };
-  const v = parseInt(e.target.value, 10);
-  if (v > 0) placings[c] = v; else delete placings[c];
-  await writeEdited(r, d, j, { placings });
+  const r = rounds.get(evalRid); if (!r) return;
+  const [c, d, j] = ed.split("|");
+  const v = e.target.value.trim() === "" ? null : Number(e.target.value);
+  if (v !== null && (!Number.isInteger(v) || v < 1 || v > r.couples.length)) {
+    e.target.classList.add("bad"); toast("Neplatné umístění", `Zadejte číslo 1–${r.couples.length}.`); return;
+  }
+  runAction(`edit:${ed}`, null, async () => {
+    const prev = evalSheets.get(`${d}_${j}`);
+    const placings = { ...(prev?.placings && typeof prev.placings === "object" ? prev.placings : {}) };
+    if (v) placings[c] = v; else delete placings[c];
+    await writeEdited(r, d, j, { placings });
+  }, "Úprava se neuložila");
 });
 $("evalMain").addEventListener("input", e => {
-  if (e.target.id === "advN") { const v = parseInt(e.target.value, 10); if (v > 0) { advanceDraft.set(evalRid, v); renderEvalMain(); } }
+  if (e.target.id === "advN") { const v = parseInt(e.target.value, 10); if (v > 0 && v <= MAX_COUPLES) { advanceDraft.set(evalRid, v); renderEvalMain(true); } }
 });
-$("evalMain").addEventListener("click", async e => {
+$("evalMain").addEventListener("click", e => {
   const r = rounds.get(evalRid); if (!r) return;
   const tog = e.target.closest("[data-tog]")?.dataset.tog;
   if (tog) {
-    const [c, d, j] = tog.split("|"); const prev = evalSheets.get(`${d}_${j}`);
-    const set = new Set(prev?.marks || []); const n = +c; set.has(n) ? set.delete(n) : set.add(n);
-    await writeEdited(r, d, j, { marks: [...set].sort((a, b) => a - b) }); return;
+    runAction(`tog:${r.id}:${tog}`, null, async () => {
+      const [c, d, j] = tog.split("|"); const prev = evalSheets.get(`${d}_${j}`);
+      const set = new Set(Array.isArray(prev?.marks) ? prev.marks.filter(Number.isInteger) : []); const n = +c; set.has(n) ? set.delete(n) : set.add(n);
+      await writeEdited(r, d, j, { marks: [...set].sort((a, b) => a - b) });
+    }, "Úprava se neuložila");
+    return;
   }
   const step = e.target.closest("[data-step]")?.dataset.step;
-  if (step) { const { totals } = prelimData(r); const cur = advanceDraft.get(r.id) ?? r.required; advanceDraft.set(r.id, Math.max(1, Math.min(r.couples.length, prelimCut(r, totals, cur).n + +step))); renderEvalMain(); return; }
-  const n = e.target.closest("[data-n]")?.dataset.n; if (n) { advanceDraft.set(r.id, +n); renderEvalMain(); return; }
-  const act = e.target.closest("[data-act]")?.dataset.act; if (!act) return;
-  if (act === "print") window.print();
-  if (act === "unEval") {
-    if (!await confirmBox("Vrátit kolo do stavu před vyhodnocením? Potvrzený postup nebo výsledky se zruší.", "Upravit znovu")) return;
-    await updateDoc(roundRef(r.id), { status: "locked", evaluatedAt: null, qualified: null, result: null });
-  }
-  if (act === "saveQual") {
-    const { totals, issues } = prelimData(r);
-    if (issues.length && !await confirmBox(`Kontrola lístků hlásí ${issues.length} problémů. Přesto potvrdit postup?`, "Potvrdit")) return;
-    const cut = prelimCut(r, totals, advanceDraft.get(r.id) ?? r.required);
-    if (cut.tie) return;
-    const qualified = cut.sorted.slice(0, cut.n).sort((a, b) => a - b);
-    await updateDoc(roundRef(r.id), { qualified, status: "evaluated", evaluatedAt: Date.now(), lockedAt: r.lockedAt || Date.now(),
-      result: { kind: "prelim", totals: Object.fromEntries(r.couples.map(c => [c, totals[c]])) } });
-    advanceDraft.delete(r.id); editMode = false;
-    log(`Postup potvrzen: ${titleOf(r)} – ${qualified.length} párů`);
-  }
-  if (act === "dlQual") download(`postup_${slug(r.category || "kategorie")}_${slug(r.label)}.json`,
-    { format: "artimo-counter/postup", version: 2, competition: comp, category: r.category, fromRound: r.label, couples: r.qualified, createdAt: new Date().toISOString() });
-  if (act === "nextRound") { const c = cats.get(r.categoryId); if (c) startRoundModal(c); else alertBox("Kolo nepatří k žádné kategorii."); }
-  if (act === "confirmFinal") {
-    const { sk } = finalData(r); if (!sk) return;
-    await updateDoc(roundRef(r.id), { status: "evaluated", evaluatedAt: Date.now(), lockedAt: r.lockedAt || Date.now(),
-      result: { kind: "final", overall: Object.fromEntries(r.couples.map((c, i) => [c, sk.overall[i]])), rule: Object.fromEntries(r.couples.map((c, i) => [c, sk.rule[i]])) } });
-    editMode = false; log(`Výsledky finále potvrzeny: ${titleOf(r)}`);
-  }
+  if (step) { const { totals } = prelimData(r); const cur = advanceDraft.get(r.id) ?? r.required; advanceDraft.set(r.id, Math.max(1, Math.min(r.couples.length, prelimCut(r, totals, cur).n + +step))); renderEvalMain(true); return; }
+  const n = e.target.closest("[data-n]")?.dataset.n; if (n) { advanceDraft.set(r.id, +n); renderEvalMain(true); return; }
+  const btn = e.target.closest("button"), act = e.target.closest("[data-act]")?.dataset.act; if (!act) return;
+  if (act === "print") { window.print(); return; }
+  if (act === "dlQual") { download(`postup_${slug(r.category || "kategorie")}_${slug(r.label)}.json`,
+    { format: "artimo-counter/postup", version: 2, competition: comp, category: r.category, fromRound: r.label, couples: r.qualified, createdAt: new Date().toISOString() }); return; }
+  if (act === "nextRound") { const c = cats.get(r.categoryId); if (c) startRoundModal(c); else alertBox("Kolo nepatří k žádné kategorii."); return; }
+  runAction(`eval:${r.id}`, btn, async () => {
+    if (act === "unEval") {
+      if (!await confirmBox("Vrátit kolo do stavu před vyhodnocením? Potvrzený postup nebo výsledky se zruší.", "Upravit znovu")) return;
+      await updateDoc(roundRef(r.id), { status: "locked", evaluatedAt: null, qualified: null, result: null });
+    }
+    if (act === "saveQual") {
+      const { totals, issues } = prelimData(r);
+      if (issues.length && !await confirmBox(`Kontrola lístků hlásí ${issues.length} problémů (vlevo). Přesto potvrdit postup?`, "Potvrdit")) return;
+      const cut = prelimCut(r, totals, advanceDraft.get(r.id) ?? r.required);
+      if (cut.tie) return;
+      const qualified = cut.sorted.slice(0, cut.n).sort((a, b) => a - b);
+      await updateDoc(roundRef(r.id), { qualified, status: "evaluated", evaluatedAt: Date.now(), lockedAt: r.lockedAt || Date.now(),
+        result: { kind: "prelim", totals: Object.fromEntries(r.couples.map(c => [c, totals[c]])) } });
+      advanceDraft.delete(r.id); editMode = false;
+      log(`Postup potvrzen: ${titleOf(r)} – ${qualified.length} párů`);
+    }
+    if (act === "confirmFinal") {
+      const { sk, stale, issues } = finalData(r);
+      if (!sk || stale || issues.length) { toast("Výsledky nelze potvrdit", "Opravte nejdřív chyby v lístcích (vlevo)."); return; }
+      await updateDoc(roundRef(r.id), { status: "evaluated", evaluatedAt: Date.now(), lockedAt: r.lockedAt || Date.now(),
+        result: { kind: "final", overall: Object.fromEntries(r.couples.map((c, i) => [c, sk.overall[i]])), rule: Object.fromEntries(r.couples.map((c, i) => [c, sk.rule[i]])) } });
+      editMode = false; log(`Výsledky finále potvrzeny: ${titleOf(r)}`);
+    }
+  }, "Vyhodnocení se neuložilo");
 });
+
+// ===================== KONTROLNÍ (REGRESNÍ) TESTY =====================
+// Referenční finále spočítaná Python implementací z dokumentu „Skating system ČSTS v5“ (vč. pravidel 10 a 11).
+const REF_CASES = [{"m":[[[4,2,1,3]],[[3,2,1,4]]],"e":[3.5,2,1,3.5],"d":[[4,2,1,3],[3,2,1,4]]},{"m":[[[1,2]],[[1,2]],[[2,1]],[[2,1]]],"e":[1.5,1.5],"d":[[1,2],[1,2],[2,1],[2,1]]},{"m":[[[3,1,2,4,5]],[[2,4,1,3,5]],[[1,2,3,4,5]]],"e":[1.5,3,1.5,4,5],"d":[[3,1,2,4,5],[2,4,1,3,5],[1,2,3,4,5]]},{"m":[[[5,4,6,2,3,1],[6,4,1,5,3,2],[6,4,1,5,3,2],[2,6,3,1,4,5],[6,4,3,5,1,2],[3,6,4,2,1,5],[6,4,1,5,3,2]],[[1,6,4,3,2,5],[5,3,1,4,6,2],[1,6,4,3,2,5],[5,3,2,1,4,6],[1,6,4,3,2,5],[1,6,4,3,2,5],[1,6,4,3,2,5]]],"e":[3,6,4,5,1,2],"d":[[6,4,3,5,2,1],[1,6,4,3,2,5]]},{"m":[[[4,2,5,1,3],[4,2,5,1,3],[4,2,5,3,1],[4,2,1,3,5]],[[2,4,1,3,5],[5,2,3,1,4],[2,4,1,3,5],[1,2,3,4,5]],[[3,2,1,4,5],[5,1,3,2,4],[4,3,1,5,2],[3,2,1,4,5]],[[1,4,5,2,3],[2,4,5,1,3],[2,4,5,1,3],[4,3,2,5,1]],[[3,1,4,2,5],[2,1,4,5,3],[5,4,3,2,1],[2,5,3,1,4]]],"e":[2,3,4,1,5],"d":[[4,1,5,2,3],[1,4,2,3,5],[3.5,2,1,3.5,5],[2,4,5,1,3],[2,4,3,1,5]]},{"m":[[[4,1,3,2],[1,4,3,2],[4,1,3,2]],[[3,4,2,1],[3,4,2,1],[2,1,3,4]],[[3,1,2,4],[2,4,3,1],[1,4,3,2]]],"e":[2,4,3,1],"d":[[4,1,3,2],[3,4,2,1],[1,4,3,2]]},{"m":[[[6,4,3,5,2,1],[3,2,1,5,4,6],[3,2,1,5,4,6],[4,2,5,6,1,3]],[[3,6,2,4,5,1],[3,6,2,4,5,1],[3,6,2,4,5,1],[3,6,2,4,5,1]]],"e":[4,3,1,6,5,2],"d":[[4,1,2,5,3,6],[3,6,2,4,5,1]]},{"m":[[[1,2,3]],[[1,3,2]]],"e":[1,2.5,2.5],"d":[[1,2,3],[1,3,2]]},{"m":[[[1,5,2,3,4],[1,5,3,4,2],[4,3,5,1,2],[3,1,4,5,2],[5,4,2,1,3],[3,1,4,2,5],[5,2,3,4,1]],[[4,3,2,1,5],[3,1,4,2,5],[3,4,2,1,5],[4,5,1,2,3],[5,4,1,2,3],[1,3,5,2,4],[3,5,1,4,2]],[[1,5,2,4,3],[1,5,2,4,3],[5,4,1,3,2],[1,5,2,4,3],[1,5,2,4,3],[3,4,1,2,5],[1,5,2,4,3]],[[2,5,4,3,1],[1,2,4,3,5],[4,5,3,2,1],[3,5,1,2,4],[2,3,1,5,4],[4,3,2,5,1],[5,2,4,3,1]],[[3,4,5,1,2],[5,2,1,3,4],[4,3,1,5,2],[5,1,3,2,4],[3,1,2,5,4],[2,3,4,1,5],[1,4,3,2,5]]],"e":[4,5,3,1,2],"d":[[4,3,5,2,1],[3,4,2,1,5],[1,5,2,4,3],[4,5,3,2,1],[4,2,3,1,5]]},{"m":[[[3,5,6,4,1,2],[4,1,2,6,5,3],[2,1,3,6,5,4],[1,4,6,5,3,2],[5,4,2,3,1,6]],[[2,3,5,6,4,1],[5,6,4,3,1,2],[4,1,3,6,5,2],[5,6,4,3,1,2],[2,4,5,1,6,3]]],"e":[3,5,6,4,2,1],"d":[[2,5,4,6,1,3],[4,5,6,2,3,1]]},{"m":[[[2,1],[2,1],[2,1],[2,1]],[[2,1],[1,2],[1,2],[2,1]]],"e":[2,1],"d":[[2,1],[1.5,1.5]]},{"m":[[[5,1,4,3,2],[1,2,5,4,3],[4,5,1,3,2],[4,5,1,3,2],[1,4,5,2,3],[3,5,1,2,4]],[[1,4,5,2,3],[3,5,1,2,4],[2,3,4,1,5],[2,3,4,1,5],[5,2,4,3,1],[2,5,1,3,4]],[[1,3,5,2,4],[5,4,3,2,1],[2,4,5,1,3],[1,5,4,2,3],[1,5,3,4,2],[5,4,3,2,1]],[[3,4,2,1,5],[3,4,2,1,5],[3,4,2,1,5],[3,5,2,4,1],[3,4,2,1,5],[3,4,2,1,5]],[[2,3,4,1,5],[4,1,3,2,5],[4,3,1,5,2],[3,1,4,2,5],[2,3,4,1,5],[2,3,4,1,5]]],"e":[2,5,3,1,4],"d":[[3,5,4,2,1],[2,4.5,3,1,4.5],[2,5,4,1,3],[3,4,2,1,5],[3,2,4,1,5]]},{"m":[[[2,3,1,4,5],[2,3,1,4,5],[2,3,1,4,5],[5,3,4,2,1]],[[4,2,1,5,3],[3,4,1,5,2],[3,5,4,1,2],[1,4,5,2,3]]],"e":[2,4,1,5,3],"d":[[2,3,1,4,5],[2,4,3,5,1]]},{"m":[[[3,2,4,1,5],[3,2,4,1,5],[1,5,3,2,4],[5,2,3,1,4],[4,5,3,1,2],[3,2,5,4,1],[3,2,5,4,1]],[[3,4,5,2,1],[2,5,1,3,4],[3,4,5,2,1],[2,5,3,4,1],[1,5,2,3,4],[5,4,1,2,3],[2,1,4,3,5]],[[1,4,2,3,5],[5,4,1,3,2],[5,4,1,2,3],[1,4,2,3,5],[1,4,2,3,5],[3,5,2,1,4],[1,4,2,3,5]]],"e":[1,4,3,2,5],"d":[[3,2,5,1,4],[1,5,4,2,3],[1,4,2,3,5]]},{"m":[[[2,1,3,4],[3,2,4,1],[3,4,1,2]],[[4,1,2,3],[3,2,4,1],[2,4,3,1]]],"e":[3,2,4,1],"d":[[3,1.5,4,1.5],[3.5,2,3.5,1]]},{"m":[[[3,4,2,1,5,6],[2,1,5,3,6,4],[2,1,5,3,6,4],[1,5,6,3,4,2],[6,3,4,2,1,5],[5,3,6,4,2,1],[6,4,2,5,3,1]],[[6,4,2,3,1,5],[6,2,1,4,5,3],[5,1,2,4,6,3],[4,5,6,1,3,2],[1,6,2,4,5,3],[1,6,2,4,5,3],[1,6,2,4,5,3]]],"e":[4,5,3,1,6,2],"d":[[3,2,6,1,5,4],[4,6,1,3,5,2]]},{"m":[[[3,1,2]],[[1,3,2]],[[2,3,1]],[[1,3,2]]],"e":[1,3,2],"d":[[3,1,2],[1,3,2],[2,3,1],[1,3,2]]},{"m":[[[3,4,1,2],[1,3,2,4],[3,4,1,2],[2,1,4,3],[2,3,1,4],[3,4,1,2]],[[3,1,2,4],[3,2,1,4],[3,1,2,4],[3,1,2,4],[4,1,3,2],[2,3,1,4]],[[3,1,2,4],[2,3,4,1],[3,1,4,2],[3,4,2,1],[1,2,4,3],[2,3,4,1]],[[4,2,1,3],[1,4,2,3],[3,1,4,2],[4,1,2,3],[4,3,1,2],[4,2,1,3]]],"e":[3,2,1,4],"d":[[2,4,1,3],[3,1,2,4],[2,3,4,1],[4,2,1,3]]},{"m":[[[5,3,4,2,1,6],[5,3,4,2,1,6],[4,2,6,5,1,3],[6,4,1,3,5,2],[6,5,2,4,3,1],[2,4,6,5,1,3],[5,3,4,2,1,6]],[[6,3,1,5,2,4],[5,3,4,1,2,6],[5,3,4,1,2,6],[3,5,2,1,6,4],[1,4,3,2,5,6],[1,2,5,6,4,3],[4,5,1,3,2,6]],[[5,6,1,4,2,3],[1,3,6,4,5,2],[1,3,6,4,5,2],[1,2,6,3,5,4],[1,6,4,5,3,2],[6,5,2,4,3,1],[1,3,6,4,5,2]],[[5,1,3,2,6,4],[3,6,4,5,1,2],[1,5,6,2,3,4],[3,6,5,1,2,4],[2,5,6,3,4,1],[4,1,2,5,6,3],[4,1,2,5,6,3]],[[3,6,2,1,5,4],[5,4,3,2,1,6],[5,4,3,2,1,6],[5,4,3,2,1,6],[1,6,3,2,4,5],[2,3,5,4,6,1],[6,2,4,1,5,3]]],"e":[5,4,6,1,2,3],"d":[[6,4,5,2,1,3],[5,4,3,1,2,6],[1,3,6,4,5,2],[3,6,5,1,4,2],[5,3,2,1,4,6]]},{"m":[[[5,2,3,1,4],[5,4,1,2,3],[4,5,1,3,2],[2,5,4,3,1],[5,2,3,1,4],[1,4,3,5,2],[4,1,2,3,5]],[[2,3,5,1,4],[4,2,3,5,1],[2,4,3,1,5],[2,4,1,5,3],[1,5,2,3,4],[4,2,3,5,1],[5,2,3,1,4]],[[2,4,5,3,1],[1,3,2,5,4],[2,5,4,1,3],[5,2,3,1,4],[2,4,5,3,1],[2,4,5,3,1],[3,1,4,2,5]],[[5,3,2,4,1],[2,1,3,5,4],[1,5,2,4,3],[1,5,4,2,3],[4,2,1,3,5],[5,2,4,3,1],[1,3,5,4,2]]],"e":[1,5,2,3,4],"d":[[5,4,1,2,3],[1,4,2,3,5],[1,4,5,2,3],[1,3,4,5,2]]}];
+function runSelfTests() {
+  const res = [], t0 = performance.now();
+  const ok = (name, cond, detail = "") => res.push({ name, ok: !!cond, detail });
+  const throws = (name, fn, re) => { try { fn(); ok(name, false, "nevyhodilo chybu"); } catch (e) { ok(name, !re || re.test(e.message), e.message); } };
+  const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  // skating
+  const pdf = skatingFinal([[[5,3,1,2,4],[3,4,5,1,2],[3,4,1,5,2]]]);
+  ok("Skating: příklad z PDF (A–E = 4, 5, 1, 2, 3)", eq(pdf.byDance[0], [4,5,1,2,3]) && eq(pdf.decidedCol[0], [3,4,1,2,2]));
+  let bad = 0; REF_CASES.forEach(c => { const r = skatingFinal(c.m); if (!eq(r.overall, c.e) || !eq(r.byDance, c.d)) bad++; });
+  ok(`Skating: ${REF_CASES.length} referenčních finále (pravidla 5–11)`, bad === 0, bad ? `${bad} nesouhlasí` : "");
+  throws("Skating: odmítne neúplné pořadí", () => skatingFinal([[[1,1,3]]]), /permutaci/);
+  // čísla párů
+  ok("Páry: „1-5, 8“", eq(parseCouples("1-5, 8"), [1,2,3,4,5,8]));
+  throws("Páry: duplicita „5, 5“", () => parseCouples("5, 5"), /vícekrát/);
+  throws("Páry: překryv „1-10, 5“", () => parseCouples("1-10, 5"), /vícekrát/);
+  const tt = performance.now(); throws("Páry: obří rozsah „1-99999999“ nezamrzne", () => parseCouples("1-99999999"), /1–9999|příliš velký/);
+  ok("Páry: kontrola obřího rozsahu trvá < 50 ms", performance.now() - tt < 50);
+  throws("Páry: nula", () => parseCouples("0"));
+  throws("Páry: text", () => parseCouples("abc"));
+  ok("Páry: 1000 párů projde", parseCouples("1-1000").length === 1000);
+  throws("Páry: 1001 párů neprojde", () => parseCouples("1-1000, 2000"), /Nejvýše/);
+  // skupiny, místa, postup
+  ok("Skupiny: 20 párů do 3 skupin = 7/7/6", eq(splitGroups(Array.from({ length: 20 }, (_, i) => i + 1), 3).map(g => g.couples.length), [7,7,6]));
+  ok("Dělená místa: 2.–3.", eq(placeLabels([1, 2.5, 2.5, 4]), ["1.", "2.–3.", "2.–3.", "4."]));
+  const cutR = { couples: [1,2,3,4] }, cut = prelimCut(cutR, { 1: 6, 2: 5, 3: 5, 4: 2 }, 2);
+  ok("Postup: shoda na hranici (méně 1 / více 3)", cut.tie && cut.down === 1 && cut.up === 3);
+  ok("Postup: bez shody", !prelimCut(cutR, { 1: 6, 2: 5, 3: 4, 4: 2 }, 2).tie);
+  const pr = { type: "prelim", couples: [1,2,3,4], dances: ["S"], judges: ["A","B","C"], required: 2 };
+  const pd = prelimData(pr, new Map([["S_A", { judge: "A", dance: "S", marks: [1,1,2] }], ["S_B", { judge: "B", dance: "S" }], ["S_C", { judge: "C", dance: "S", marks: [2,9] }]]));
+  ok("Postup: duplicitní křížek se počítá jednou", pd.totals[1] === 1 && pd.issues.some(i => /duplicitní/.test(i)));
+  ok("Postup: lístek bez křížků nespadne", pd.issues.some(i => /nemá křížky/.test(i)));
+  ok("Postup: křížek mimo kolo se nezapočítá", pd.totals[2] === 2 && pd.issues.some(i => /mimo kolo/.test(i)));
+  const fr = { id: "t", type: "final", couples: [1,2,3], dances: ["S"], judges: ["A"] };
+  const fd = finalData(fr, new Map([["S_A", { placings: { 1: 1, 2: 1, 3: 3 } }]]), new Map());
+  ok("Finále: duplicitní umístění zablokuje výpočet", !fd.sk && fd.issues.length === 1);
+  // plán kol podle klíče
+  const pc = planNext({ id: "x", couples: Array.from({ length: 10 }, (_, i) => i + 1), key: [12, 6], groups: 2, dances: ["S"], judges: ["A"] }, []);
+  ok("Klíč: přeskočí kolo, kde je klíč ≥ počtu párů", pc.type === "prelim" && pc.required === 6);
+  const pf = planNext({ id: "x", couples: [1,2,3,4,5], key: [], dances: ["S"], judges: ["A"] }, []);
+  ok("Klíč: prázdný klíč = rovnou finále", pf.type === "final");
+  // QR
+  throws("QR: cizí kód", () => parseQr("hello"), /Není to QR/);
+  const qr = { id: "r1", type: "prelim", couples: [1,2,3,4], dances: ["S","C"], judges: ["A"], label: "1. kolo" };
+  ok("QR: platný kód předkola", qrToSheets(parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;S=1.2;C=3.4"), qr).length === 2);
+  throws("QR: chybějící tanec", () => qrToSheets(parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;S=1.2"), qr), /neobsahuje tance/);
+  throws("QR: opakovaný pár", () => qrToSheets(parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;S=1.1;C=3.4"), qr), /Opakované/);
+  throws("QR: neúplné finále", () => qrToSheets(parseQr("AC2;c=x;r=f;j=A;t=f;ts=1;S=1.2"), { ...qr, type: "final", dances: ["S"], couples: [1,2,3] }), /chybí umístění/);
+  // import
+  ok("Import: neúplný soubor se odmítne", validateExport({ format: "artimo-counter/soutez", competition: { id: "abc" } }).length > 0);
+  ok("Import: lístek bez křížků se odmítne", validateExport({ competition: { id: "abc" }, categories: [], rounds: [{ id: "r", type: "prelim", status: "open", dances: ["S"], couples: [1,2], judges: ["A"], required: 1, sheets: [{ id: "S_A", dance: "S", judge: "A" }] }] }).length === 1);
+  ok("Import: platný minimální soubor projde", validateExport({ competition: { id: "abc", jury: { A: "" } }, categories: [], rounds: [] }).length === 0);
+  return { res, ms: Math.round(performance.now() - t0) };
+}
+$("selfTestBtn").onclick = () => {
+  let out;
+  try { out = runSelfTests(); } catch (e) { showError(e, "Testy spadly"); return; }
+  const failed = out.res.filter(r => !r.ok);
+  log(`Kontrolní testy: ${out.res.length - failed.length}/${out.res.length} OK (${out.ms} ms)`);
+  modal(failed.length ? `Testy: ${failed.length} selhalo` : "Testy: vše v pořádku",
+    `<div class="hint" style="margin-top:0">${out.res.length - failed.length} z ${out.res.length} testů prošlo za ${out.ms} ms.</div>
+     <div style="margin-top:10px;max-height:55vh;overflow:auto">${out.res.map(r => `<div class="row" style="padding:5px 0;border-top:1px solid var(--stroke)">
+       <span style="color:${r.ok ? "#5fe08a" : "#ff8a8d"};width:18px">${r.ok ? "✓" : "✕"}</span><span class="grow">${esc(r.name)}</span>${r.ok ? "" : `<span class="faint">${esc(r.detail)}</span>`}</div>`).join("")}</div>`,
+    [{ label: "Zavřít", cls: "primary", value: true }]);
+};
 
 // ===================== PŘIPOJENÍ =====================
 function setConn(cls, text) { $("connDot").className = "dot " + cls; $("connText").textContent = text; }
