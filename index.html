@@ -100,7 +100,31 @@ select.in option{background:#11154a}
 .badge.ready{background:rgba(255,255,255,.08);color:var(--text2)}
 .badge.done{background:var(--accent);color:var(--ink)}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--gray);display:inline-block;flex:0 0 auto}
-.dot.ok{background:var(--green)}.dot.wait{background:var(--orange)}.dot.bad{background:var(--red)}
+.dot.ok{background:var(--green)}.dot.wait{background:var(--orange)}.dot.bad{background:var(--red)}.dot.idle{background:#7d82a8}
+/* pravý sloupec – soutěžící kategorie */
+#page-run.layout{grid-template-columns:300px 1fr 250px}
+@media(max-width:1280px){#page-run.layout{grid-template-columns:300px 1fr}#roster{display:none}}
+@media(max-width:980px){#page-run.layout{grid-template-columns:1fr}}
+#roster{align-self:start;position:sticky;top:70px;max-height:calc(100vh - 88px);overflow:auto}
+.rl-row{display:grid;grid-template-columns:38px 1fr auto;gap:6px;align-items:baseline;padding:5px 2px;border-top:1px solid var(--stroke);font-size:12.5px}
+.rl-row .n{font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)}
+.rl-row .nm{color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rl-row .st{font-size:11px;color:var(--text2);white-space:nowrap}
+.rl-row.out .n,.rl-row.out .nm{opacity:.42;text-decoration:line-through}
+.rl-row.out .st{opacity:.6}
+.rl-row.p1 .st{color:#f5d36a;font-weight:700}.rl-row.p2 .st{color:#d8dde8;font-weight:700}.rl-row.p3 .st{color:#e0a370;font-weight:700}
+.rl-row.dns .nm,.rl-row.dns .n{opacity:.35}
+.cname{display:block;font-size:10.5px;font-weight:500;color:var(--text2);line-height:1.2;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#printArea{display:none}
+.res{font-size:12px;line-height:1.4}
+.res h2{font-size:17px;margin:18px 0 2px}.res h2:first-child{margin-top:0}
+.res .rmeta{font-size:11px;color:var(--text2);margin-bottom:8px}
+.res table{border-collapse:collapse;width:100%;margin:6px 0 12px}
+.res th,.res td{border:1px solid var(--stroke);padding:3px 6px;text-align:center}
+.res td.l,.res th.l{text-align:left}
+.res h4{margin:10px 0 2px;font-size:12.5px;break-after:avoid}.res tr{break-inside:avoid}
+.res .cat{break-inside:auto}
+.res .cat + .cat{break-before:page;margin-top:24px}
 .muted{color:var(--text2)}.faint{color:var(--text3)}
 .hint{font-size:12px;color:var(--text2);line-height:1.45;margin-top:4px}
 .err{color:#ff8a8d;font-size:12px;margin-top:6px}
@@ -247,6 +271,10 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
   .tbl th,.tbl td{border-color:#bbb;color:#000}
   .sk td.dec,.pod.p1,.xtab tr.q td.cpl{background:#ddd!important;color:#000!important}
   .muted,.faint,.legend,.meta{color:#333}
+  body.printres > *:not(#printArea){display:none!important}
+  body.printres #printArea{display:block;color:#000}
+  body.printres .res th,body.printres .res td{border-color:#999;color:#000}
+  body.printres .res .rmeta{color:#333}
 }
 </style>
 </head>
@@ -260,7 +288,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
     <button class="btn primary lg full" style="margin-top:12px" type="submit">Vstoupit</button>
     <div class="err" id="lockErr" style="text-align:center;min-height:16px"></div>
   </form>
-  <div class="credit" style="position:absolute;bottom:0;left:0;right:0">ArtimoCounter, created by Martin Hejhal, 2026, v3.0</div>
+  <div class="credit" style="position:absolute;bottom:0;left:0;right:0">ArtimoCounter, created by Martin Hejhal, 2026, v4.0</div>
 </div>
 <header>
   <img class="logo" src="data:image/png;base64,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" alt="Artimo">
@@ -294,6 +322,24 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
           <button class="btn sm" id="importBtn">Import</button>
           <input type="file" id="importFile" accept=".json,application/json" hidden>
         </div>
+        <div class="row wrap" style="margin-top:8px">
+          <button class="btn sm" id="resultsBtn">Výsledková listina…</button>
+          <button class="btn sm" id="backupsBtn">Zálohy…</button>
+          <button class="btn sm" id="testCompBtn">Zkušební soutěž…</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="sect" open>
+      <summary>Soutěžící <span class="cnt" id="namesCnt"></span></summary>
+      <div class="sect-body">
+        <div class="hint" style="margin-top:0" id="namesInfo"></div>
+        <div class="row wrap" style="margin-top:8px">
+          <button class="btn sm" id="namesUpBtn">Nahrát seznam (TXT)…</button>
+          <button class="btn sm plain" id="namesTplBtn">Vzor</button>
+          <button class="btn sm plain" id="namesDelBtn" hidden>Odebrat</button>
+          <input type="file" id="namesFile" accept=".txt,.csv,text/plain" hidden>
+        </div>
       </div>
     </details>
 
@@ -310,6 +356,8 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
       <div class="sect-body">
         <div id="juryList"></div>
         <button class="btn sm full" id="addJudgeBtn" style="margin-top:8px">+ Přidat porotce</button>
+        <div class="row wrap" style="margin-top:8px"><button class="btn sm" id="diagBtn">Deník přenosu…</button>
+          <label class="row" style="gap:6px;font-size:12px;color:var(--text2)"><input type="checkbox" id="soundSw"> Zvuk, když dorazí všechny lístky</label></div>
       </div>
     </details>
 
@@ -336,6 +384,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
     </details>
   </aside>
   <main class="main" id="runMain"></main>
+  <aside id="roster"></aside>
 </div>
 
 <!-- ===================== VYHODNOCENÍ ===================== -->
@@ -350,15 +399,16 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
   <main class="main"><div class="card pad" id="evalMain"></div></main>
 </div>
 
-<div class="credit">ArtimoCounter, created by Martin Hejhal, 2026, v3.0</div>
+<div class="credit">ArtimoCounter, created by Martin Hejhal, 2026, v4.0</div>
 <div id="modalRoot"></div>
+<div id="printArea"></div>
 <div class="toasts" id="toasts"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, memoryLocalCache,
-         collection, doc, setDoc, updateDoc, deleteDoc, getDocs, getDoc, onSnapshot, serverTimestamp, writeBatch }
+         collection, doc, setDoc, updateDoc, deleteDoc, getDocs, getDoc, onSnapshot, serverTimestamp, writeBatch, increment, query, where }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -375,8 +425,9 @@ const JSQR_URL = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 let db;
+let memCache = false;
 try { db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }); }
-catch { db = initializeFirestore(app, { localCache: memoryLocalCache() }); }
+catch { memCache = true; db = initializeFirestore(app, { localCache: memoryLocalCache() }); }
 
 // ===== SKATING SYSTEM ČSTS v5 (port referenční implementace z PDF) =====
 // marks[t][j][i] = pořadí, které rozhodčí j dal páru i v tanci t.
@@ -568,6 +619,7 @@ function sheetError(r, sh) {
   if (!r.dances?.includes(sh.dance)) return "neznámý tanec";
   if (!r.judges?.includes(sh.judge)) return "porotce není v kole";
   if (sh.id && sh.id !== `${sh.dance}_${sh.judge}`) return "nesouhlasí ID lístku";
+  if (sh.type != null && sh.type !== r.type) return "typ lístku nesouhlasí s typem kola";
   if (r.type === "prelim") {
     if (!isIntArr(sh.marks)) return "chybí nebo jsou neplatné křížky";
     if (new Set(sh.marks).size !== sh.marks.length) return "duplicitní křížek";
@@ -578,6 +630,8 @@ function sheetError(r, sh) {
       if (!r.couples.includes(+c)) return "pár mimo kolo";
       if (!Number.isInteger(pl) || pl < 1 || pl > r.couples.length) return "neplatné umístění";
     }
+    const pv = Object.values(sh.placings);
+    if (new Set(pv).size !== pv.length) return "stejné umístění u více párů";
   }
   return null;
 }
@@ -586,6 +640,7 @@ function validateExport(d) {
   const E = [], DK = Object.keys(DANCES), c = d?.competition;
   if (!c || typeof c.id !== "string" || !/^[a-z0-9-]{3,40}$/.test(c.id)) E.push("Chybí nebo je neplatné ID soutěže.");
   if (c && c.jury != null && (typeof c.jury !== "object" || Object.keys(c.jury).some(l => !isLetter(l)))) E.push("Neplatná porota soutěže.");
+  if (c && c.names != null && (typeof c.names !== "object" || Array.isArray(c.names) || Object.entries(c.names).some(([k, v]) => !/^\d{1,4}$/.test(k) || +k < 1 || typeof v !== "string"))) E.push("Neplatný seznam soutěžících.");
   if (!Array.isArray(d?.categories)) E.push("Chybí seznam kategorií.");
   if (!Array.isArray(d?.rounds)) E.push("Chybí seznam kol.");
   if (E.length) return E;
@@ -611,8 +666,21 @@ function validateExport(d) {
     if (!isIntArr(r.couples) || r.couples.length < 2 || new Set(r.couples).size !== r.couples.length) E.push(`${w}: neplatná čísla párů.`);
     if (!Array.isArray(r.judges) || !r.judges.length || r.judges.some(l => !isLetter(l))) E.push(`${w}: neplatná porota.`);
     if (r.type === "prelim" && !(Number.isInteger(r.required) && r.required >= 1)) E.push(`${w}: chybí počet postupujících.`);
+    if (r.type === "prelim" && Array.isArray(r.couples) && Number.isInteger(r.required) && r.required >= r.couples.length) E.push(`${w}: počet postupujících musí být menší než počet párů.`);
+    if (Array.isArray(r.dances) && new Set(r.dances).size !== r.dances.length) E.push(`${w}: tanec je v kole vícekrát.`);
+    if (Array.isArray(r.judges) && new Set(r.judges).size !== r.judges.length) E.push(`${w}: porotce je v kole vícekrát.`);
+    if (r.type === "prelim" && r.status === "evaluated" && !isIntArr(r.qualified)) E.push(`${w}: vyhodnocené kolo nemá seznam postupujících.`);
+    if (r.qualified != null && isIntArr(r.qualified) && Array.isArray(r.couples) && r.qualified.some(c => !r.couples.includes(c))) E.push(`${w}: postupující pár není v kole.`);
+    if (Array.isArray(r.sheets)) { const ids = r.sheets.map(x => x?.id || `${x?.dance}_${x?.judge}`); if (new Set(ids).size !== ids.length) E.push(`${w}: duplicitní lístek.`); }
     if (r.groups != null && (!Array.isArray(r.groups) || r.groups.some(g => !isIntArr(g?.couples)))) E.push(`${w}: neplatné skupiny.`);
+    else if (Array.isArray(r.groups) && r.groups.length && Array.isArray(r.couples)) {
+      const all = r.groups.flatMap(g => g.couples);
+      if (new Set(all).size !== all.length) E.push(`${w}: pár je ve více skupinách.`);
+      else if (all.some(c => !r.couples.includes(c))) E.push(`${w}: skupina obsahuje pár, který není v kole.`);
+      else if (all.length !== r.couples.length) E.push(`${w}: některý pár není v žádné skupině.`);
+    }
     if (r.qualified != null && !isIntArr(r.qualified)) E.push(`${w}: neplatný seznam postupujících.`);
+    else if (isIntArr(r.qualified) && new Set(r.qualified).size !== r.qualified.length) E.push(`${w}: duplicitní postupující.`);
     if (r.categoryId != null && !catIds.has(r.categoryId)) E.push(`${w}: odkazuje na neexistující kategorii.`);
     if (r.sheets != null && !Array.isArray(r.sheets)) { E.push(`${w}: neplatné lístky.`); return; }
     if (E.length > 200) return;
@@ -620,7 +688,16 @@ function validateExport(d) {
   });
   return E;
 }
-// Rozbor QR kódu porotce: AC2;c=<soutěž>;r=<kolo>;j=<porotce>;t=p|f;ts=<ms>;S=1.4.7;…
+// Varování (nebrání importu): neúplné lístky – export může obsahovat rozpracovanou ruční opravu.
+function exportWarnings(d) {
+  const W = [];
+  for (const r of d?.rounds || []) for (const sh of r.sheets || []) {
+    if (r.type === "prelim" && Array.isArray(sh?.marks) && sh.marks.length !== r.required) W.push(`${r.label || r.id} · ${sh.judge} · ${DANCES[sh.dance] || sh.dance}: ${sh.marks.length} křížků místo ${r.required}`);
+    if (r.type === "final" && sh?.placings && Object.keys(sh.placings).length !== r.couples.length) W.push(`${r.label || r.id} · ${sh.judge} · ${DANCES[sh.dance] || sh.dance}: neúplné pořadí`);
+  }
+  return W;
+}
+// Rozbor QR kódu porotce: AC2;c=<soutěž>;r=<kolo>;j=<porotce>;t=p|f;ts=<ms>;v=<tanec><revize>.…;S=1.4.7;…
 function parseQr(text) {
   const parts = String(text).trim().split(";");
   if (parts[0] !== "AC2") throw new Error("Není to QR kód z aplikace porotce.");
@@ -642,6 +719,7 @@ function qrToSheets(kv, r) {
     const nums = raw.map(x => { const n = Number(x); if (!Number.isInteger(n) || !r.couples.includes(n)) throw new Error(`Neplatné číslo páru „${x}“ v tanci ${DANCES[d]}.`); return n; });
     if (new Set(nums).size !== nums.length) throw new Error(`Opakované číslo páru v tanci ${DANCES[d]}.`);
     if (r.type === "final" && nums.length !== r.couples.length) throw new Error(`Ve finále (${DANCES[d]}) chybí umístění některých párů.`);
+    if (r.type === "prelim" && nums.length !== r.required) throw new Error(`V tanci ${DANCES[d]} je ${nums.length} křížků, kolo vyžaduje ${r.required}.`);
     return r.type === "prelim" ? { dance: d, marks: [...nums].sort((a, b) => a - b) } : { dance: d, placings: Object.fromEntries(nums.map((c, i) => [String(c), i + 1])) };
   });
 }
@@ -668,13 +746,38 @@ addEventListener("unhandledrejection", e => { showError(e.reason, "Neočekávan�
 addEventListener("error", e => { if (e.error) showError(e.error, "Neočekávaná chyba"); });
 // Akce s klíčem běží jen jednou naráz; tlačítko je po dobu zápisu zablokované.
 const locks = new Set();
-async function runAction(key, btn, fn, ctx = "Akce se nezdařila") {
-  if (locks.has(key)) return;
+// Bez spojení Firebase zápis neodmítne, jen čeká ve frontě – po 15 s se tlačítko uvolní s vysvětlením.
+// Akce, které nejsou bezpečně opakovatelné (stav kola, vyhodnocení, správce…), zůstanou zamčené, dokud zápis skutečně nedoběhne.
+// Opakovatelné akce (ruční úprava buňky, QR) se po timeoutu uvolní – zápis s absolutní hodnotou lze bez rizika zopakovat.
+const waiting = new Set();
+async function runAction(key, btn, fn, ctx = "Akce se nezdařila", timeoutMs = 15000, repeatable = false) {
+  if (locks.has(key)) { if (waiting.has(key)) toast("Předchozí zápis ještě čeká", "Akce se dokončí po obnovení spojení."); return; }
   locks.add(key); if (btn) btn.disabled = true;
-  try { return await fn(); }
+  let timer, deferred = false;
+  const release = () => { locks.delete(key); waiting.delete(key); if (btn && btn.isConnected) btn.disabled = false; };
+  const work = Promise.resolve().then(fn);
+  const slow = new Promise(res => { timer = setTimeout(() => res("__timeout__"), timeoutMs); });
+  try {
+    const r = await Promise.race([work, slow]);
+    if (r === "__timeout__") {
+      deferred = true;
+      toast("Zápis čeká na připojení", repeatable ? "Změna je ve frontě a uloží se po obnovení spojení." : "Změna je ve frontě a uloží se po obnovení spojení. Tlačítko zůstane zamčené, dokud se nedokončí.");
+      if (repeatable) { work.catch(e => showError(e, ctx)); release(); return; }
+      waiting.add(key);
+      work.then(() => { log(`Odložený zápis dokončen (${key})`); renderAll(); }, e => showError(e, ctx)).finally(release);
+      return;
+    }
+    return r;
+  }
   catch (e) { showError(e, ctx); }
-  finally { locks.delete(key); if (btn && btn.isConnected) btn.disabled = false; }
+  finally { clearTimeout(timer); if (!deferred) release(); }
 }
+// ----- auditní log (kolekce competitions/{soutěž}/log) -----
+const logRef = () => doc(collection(db, "competitions", comp, "log"));
+function auditEntry(action, extra = {}) {
+  return { at: serverTimestamp(), ts: Date.now(), who: "sčitatel", action, ...extra };
+}
+function audit(action, extra) { setDoc(logRef(), auditEntry(action, extra)).catch(() => {}); }
 // Zápis po dávkách (max. 450 operací), každá dávka je atomická.
 async function commitOps(ops) {
   for (let i = 0; i < ops.length; i += 450) {
@@ -724,7 +827,61 @@ let selectedCell = null, editMode = false;
 let unsubs = [];
 const knownRevs = new Map();
 const advanceDraft = new Map();
-const lastSk = new Map();          // poslední platný výsledek finále (aby tabulka při úpravě neposkakovala)
+const lastSk = new Map();
+// Potvrzení převzetí: sčitatel zapíše do kola, kterou revizi lístku přečetl (porotce pak vidí „Převzato sčitatelem“).
+// Fronta je klíčovaná „soutěž|kolo“ – po přepnutí soutěže se potvrzení zapíše do správné soutěže.
+// Neúspěšný zápis se vrátí do fronty a zkusí se znovu.
+const ackWatch = new Map(), ackSeen = new Map(), ackQueue = new Map(); let ackTimer = null;
+const heard = new Map(), completeRounds = new Set(), sheetCache = new Map();   // v4.0: přítomnost (čas příjmu), kompletní kola, lístky v paměti
+const ACK_AFTER_LOCK = 15 * 60000;   // zamčené kolo sledujeme ještě 15 min (QR, opožděné lístky)
+function ackWanted(r) {
+  if (r.status === "open") return true;
+  if (r.status !== "locked") return false;
+  const t = tsMs(r.lockedAt); return !t || Date.now() - t < ACK_AFTER_LOCK;
+}
+function syncAckWatchers() {
+  const c = comp;
+  const want = new Set([...rounds.values()].filter(ackWanted).map(r => r.id));
+  for (const [rid, u] of ackWatch) if (!want.has(rid)) { u(); ackWatch.delete(rid); }
+  for (const rid of want) if (!ackWatch.has(rid)) { let first = true; ackWatch.set(rid, onSnapshot(collection(db, "competitions", c, "rounds", rid, "sheets"), snap => {
+    if (c !== comp) return;
+    const r = rounds.get(rid); if (!r) return;
+    cacheSheets(rid, snap.docs);
+    for (const d of snap.docs) {
+      if (d.metadata?.hasPendingWrites) continue;
+      const x = d.data(), rev = x.rev; if (!Number.isInteger(rev)) continue;
+      const k = c + "|" + rid + "|" + d.id;
+      if (rev > (r.acks?.[d.id] || 0) && (ackSeen.get(k) || 0) < rev) { ackSeen.set(k, rev); queueAck(c, rid, d.id, rev); if (!first && x.writer === "porotce") markActive(x.judge); }
+    }
+    // všechny lístky kola dorazily → zvuk + krátká hláška
+    if (r.status === "open") {
+      const okIds = new Set(snap.docs.filter(d => { const x = d.data(); return !sheetError(r, { id: d.id, ...x }) && (r.type !== "prelim" || x.marks.length === r.required) && (r.type !== "final" || Object.keys(x.placings).length === r.couples.length); }).map(d => d.id));
+      const all = r.dances.every(d => r.judges.every(j => okIds.has(`${d}_${j}`))), ck = c + "|" + rid;
+      if (all && !completeRounds.has(ck)) { completeRounds.add(ck); if (!first) { chime(); toast("Všechny lístky dorazily", titleOf(r), "ok"); log(`Kompletní: ${titleOf(r)}`); } }
+    }
+    first = false;
+  }, () => {})); }
+}
+setInterval(() => { if (rounds.size) syncAckWatchers(); }, 60000);   // odpojit kola zamčená před víc než 15 min
+function queueAck(c, rid, key, rev, delay = 700) {
+  const qk = c + "|" + rid;
+  if (!ackQueue.has(qk)) ackQueue.set(qk, {});
+  const m = ackQueue.get(qk); m[key] = Math.max(m[key] || 0, rev);
+  clearTimeout(ackTimer); ackTimer = setTimeout(flushAcks, delay);
+}
+async function flushAcks() {
+  const q = [...ackQueue]; ackQueue.clear();
+  for (const [qk, m] of q) {
+    const [c, rid] = qk.split("|");
+    const upd = { ackAt: Date.now() };
+    for (const [k, v] of Object.entries(m)) upd[`acks.${k}`] = v;
+    try { await updateDoc(doc(db, "competitions", c, "rounds", rid), upd); }
+    catch (e) {
+      if (e?.code === "not-found") continue;                  // kolo smazané – nic k potvrzení
+      for (const [k, v] of Object.entries(m)) queueAck(c, rid, k, v, 5000);
+    }
+  }
+}          // poslední platný výsledek finále (aby tabulka při úpravě neposkakovala)
 const compRef = () => doc(db, "competitions", comp);
 const roundRef = id => doc(db, "competitions", comp, "rounds", id);
 const sheetRef = (rid, d, j) => doc(db, "competitions", comp, "rounds", rid, "sheets", `${d}_${j}`);
@@ -749,7 +906,8 @@ function showPage(p) {
 // ===================== LISTENERY =====================
 function startComp() {
   unsubs.forEach(u => u()); unsubs = []; unsubRun?.(); unsubEval?.(); unsubRun = unsubEval = null;
-  compDoc = {}; compExists = false; cats.clear(); rounds.clear(); presence.clear(); runSheets.clear(); evalSheets.clear(); knownRevs.clear();
+  compDoc = {}; compExists = false; cats.clear(); rounds.clear(); presence.clear(); runSheets.clear(); evalSheets.clear(); knownRevs.clear(); lastSk.clear(); advanceDraft.clear();
+  ackWatch.forEach(u => u()); ackWatch.clear(); ackSeen.clear(); heard.clear(); sheetCache.clear();
   selCat = selRound = evalRid = null; editMode = false;
   store.set("ac_comp", comp);
   const lerr = e => showError(e, "Načítání dat");
@@ -759,10 +917,11 @@ function startComp() {
   }, lerr));
   unsubs.push(onSnapshot(collection(db, "competitions", comp, "rounds"), { includeMetadataChanges: true }, snap => {
     setConn(snap.metadata.fromCache ? "wait" : "ok", snap.metadata.fromCache ? "Offline / připojování" : "Připojeno");
-    rounds = new Map(snap.docs.map(d => [d.id, { id: d.id, ...d.data() }])); renderAll();
+    rounds = new Map(snap.docs.map(d => [d.id, { id: d.id, ...d.data() }])); syncAckWatchers(); renderAll();
   }, err => { setConn("bad", "Chyba: " + err.code); log("CHYBA čtení kol: " + err.message); }));
   unsubs.push(onSnapshot(collection(db, "competitions", comp, "judges"), snap => {
     presence = new Map(snap.docs.map(d => [d.id, d.data({ serverTimestamps: "estimate" })]));
+    for (const [j, p] of presence) hearJudge(j, tsMs(p.lastSeen));
     if (page === "run" && selRound) renderRunMain();
   }, lerr));
   renderAll();
@@ -773,14 +932,14 @@ function watchRunSheets(rid) {
   unsubRun?.(); runSheets.clear();
   if (!rid) return;
   unsubRun = onSnapshot(collection(db, "competitions", comp, "rounds", rid, "sheets"), snap => {
-    runSheets = new Map(snap.docs.map(d => [d.id, d.data()]));
+    runSheets = new Map(snap.docs.map(d => [d.id, d.data()])); cacheSheets(rid, snap.docs);
     for (const ch of snap.docChanges()) {
       const s = ch.doc.data(), key = rid + ch.doc.id, prev = knownRevs.get(key);
       if (ch.type !== "removed" && prev !== s.rev) {
         knownRevs.set(key, s.rev);
         if (prev !== undefined || !snap.metadata.fromCache) {
-          const sent = tsMs(s.sentAt), delay = sent && s.clientAt ? ((sent - s.clientAt) / 1000).toFixed(1) + " s" : "?";
-          log(`Porotce ${s.judge} · ${DANCES[s.dance]} · v${s.rev}${s.source === "qr" ? " (QR)" : ""} · ${delay}`);
+          const sent = tsMs(s.sentAt);
+          log(`Porotce ${s.judge} · ${DANCES[s.dance]} · v${s.rev}${s.source === "qr" ? " (QR)" : s.writer === "scitatel" ? " (sčitatel)" : ""} · na serveru ${sent ? fmtTimeS(sent) : "…"}`);
         }
       }
     }
@@ -791,7 +950,7 @@ function watchEvalSheets(rid) {
   unsubEval?.(); evalSheets.clear();
   if (!rid) return;
   unsubEval = onSnapshot(collection(db, "competitions", comp, "rounds", rid, "sheets"), snap => {
-    evalSheets = new Map(snap.docs.map(d => [d.id, d.data()]));
+    evalSheets = new Map(snap.docs.map(d => [d.id, d.data()])); cacheSheets(rid, snap.docs);
     if (page === "eval") renderEvalMain();
   }, e => showError(e, "Načítání lístků"));
 }
@@ -800,22 +959,27 @@ function renderAll() {
   $("compTitle").textContent = `${compDoc.name || comp} · sčitatel`;
   const waiting = [...rounds.values()].filter(r => r.status === "locked").length;
   $("evalCnt").hidden = !waiting; $("evalCnt").textContent = waiting;
-  if (page === "run") { renderSide(); renderRunMain(); }
+  if (page === "run") { renderSide(); renderRunMain(); renderRoster(); }
   else { renderEvalList(); renderEvalMain(); }
 }
 
 // ===================== POSTRANNÍ PANEL =====================
 function renderSide() {
   if (document.activeElement !== $("compName")) $("compName").value = compDoc.name || "";
+  const nn = Object.keys(compDoc.names || {}).length;
+  $("namesCnt").textContent = nn || "";
+  $("namesInfo").innerHTML = nn ? `Nahráno <b>${nn}</b> jmen. Zobrazují se v pravém sloupci, ve vyhodnocení a ve výsledkové listině.` : "Volitelné: textový soubor, na každém řádku <b>číslo - jméno</b> (např. 2 - Martin Hejhal).";
+  $("namesDelBtn").hidden = !nn;
   $("compIdShow").textContent = comp;
   const list = [...rounds.values()];
   const start = compDoc.startedAt, end = compDoc.finishedAt;
   const cst = compExists ? (end ? "done" : start ? "live" : "ready") : null;
   $("compStateRow").innerHTML = !compExists ? "" : `<span class="badge ${cst === "live" ? "open" : cst === "done" ? "done" : "ready"}">${{ live: "probíhá", done: "ukončená", ready: "připravená" }[cst]}</span>
-    ${cst === "ready" ? `<button class="btn sm" data-cstate="start">Zahájit soutěž</button>` : cst === "live" ? `<button class="btn sm" data-cstate="finish">Ukončit soutěž</button>` : `<button class="btn sm" data-cstate="reopen">Znovu otevřít</button>`}`;
-  $("compTimes").innerHTML = compExists
+    ${cst === "ready" ? `<button class="btn sm" data-cstate="start">Zahájit soutěž</button>` : cst === "live" ? `<button class="btn sm" data-cstate="finish">Ukončit soutěž</button>` : `<button class="btn sm" data-cstate="reopen">Znovu otevřít</button>`}
+    ${compDoc.test ? `<button class="btn sm" data-testlinks="1">Odkazy pro porotce</button><button class="btn sm danger" data-deltest="1">Smazat zkoušku</button>` : ""}`;
+  $("compTimes").innerHTML = (compDoc.importPending ? `<div style="color:#ff8a8d;margin-bottom:4px"><b>Import této soutěže nebyl dokončen.</b> Spusťte ho znovu se stejným souborem.</div>` : "") + (memCache ? `<div style="color:#ffb84d;margin-bottom:4px">Prohlížeč neukládá data offline – při výpadku nezavírejte stránku.</div>` : "") + (compExists
     ? `Začátek: ${start ? fmtDT(start) : "zatím nezačala"}${end ? ` · Konec: ${fmtDT(end)}` : ""} · ${list.filter(r => r.status === "evaluated").length}/${list.length} kol vyhodnoceno`
-    : `<span style="color:var(--orange)">Soutěž s tímto ID zatím neexistuje.</span> Založte ji tlačítkem „Nová soutěž…“ nebo ji načtěte importem.`;
+    : `<span style="color:var(--orange)">Soutěž s tímto ID zatím neexistuje.</span> Založte ji tlačítkem „Nová soutěž…“ nebo ji načtěte importem.`);
 
   // kategorie + jejich kola
   const cl = [...cats.values()].sort((a, b) => (a.order ?? a.created ?? 0) - (b.order ?? b.created ?? 0));
@@ -851,9 +1015,14 @@ function selectRound(rid) {
 }
 
 $("compName").addEventListener("change", () => saveComp({ name: $("compName").value.trim() }));
-$("compStateRow").addEventListener("click", e => { const b = e.target.closest("[data-cstate]"); if (b) runAction("cstate", b, () => setCompState(comp, b.dataset.cstate), "Změna stavu soutěže"); });
+$("compStateRow").addEventListener("click", e => {
+  if (e.target.closest("[data-testlinks]")) { showTestLinks(); return; }
+  const dt = e.target.closest("[data-deltest]"); if (dt) { deleteTestComp(dt); return; }
+  const b = e.target.closest("[data-cstate]"); if (b) runAction("cstate", b, () => setCompState(comp, b.dataset.cstate), "Změna stavu soutěže");
+});
 async function setCompState(id, a, ask = true) {
   const ref = doc(db, "competitions", id);
+  setDoc(doc(collection(db, "competitions", id, "log")), { at: serverTimestamp(), ts: Date.now(), who: "sčitatel", action: { start: "zahájení soutěže", finish: "ukončení soutěže", reopen: "znovuotevření soutěže" }[a] || a }).catch(() => {});
   if (a === "start") await updateDoc(ref, { startedAt: Date.now(), finishedAt: null });
   if (a === "finish") { if (ask && !await confirmBox("Ukončit soutěž? Porotcům zmizí z nabídky.", "Ukončit")) return false; await updateDoc(ref, { finishedAt: Date.now() }); }
   if (a === "reopen") await updateDoc(ref, { finishedAt: null });
@@ -870,7 +1039,7 @@ async function deleteCompData(id) {
     for (const x of sh.docs) ops.push({ del: true, ref: doc(db, "competitions", id, "rounds", r.id, "sheets", x.id) });
     ops.push({ del: true, ref: doc(db, "competitions", id, "rounds", r.id) });
   }
-  for (const sub of ["categories", "judges"]) {
+  for (const sub of ["categories", "judges", "log"]) {
     const d = await getDocs(collection(db, "competitions", id, sub));
     for (const x of d.docs) ops.push({ del: true, ref: doc(db, "competitions", id, sub, x.id) });
   }
@@ -882,6 +1051,7 @@ async function deleteCompData(id) {
 let mgr = null;
 const mgrState = c => c.finishedAt ? "done" : c.startedAt ? "live" : "ready";
 async function openManager() {
+  $("modalRoot").innerHTML = "";
   mgr = { list: [], confirm: null, msg: null, loading: true };
   renderManager(); await refreshManager();
 }
@@ -907,20 +1077,26 @@ function renderManager() {
       <button class="btn sm" data-m="open" data-id="${esc(c.id)}" ${c.id === comp ? "disabled" : ""}>${c.id === comp ? "Otevřená" : "Přepnout"}</button>
       <button class="btn sm danger" data-m="del" data-id="${esc(c.id)}">Smazat</button></div>`).join("") : `<div class="hint">Žádné soutěže.</div>`;
   const orphan = typeof mgr.confirm === "string" && mgr.confirm.startsWith("id:") ? mgr.confirm.slice(3) : null;
-  root.innerHTML = `<div class="backdrop"><div class="modal wide"><div class="mh">Správce soutěží</div><div class="mb">
+  // Okno se vytvoří jen jednou; při změnách se přepíše pouze jeho obsah (bez znovuspuštění animací = nebliká).
+  if (!root.querySelector("#mgrBody")) {
+    root.innerHTML = `<div class="backdrop"><div class="modal wide"><div class="mh">Správce soutěží</div><div class="mb" id="mgrBody"></div>
+      <div class="mf"><button class="btn primary" data-m="close">Zavřít</button></div></div></div>`;
+    const box = root.querySelector(".backdrop");
+    box.onmousedown = e => { if (e.target === box && !locks.has("manager")) closeManager(); };
+    box.querySelector(".modal").onclick = e => {
+      const b = e.target.closest("[data-m]"); if (!b) return;
+      runAction("manager", b, () => managerAction(b.dataset.m, b.dataset.id), "Správce soutěží");
+    };
+  }
+  const body = root.querySelector("#mgrBody"), scroll = body.scrollTop;
+  body.innerHTML = `
     <div class="hint" style="margin-top:0">Porotcům se nabízejí soutěže, které nejsou ukončené a mají je v porotě. Probíhající soutěž je nutné před smazáním ukončit.</div>
     ${mgr.msg ? `<div class="${mgr.msg.bad ? "warn" : "okbox"}" style="${mgr.msg.bad ? "border-color:rgba(255,90,95,.5);background:rgba(255,90,95,.1)" : ""}">${mgr.msg.text}</div>` : ""}
     <div style="margin-top:10px">${rows}</div>
     <div class="sec-t">Zbytková data</div>
     <div class="hint" style="margin-top:0">Starší testovací data bez záznamu soutěže (např. ID „test“ z první verze) smažete podle ID.</div>
-    ${orphan ? confirmRow("id:" + orphan, orphan) : `<div class="row" style="margin-top:6px"><input class="in" id="mDelId" placeholder="ID soutěže" value="${esc(keepId)}"><button class="btn sm danger" data-m="delid">Smazat data</button></div>`}
-    </div><div class="mf"><button class="btn primary" data-m="close">Zavřít</button></div></div></div>`;
-  const box = root.querySelector(".backdrop");
-  box.onmousedown = e => { if (e.target === box && !locks.has("manager")) closeManager(); };
-  box.querySelector(".modal").onclick = e => {
-    const b = e.target.closest("[data-m]"); if (!b) return;
-    runAction("manager", b, () => managerAction(b.dataset.m, b.dataset.id), "Správce soutěží");
-  };
+    ${orphan ? confirmRow("id:" + orphan, orphan) : `<div class="row" style="margin-top:6px"><input class="in" id="mDelId" placeholder="ID soutěže" value="${esc(keepId)}"><button class="btn sm danger" data-m="delid">Smazat data</button></div>`}`;
+  body.scrollTop = scroll;
 }
 function closeManager() { mgr = null; $("modalRoot").innerHTML = ""; }
 async function managerAction(m, id) {
@@ -1017,16 +1193,22 @@ $("newCompBtn").onclick = () => modal("Nová soutěž",
   } }]);
 
 // ----- export / import -----
-$("exportBtn").onclick = e => runAction("export", e.currentTarget, async () => {
+// auto = automatická záloha: bez logu a s lístky z paměti (šetří čtení z databáze)
+async function buildExport(auto = false) {
   const data = { format: "artimo-counter/soutez", version: 2, exportedAt: new Date().toISOString(),
     competition: { id: comp, ...plain(compDoc) }, categories: [], rounds: [] };
   for (const c of cats.values()) data.categories.push(plain(c));
+  if (!auto) { const lg = await getDocs(collection(db, "competitions", comp, "log")); data.log = lg.docs.map(d => ({ id: d.id, ...plain(d.data()) })); }
   for (const r of [...rounds.values()].sort(byCreated)) {
-    const sh = await getDocs(collection(db, "competitions", comp, "rounds", r.id, "sheets"));
-    data.rounds.push({ ...plain(r), sheets: sh.docs.map(d => ({ id: d.id, ...plain(d.data()) })) });
+    const list = auto ? await sheetsOf(r.id) : (await getDocs(collection(db, "competitions", comp, "rounds", r.id, "sheets"))).docs.map(d => ({ id: d.id, ...d.data() }));
+    data.rounds.push({ ...plain(r), sheets: list.map(x => plain(x)) });
   }
-  const t = new Date(), stamp = `${t.getFullYear()}${String(t.getMonth() + 1).padStart(2, "0")}${String(t.getDate()).padStart(2, "0")}-${String(t.getHours()).padStart(2, "0")}${String(t.getMinutes()).padStart(2, "0")}`;
-  download(`soutez_${comp}_${stamp}.json`, data);
+  return data;
+}
+const stampNow = (t = new Date()) => `${t.getFullYear()}${String(t.getMonth() + 1).padStart(2, "0")}${String(t.getDate()).padStart(2, "0")}-${String(t.getHours()).padStart(2, "0")}${String(t.getMinutes()).padStart(2, "0")}`;
+$("exportBtn").onclick = e => runAction("export", e.currentTarget, async () => {
+  const data = await buildExport();
+  download(`soutez_${comp}_${stampNow()}.json`, data);
   log(`Export soutěže ${comp}: ${data.categories.length} kategorií, ${data.rounds.length} kol`);
 }, "Export se nezdařil");
 $("importBtn").onclick = () => $("importFile").click();
@@ -1048,27 +1230,33 @@ async function importCompetition(f) {
   const exRounds = await getDocs(collection(db, "competitions", id, "rounds"));
   const exCats = await getDocs(collection(db, "competitions", id, "categories"));
   const hasData = existing.exists() || exRounds.docs.length || exCats.docs.length;
+  const warns = exportWarnings(data);
+  if (data.log != null && !Array.isArray(data.log)) { await alertBox("Soubor obsahuje poškozený log změn, nic nebylo načteno."); return; }
   const ok = await confirmBox(`Načíst soutěž <b>${esc(data.competition.name || id)}</b> (ID ${esc(id)}): ${data.categories.length} kategorií, ${data.rounds.length} kol.` +
+    (warns.length ? `<br><br><b style="color:#ffb84d">Upozornění – neúplné lístky (${warns.length}):</b><br>• ${warns.slice(0, 8).map(esc).join("<br>• ")}${warns.length > 8 ? "<br>…" : ""}` : "") +
     (hasData ? `<br><br><b style="color:#ff8a8d">Soutěž s tímto ID už v databázi je. Její data budou nahrazena obsahem souboru.</b>` : ""), "Načíst", hasData ? "danger" : "primary");
   if (!ok) return;
   // nejdřív zápisy, potom mazání starých záznamů, které v souboru nejsou
   const ops = [], keep = new Set();
   const put = (ref, data) => { ops.push({ ref, data }); keep.add(ref.path); };
   const { id: _, ...compData } = data.competition;
-  put(doc(db, "competitions", id), compData);
+  put(doc(db, "competitions", id), { ...compData, importPending: true });
   for (const c of data.categories) { const { id: cid, ...cd } = c; put(doc(db, "competitions", id, "categories", cid), cd); }
   for (const r of data.rounds) {
     const { id: rid, sheets, ...rd } = r;
     put(doc(db, "competitions", id, "rounds", rid), rd);
-    for (const sh of sheets || []) { const { id: sid, ...sd } = sh; put(doc(db, "competitions", id, "rounds", rid, "sheets", sid || `${sd.dance}_${sd.judge}`), sd); }
+    for (const sh of sheets || []) { const { id: sid, ...sd } = sh; put(doc(db, "competitions", id, "rounds", rid, "sheets", sid || `${sd.dance}_${sd.judge}`), { ...sd, writer: "scitatel" }); }
   }
+  for (const e of data.log || []) { if (e && typeof e === "object") { const { id: lid, ...ld } = e; put(lid ? doc(db, "competitions", id, "log", String(lid)) : doc(collection(db, "competitions", id, "log")), ld); } }
+  put(doc(collection(db, "competitions", id, "log")), { at: serverTimestamp(), ts: Date.now(), who: "sčitatel", action: "import soutěže", rounds: data.rounds.length });
   for (const r of exRounds.docs) {
     const sh = await getDocs(collection(db, "competitions", id, "rounds", r.id, "sheets"));
     for (const x of sh.docs) { const ref = doc(db, "competitions", id, "rounds", r.id, "sheets", x.id); if (!keep.has(ref.path)) ops.push({ del: true, ref }); }
     const ref = doc(db, "competitions", id, "rounds", r.id); if (!keep.has(ref.path)) ops.push({ del: true, ref });
   }
   for (const c of exCats.docs) { const ref = doc(db, "competitions", id, "categories", c.id); if (!keep.has(ref.path)) ops.push({ del: true, ref }); }
-  await commitOps(ops);
+  try { await commitOps(ops); await updateDoc(doc(db, "competitions", id), { importPending: false }); }
+  catch (e) { await alertBox(`Import nebyl dokončen (${esc(errText(e))}).<br>Spusťte ho znovu se stejným souborem – opakování je bezpečné a import dokončí.`); return; }
   comp = id; startComp(); log(`Import soutěže ${id} dokončen (${ops.length} operací)`);
   toast("Import dokončen", `${data.categories.length} kategorií, ${data.rounds.length} kol`, "ok");
 }
@@ -1102,6 +1290,7 @@ const segVal = (root, name) => root.querySelector(`[data-seg="${name}"] button.o
 
 $("addCatBtn").onclick = () => editCategory(null);
 function editCategory(cid) {
+  const newCatId = nextId();
   if (!compExists) { alertBox("Nejdřív založte soutěž (Nová soutěž…) nebo ji načtěte importem."); return; }
   const c = cid ? cats.get(cid) : { name: "", dances: LAT, couples: [], key: [], groups: 1, judges: [] };
   const hasRounds = cid && roundsOfCat(cid).length;
@@ -1125,7 +1314,7 @@ function editCategory(cid) {
     for (let i = 1; i < key.length; i++) if (key[i] >= key[i - 1]) throw new Error("Postupový klíč musí klesat (např. 24, 12, 6).");
     if (key.length && key[0] >= couples.length) throw new Error(`První číslo klíče (${key[0]}) musí být menší než počet párů (${couples.length}).`);
     if (!judges.length) throw new Error("Vyberte porotce, kteří kategorii hodnotí.");
-    const id = cid || nextId();
+    const id = cid || newCatId;
     await setDoc(doc(db, "competitions", comp, "categories", id), { name, dances, couples, key, groups, judges, created: c.created || Date.now(), order: c.order ?? cats.size });
     selCat = id; selRound = null;
   } });
@@ -1163,6 +1352,7 @@ function planNext(cat, rs = roundsOfCat(cat.id)) {
 function startRoundModal(cat) {
   const p = planNext(cat);
   if (p.blocked) { alertBox(p.blocked); return; }
+  const newId = nextId();            // stejné ID i při opakovaném kliknutí → nikdy dvě kola
   const body = `
     <div class="row"><div class="grow"><label class="lbl" style="margin-top:0">Název kola</label><input class="in" id="rLabel" value="${esc(p.label)}"></div>
       <div><label class="lbl" style="margin-top:0">Typ</label>${segHtml("type", [["prelim", "Postupové"], ["final", "Finále"]], p.type)}</div></div>
@@ -1191,10 +1381,11 @@ function startRoundModal(cat) {
     if (type === "prelim" && (!required || required >= couples.length)) throw new Error("Počet postupujících musí být menší než počet párů.");
     if (type === "final" && couples.length > MAX_FINAL) throw new Error(`Finále může mít nejvýše ${MAX_FINAL} párů.`);
     if (judges.some(j => !(j in (compDoc.jury || {})))) throw new Error("Vybraný porotce už v porotě soutěže není.");
-    const id = nextId();
+    const id = newId;
     await setDoc(roundRef(id), { categoryId: cat.id, category: cat.name, label, keyIndex: p.keyIndex, type, dances, couples, judges, required,
       groups: splitGroups(couples, g), status: "open", created: Date.now() });
     if (!compDoc.startedAt) saveComp({ startedAt: Date.now() });
+    audit("spuštění kola", { round: id, category: cat.name, label, couples: couples.length });
     log(`Spuštěno kolo ${cat.name} · ${label}`);
     showPage("run"); selectRound(id);
   } }], root => {
@@ -1261,11 +1452,10 @@ function roundDetailHtml(r) {
 
     <div class="sec-t">Porota · připraveno ${readyCount} / ${r.judges.length}</div>
     <div class="jcards">${r.judges.map(j => {
-      const p = presence.get(j), seen = tsMs(p?.lastSeen);
-      const online = seen && now - seen < 90000, ready = p?.readyFor === r.id;
+      const p = presence.get(j), ps = presenceState(j), ready = p?.readyFor === r.id;
       const n = r.dances.filter(d => runSheets.has(`${d}_${j}`)).length;
       return `<div class="jcard ${ready ? "ready" : ""}"><span class="jl">${j}</span><div class="info"><b>${esc(jury[j] || "Porotce " + j)}</b>
-        <span class="row" style="gap:5px"><span class="dot ${online ? "ok" : seen ? "bad" : ""}"></span>${online ? "přihlášen" : seen ? "offline " + fmtTime(seen) : "nepřihlášen"}</span>
+        <span class="row" style="gap:5px"><span class="dot ${ps.cls}"></span>${ps.text}</span>
         ${ready ? "připraven" : "nepotvrdil"} · ${n}/${r.dances.length}</div></div>`;
     }).join("")}</div>
 
@@ -1283,13 +1473,31 @@ function roundDetailHtml(r) {
 }
 function sheetText(r, s) {
   if (!s) return `<span class="faint">Lístek zatím nedorazil.</span>`;
-  const head = `<b>Porotce ${s.judge} · ${DANCES[s.dance]}</b> <span class="faint">· verze ${s.rev} · ${fmtTimeS(tsMs(s.sentAt))}${s.source === "qr" ? " · QR" : ""}${s.edited ? " · upraveno sčitatelem" : ""}</span><br>`;
+  const hist = `<button class="btn sm" style="float:right" data-hist="${esc(r.id)}|${esc(s.dance)}|${esc(s.judge)}">Historie změn</button>`;
+  const ack = (r.acks?.[`${s.dance}_${s.judge}`] || 0) >= (s.rev || 0) ? " · převzato" : "";
+  const head = `${hist}<b>Porotce ${s.judge} · ${DANCES[s.dance]}</b> <span class="faint">· verze ${s.rev} · ${fmtTimeS(tsMs(s.sentAt))}${s.source === "qr" ? " · QR" : ""}${s.edited ? " · upraveno sčitatelem" : ""}${ack}</span><br>`;
   const err = sheetError(r, s);
   if (r.type === "prelim") return head + `Křížky (${(s.marks || []).length}): <b>${esc((s.marks || []).join(", "))}</b>${err ? ` <span style="color:#ff8a8d">– ${err}</span>` : ""}`;
   return head + Object.entries(s.placings || {}).sort((a, b) => a[1] - b[1]).map(([c, p]) => `${esc(p)}. <b>${esc(c)}</b>`).join(" &nbsp;·&nbsp; ") + (err ? ` <span style="color:#ff8a8d">– ${err}</span>` : "");
 }
 
+async function showHistory(rid, d, j) {
+  let docs;
+  try { docs = (await getDocs(query(collection(db, "competitions", comp, "log"), where("round", "==", rid)))).docs.map(x => x.data()); }
+  catch (e) { showError(e, "Historie se nenačetla"); return; }
+  const r = rounds.get(rid);
+  const items = docs.filter(x => (x.dance === d && x.judge === j) || (x.judge === j && Array.isArray(x.dances) && x.dances.includes(d)) || (!x.judge && !x.dance))
+    .sort((a, b) => (a.ts || 0) - (b.ts || 0));
+  const val = v => v == null ? "–" : Array.isArray(v) ? v.join(", ") : Object.entries(v).sort((a, b) => a[1] - b[1]).map(([c, p]) => `${p}.→${c}`).join(" ");
+  modal(`Historie · porotce ${esc(j)} · ${DANCES[d] || d}`, items.length ? `<div style="max-height:60vh;overflow:auto">${items.map(x => `<div style="padding:7px 0;border-top:1px solid var(--stroke);font-size:12px;line-height:1.5">
+      <b>${fmtTimeS(tsMs(x.at) || x.ts)}</b> · ${esc(x.who || "")} · ${esc(x.action || "")}${x.dance || x.judge ? "" : " (celé kolo)"}
+      ${x.marks || x.placings ? `<br><span class="muted">${esc(val(x.marks || x.placings))}</span>` : ""}
+      ${x.before !== undefined ? `<br><span class="muted">před: ${esc(val(x.before))}<br>po: ${esc(val(x.after))}</span>` : ""}</div>`).join("")}</div>`
+    : `<div class="hint" style="margin-top:0">K tomuto lístku zatím nejsou záznamy. Historie se zapisuje od verze 3.2.</div>`, [{ label: "Zavřít", cls: "primary", value: true }]);
+}
 $("runMain").addEventListener("click", e => {
+  const hb = e.target.closest("[data-hist]");
+  if (hb) { const [rid, d, j] = hb.dataset.hist.split("|"); showHistory(rid, d, j); return; }
   const cell = e.target.closest("[data-key]");
   if (cell) { selectedCell = cell.dataset.key; renderRunMain(); return; }
   const open = e.target.closest("[data-open]"); if (open) { selectRound(open.dataset.open); return; }
@@ -1302,12 +1510,14 @@ $("runMain").addEventListener("click", e => {
     if (act === "toggleLock") {
       const next = r.status === "open" ? "locked" : "open";
       await updateDoc(roundRef(r.id), { status: next, ...(next === "locked" ? { lockedAt: Date.now() } : {}) });
+      audit(next === "locked" ? "uzavření kola" : "otevření kola", { round: r.id });
       log(`${titleOf(r)}: ${statusText(next)}`);
     }
     if (act === "toEval") {
-      const total = r.judges.length * r.dances.length, done = r.judges.reduce((n, j) => n + r.dances.filter(d => runSheets.has(`${d}_${j}`)).length, 0);
-      if (done < total && !await confirmBox(`Chybí ${total - done} z ${total} lístků. Kolo se uzavře a chybějící hodnocení můžete doplnit ručně ve Vyhodnocení.`, "Uzavřít a vyhodnotit")) return;
-      if (r.status === "open") await updateDoc(roundRef(r.id), { status: "locked", lockedAt: Date.now() });
+      const total = r.judges.length * r.dances.length;
+      const valid = r.judges.reduce((n, j) => n + r.dances.filter(d => { const sh = runSheets.get(`${d}_${j}`); return sh && !sheetError(r, sh) && (r.type !== "prelim" || sh.marks.length === r.required) && (r.type !== "final" || Object.keys(sh.placings).length === r.couples.length); }).length, 0);
+      if (valid < total && !await confirmBox(`Platných je ${valid} z ${total} lístků (chybějící nebo neúplné: ${total - valid}). Kolo se uzavře a hodnocení můžete doplnit ručně ve Vyhodnocení.`, "Uzavřít a vyhodnotit")) return;
+      if (r.status === "open") { await updateDoc(roundRef(r.id), { status: "locked", lockedAt: Date.now() }); audit("uzavření kola", { round: r.id }); }
       openEval(r.id);
     }
   }, "Změna kola se nezdařila");
@@ -1326,7 +1536,7 @@ drop.addEventListener("drop", e => {
 });
 // zabránit, aby prohlížeč obrázek puštěný mimo zónu otevřel místo aplikace
 ["dragover", "drop"].forEach(ev => window.addEventListener(ev, e => { if (!drop.contains(e.target)) e.preventDefault(); }));
-function processQrFiles(files) { return runAction("qr", $("qrUploadBtn"), () => processQrFilesInner(files), "Zpracování QR"); }
+function processQrFiles(files) { return runAction("qr", $("qrUploadBtn"), () => processQrFilesInner(files), "Zpracování QR", 15000, true); }
 async function processQrFilesInner(files) {
   if (!files.length) return;
   const logEl = $("qrLog");
@@ -1374,19 +1584,31 @@ async function applyQrPayload(text) {
   const list = qrToSheets(kv, r);               // celé QR se zkontroluje dřív, než se cokoli zapíše
   const existing = await getDocs(collection(db, "competitions", comp, "rounds", r.id, "sheets"));
   const ex = new Map(existing.docs.map(d => [d.id, d.data()]));
-  const ops = []; let same = 0;
+  const ops = []; let same = 0; const older = [], manual = [];
+  const qrTs = Number(kv.ts) || 0;
+  // v=S2.C1 – revize lístku, ze které porotce vycházel (od v3.3). Starší QR bez „v“ se porovnají podle času.
+  const baseRev = new Map((kv.v || "").split(".").filter(Boolean).map(x => [x[0], Number(x.slice(1))]));
   for (const it of list) {
     const prev = ex.get(`${it.dance}_${kv.j}`);
     const isSame = prev && (r.type === "prelim"
       ? JSON.stringify([...(prev.marks || [])].sort((a, b) => a - b)) === JSON.stringify(it.marks)
       : JSON.stringify(Object.entries(prev.placings || {}).sort()) === JSON.stringify(Object.entries(it.placings).sort()));
     if (isSame) { same++; continue; }
-    ops.push({ ref: sheetRef(r.id, it.dance, kv.j), data: { judge: kv.j, dance: it.dance, type: r.type, uid: null, clientAt: Number(kv.ts) || Date.now(),
-      sentAt: serverTimestamp(), source: "qr", rev: (prev?.rev || 0) + 1, ...(r.type === "prelim" ? { marks: it.marks } : { placings: it.placings }) } });
+    // ochrana: QR nesmí přepsat ruční opravu sčitatele ani lístek, který porotce odeslal později
+    if (prev && (prev.edited || prev.writer === "scitatel" && prev.source === "manual")) { manual.push(DANCES[it.dance]); continue; }
+    if (prev && kv.v != null) { const br = baseRev.get(it.dance); if (Number.isInteger(prev.rev) && Number.isInteger(br) && prev.rev > br) { older.push(DANCES[it.dance]); continue; } }
+    else if (prev && Number.isFinite(prev.clientAt) && qrTs && qrTs < prev.clientAt) { older.push(DANCES[it.dance]); continue; }
+    ops.push({ ref: sheetRef(r.id, it.dance, kv.j), data: { judge: kv.j, dance: it.dance, type: r.type, uid: null, clientAt: qrTs || Date.now(),
+      sentAt: serverTimestamp(), source: "qr", writer: "scitatel", rev: increment(1), ...(r.type === "prelim" ? { marks: it.marks } : { placings: it.placings }) } });
   }
+  if (ops.length) ops.push({ ref: logRef(), data: auditEntry("QR import", { round: r.id, judge: kv.j, dances: list.map(x => x.dance), written: ops.length, qrTs }) });
   await commitOps(ops);
-  log(`QR: porotce ${kv.j} · ${titleOf(r)} · zapsáno ${ops.length}, beze změny ${same}`);
-  return `<b>${kv.j}</b> · ${esc(titleOf(r))} – zapsáno ${ops.length}${same ? `, beze změny ${same}` : ""} ✓`;
+  const written = Math.max(0, ops.length - 1);
+  log(`QR: porotce ${kv.j} · ${titleOf(r)} · zapsáno ${written}, beze změny ${same}, starší ${older.length}, ručně opravené ${manual.length}`);
+  let msg = `<b>${kv.j}</b> · ${esc(titleOf(r))} – zapsáno ${written}${same ? `, beze změny ${same}` : ""}${written ? " ✓" : ""}`;
+  if (older.length) msg += `<br><span style="color:#ffb84d">Nepřepsáno (na serveru je novější verze lístku): ${older.join(", ")}</span>`;
+  if (manual.length) msg += `<br><span style="color:#ffb84d">Nepřepsáno (lístek ručně opravil sčitatel): ${manual.join(", ")}</span>`;
+  return msg;
 }
 
 // ===================== VYHODNOCENÍ =====================
@@ -1413,7 +1635,7 @@ function evalNote(html) {
   box.prepend(el); setTimeout(() => el.remove(), 8000);
 }
 // Při psaní do buňky (ruční úpravy) se tabulka nepřekresluje – dorovná se, až uživatel buňky opustí.
-let evalPending = false;
+let evalPending = false, advTimer = null;
 const typingInEval = () => { const a = document.activeElement; return !!a && a.classList?.contains("mk-in") && $("evalMain").contains(a); };
 $("evalMain").addEventListener("focusout", () => setTimeout(() => { if (evalPending && !typingInEval()) renderEvalMain(); }, 0));
 function renderEvalMain(force) {
@@ -1473,7 +1695,7 @@ function prelimView(r) {
   const cut = prelimCut(r, totals, n);
   const qualified = new Set(cut.tie ? cut.sorted.slice(0, cut.down) : cut.sorted.slice(0, cut.n));
   const tieSet = new Set(cut.tie ? cut.sorted.filter(c => totals[c] === cut.value) : []);
-  const evaluated = r.status === "evaluated";
+  const evaluated = r.status === "evaluated" && Array.isArray(r.qualified);
   const groupOf = {}; (r.groups || []).forEach(g => g.couples.forEach(c => groupOf[c] = g.n));
   const multiG = (r.groups || []).length > 1;
   const edited = new Set([...evalSheets.values()].filter(s => s.edited || s.source === "manual").map(s => `${s.dance}_${s.judge}`));
@@ -1537,10 +1759,10 @@ function finalView(r) {
     const pc = p => p === 1 ? "p1" : p > 1 && p <= 2.5 ? "p2" : p > 2 && p <= 3.5 ? "p3" : "";
     html += `<div class="row no-print" style="margin-top:14px">${evaluated ? `<div class="okbox" style="margin:0;flex:1">✓ Výsledky potvrzeny ${fmtDT(r.evaluatedAt)}</div>` : `<button class="btn primary" data-act="confirmFinal" ${stale ? "disabled" : ""}>Potvrdit výsledky finále</button>${stale ? `<span class="muted">Zobrazen poslední platný výsledek – opravte chyby vlevo.</span>` : ""}`}</div>
       <div class="${stale ? "stale" : ""}"><div class="sec-t">Výsledky</div>
-      <div class="podium">${order.map(o => `<div class="pod ${pc(o.p)}"><div class="pl">${o.l} místo</div><div class="cn">${o.c}</div></div>`).join("")}</div>
+      <div class="podium">${order.map(o => `<div class="pod ${pc(o.p)}"><div class="pl">${o.l} místo</div><div class="cn">${o.c}</div>${nm(o.c) ? `<div class="cname" style="margin:2px auto 0">${esc(nm(o.c))}</div>` : ""}</div>`).join("")}</div>
       <div class="sec-t">Celkové pořadí</div>
       <table class="tbl sk"><tr><th>Pár</th>${r.dances.map(d => `<th>${DANCES[d]}</th>`).join("")}<th>Součet</th><th>Rozhodlo</th><th>Místo</th></tr>
-      ${order.map(o => `<tr><td class="cpl">${o.c}</td>${r.dances.map((d, t) => `<td>${fmtNum(sk.byDance[t][o.i])}</td>`).join("")}<td><b>${fmtNum(sk.sums[o.i])}</b></td>
+      ${order.map(o => `<tr><td class="cpl">${o.c}${nm(o.c) ? `<span class="cname">${esc(nm(o.c))}</span>` : ""}</td>${r.dances.map((d, t) => `<td>${fmtNum(sk.byDance[t][o.i])}</td>`).join("")}<td><b>${fmtNum(sk.sums[o.i])}</b></td>
         <td class="mk">${{ "9": "", "10": "pravidlo 10", "11": "pravidlo 11" }[sk.rule[o.i]] ?? ""}</td><td class="place">${o.l}</td></tr>`).join("")}</table>
       <div class="legend">Pravidlo 9: nižší součet umístění. Pravidlo 10: při shodě rozhoduje počet tanců s umístěním na hledané místo nebo lepší, pak jejich součet. Pravidlo 11: spojené známky ze všech tanců.</div></div>`;
   }
@@ -1576,10 +1798,20 @@ async function writeEdited(r, d, j, patch) {
   const base = prev || { judge: j, dance: d, type: r.type, uid: null, clientAt: Date.now(), sentAt: serverTimestamp(), source: "manual", rev: 0 };
   if (r.type === "prelim" && !Array.isArray(base.marks)) base.marks = [];
   if (r.type === "final" && (!base.placings || typeof base.placings !== "object")) base.placings = {};
-  const data = { ...base, ...patch, edited: true, editedAt: Date.now(), rev: (base.rev || 0) + 1 };
+  const local = { ...base, ...patch, edited: true, editedAt: Date.now(), writer: "scitatel", rev: (base.rev || 0) + 1 };
   // lokálně hned, aby další rychlá úprava navazovala na tuto (a nepřepsala ji starším stavem)
-  if (evalRid === r.id) evalSheets.set(`${d}_${j}`, data);
-  await setDoc(sheetRef(r.id, d, j), data);
+  if (evalRid === r.id) evalSheets.set(`${d}_${j}`, local);
+  const b = writeBatch(db);
+  b.set(sheetRef(r.id, d, j), { ...local, rev: increment(1) });     // revizi zvyšuje server – nikdy dvě stejné
+  b.set(logRef(), auditEntry("ruční úprava", { round: r.id, dance: d, judge: j,
+    before: prev ? (r.type === "prelim" ? (prev.marks || []) : (prev.placings || {})) : null, after: r.type === "prelim" ? local.marks : local.placings }));
+  try { await b.commit(); }
+  catch (e) {
+    // zápis odmítnut → vrátit buňku na poslední potvrzený stav (pokud ji mezitím nepřepsala další úprava)
+    const k = `${d}_${j}`;
+    if (evalRid === r.id && evalSheets.get(k) === local) { if (prev) evalSheets.set(k, prev); else evalSheets.delete(k); renderEvalMain(true); }
+    throw e;
+  }
 }
 $("evalMain").addEventListener("change", e => {
   if (e.target.id === "editSw") { editMode = e.target.checked; renderEvalMain(true); return; }
@@ -1595,10 +1827,10 @@ $("evalMain").addEventListener("change", e => {
     const placings = { ...(prev?.placings && typeof prev.placings === "object" ? prev.placings : {}) };
     if (v) placings[c] = v; else delete placings[c];
     await writeEdited(r, d, j, { placings });
-  }, "Úprava se neuložila");
+  }, "Úprava se neuložila", 15000, true);
 });
 $("evalMain").addEventListener("input", e => {
-  if (e.target.id === "advN") { const v = parseInt(e.target.value, 10); if (v > 0 && v <= MAX_COUPLES) { advanceDraft.set(evalRid, v); renderEvalMain(true); } }
+  if (e.target.id === "advN") { const v = parseInt(e.target.value, 10); if (v > 0 && v <= MAX_COUPLES) { advanceDraft.set(evalRid, v); clearTimeout(advTimer); advTimer = setTimeout(() => renderEvalMain(true), 450); } }
 });
 $("evalMain").addEventListener("click", e => {
   const r = rounds.get(evalRid); if (!r) return;
@@ -1608,7 +1840,7 @@ $("evalMain").addEventListener("click", e => {
       const [c, d, j] = tog.split("|"); const prev = evalSheets.get(`${d}_${j}`);
       const set = new Set(Array.isArray(prev?.marks) ? prev.marks.filter(Number.isInteger) : []); const n = +c; set.has(n) ? set.delete(n) : set.add(n);
       await writeEdited(r, d, j, { marks: [...set].sort((a, b) => a - b) });
-    }, "Úprava se neuložila");
+    }, "Úprava se neuložila", 15000, true);
     return;
   }
   const step = e.target.closest("[data-step]")?.dataset.step;
@@ -1623,6 +1855,7 @@ $("evalMain").addEventListener("click", e => {
     if (act === "unEval") {
       if (!await confirmBox("Vrátit kolo do stavu před vyhodnocením? Potvrzený postup nebo výsledky se zruší.", "Upravit znovu")) return;
       await updateDoc(roundRef(r.id), { status: "locked", evaluatedAt: null, qualified: null, result: null });
+      audit("zrušení vyhodnocení", { round: r.id });
     }
     if (act === "saveQual") {
       const { totals, issues } = prelimData(r);
@@ -1633,7 +1866,9 @@ $("evalMain").addEventListener("click", e => {
       await updateDoc(roundRef(r.id), { qualified, status: "evaluated", evaluatedAt: Date.now(), lockedAt: r.lockedAt || Date.now(),
         result: { kind: "prelim", totals: Object.fromEntries(r.couples.map(c => [c, totals[c]])) } });
       advanceDraft.delete(r.id); editMode = false;
+      audit("potvrzení postupu", { round: r.id, qualified });
       log(`Postup potvrzen: ${titleOf(r)} – ${qualified.length} párů`);
+      autoBackup(`postup · ${titleOf(r)}`);
     }
     if (act === "confirmFinal") {
       const { sk, stale, issues } = finalData(r);
@@ -1641,9 +1876,335 @@ $("evalMain").addEventListener("click", e => {
       await updateDoc(roundRef(r.id), { status: "evaluated", evaluatedAt: Date.now(), lockedAt: r.lockedAt || Date.now(),
         result: { kind: "final", overall: Object.fromEntries(r.couples.map((c, i) => [c, sk.overall[i]])), rule: Object.fromEntries(r.couples.map((c, i) => [c, sk.rule[i]])) } });
       editMode = false; log(`Výsledky finále potvrzeny: ${titleOf(r)}`);
+      audit("potvrzení výsledků finále", { round: r.id, overall: Object.fromEntries(r.couples.map((c, i) => [c, sk.overall[i]])) });
+      autoBackup(`finále · ${titleOf(r)}`);
     }
   }, "Vyhodnocení se neuložilo");
 });
+
+// ===================== v4.0: PŘÍTOMNOST, ZVUK, CACHE LÍSTKŮ =====================
+// Přítomnost porotce se počítá podle času PŘÍJMU zprávy na tomto počítači – rozdíl hodin počítače a serveru nevadí.
+function hearJudge(j, v) {
+  const h = heard.get(j);
+  if (!h) { heard.set(j, { v, at: v ? Math.min(Date.now(), v) : 0 }); return; }   // první načtení – odhad
+  if (v && v !== h.v) { h.v = v; h.at = Date.now(); }
+}
+function markActive(j) { if (!j) return; const h = heard.get(j) || { v: 0, at: 0 }; h.at = Date.now(); heard.set(j, h); }
+function presenceState(j) {
+  const h = heard.get(j); if (!h || !h.at) return { cls: "", text: "nepřihlášen", st: "none" };
+  const age = Date.now() - h.at;
+  if (age < 120000) return { cls: "ok", text: "aktivní", st: "active" };
+  if (age < 600000) return { cls: "idle", text: `neaktivní ${Math.max(2, Math.round(age / 60000))} min`, st: "idle" };
+  return { cls: "bad", text: `odpojen od ${fmtTime(h.at)}`, st: "off" };
+}
+// zvuk při kompletním kole (AudioContext vznikne při prvním kliknutí – prohlížeče jinak zvuk blokují)
+let audioCtx = null;
+addEventListener("pointerdown", () => { try { audioCtx ||= new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume?.(); } catch {} }, { capture: true });
+$("soundSw").checked = store.get("ac_sound") !== "0";
+$("soundSw").onchange = e => store.set("ac_sound", e.target.checked ? "1" : "0");
+function chime() {
+  if (store.get("ac_sound") === "0" || !audioCtx) return;
+  try {
+    const t = audioCtx.currentTime;
+    [784, 1175].forEach((f, i) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain(), s0 = t + i * 0.17;
+      o.type = "sine"; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, s0); g.gain.exponentialRampToValueAtTime(0.22, s0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, s0 + 0.4);
+      o.connect(g).connect(audioCtx.destination); o.start(s0); o.stop(s0 + 0.45);
+    });
+  } catch {}
+}
+// lístky všech kol, které sčitatel už viděl (pro zálohy a výsledkovou listinu bez opakovaného čtení)
+function cacheSheets(rid, docs) { sheetCache.set(rid, docs.map(d => ({ id: d.id, ...d.data() }))); }
+async function sheetsOf(rid) {
+  if (!sheetCache.has(rid)) { const sn = await getDocs(collection(db, "competitions", comp, "rounds", rid, "sheets")); cacheSheets(rid, sn.docs); }
+  return sheetCache.get(rid);
+}
+
+// ===================== v4.0: AUTOMATICKÉ ZÁLOHY =====================
+const BK_KEY = () => `ac_bk_${comp}`, BK_MAX = 6;
+function readBackups(c = comp) { try { return JSON.parse(localStorage.getItem(`ac_bk_${c}`) || "[]"); } catch { return []; } }
+async function autoBackup(reason) {
+  const c = comp;
+  try {
+    const data = await buildExport(true);
+    if (c !== comp) return;
+    let list = [{ at: Date.now(), reason, data }, ...readBackups(c)].slice(0, BK_MAX);
+    for (;;) {
+      try { localStorage.setItem(`ac_bk_${c}`, JSON.stringify(list)); break; }
+      catch { if (list.length <= 1) throw new Error("V prohlížeči není místo na zálohu."); list = list.slice(0, -1); }
+    }
+    log(`Záloha uložena (${reason})`);
+  } catch (e) { log("Záloha se nezdařila: " + errText(e)); toast("Automatická záloha se nezdařila", errText(e) + " Udělejte ruční Export."); }
+}
+$("backupsBtn").onclick = () => {
+  const list = readBackups();
+  modal("Automatické zálohy", `<div class="hint" style="margin-top:0">Záloha se uloží v tomto prohlížeči po každém potvrzeném postupu a finále (posledních ${BK_MAX}). Obnovíte ji tlačítkem Import.</div>
+    ${list.length ? `<div style="margin-top:10px">${list.map((b, i) => `<div class="row" style="padding:7px 0;border-top:1px solid var(--stroke)">
+      <div class="grow"><b>${fmtDT(b.at)}</b><br><span class="faint" style="font-size:11px">${esc(b.reason)} · ${b.data.rounds.length} kol · ${Math.round(JSON.stringify(b.data).length / 1024)} kB</span></div>
+      <button class="btn sm" data-bk="${i}">Stáhnout</button></div>`).join("")}</div>` : `<div class="hint">Pro soutěž <b>${esc(comp)}</b> zatím žádná záloha není.</div>`}`,
+    [{ label: "Zálohovat teď", action: async () => { await autoBackup("ručně"); $("backupsBtn").onclick(); return false; } }, { label: "Zavřít", cls: "primary", value: true }],
+    root => root.querySelectorAll("[data-bk]").forEach(b => b.onclick = () => { const x = list[+b.dataset.bk]; download(`zaloha_${comp}_${stampNow(new Date(x.at))}.json`, x.data); }));
+};
+
+// ===================== v4.0: ZKUŠEBNÍ SOUTĚŽ =====================
+const SAMPLE_NAMES = ["Jan Novák – Eva Malá", "Petr Svoboda – Lucie Dvořáková", "Tomáš Černý – Anna Procházková", "Jakub Veselý – Tereza Horáková",
+  "Martin Kučera – Klára Němcová", "Ondřej Marek – Barbora Pokorná", "David Pospíšil – Kristýna Hájková", "Lukáš Jelínek – Veronika Králová",
+  "Filip Růžička – Natálie Benešová", "Adam Fiala – Karolína Sedláčková", "Vojtěch Doležal – Adéla Zemanová", "Matěj Kolář – Eliška Navrátilová"];
+$("testCompBtn").onclick = () => modal("Zkušební soutěž",
+  `<p style="line-height:1.5;margin:4px 0 0">Vytvoří samostatnou soutěž pro zkoušku: porotci <b>A–D</b>, kategorie <b>Zkouška LAT</b> (samba, cha-cha, jive), páry <b>1–12</b> se jmény, 2 skupiny, postup 6 párů do finále.</p>
+   <div class="hint">Ostrá data se nezmění. Po zkoušce soutěž smažete tlačítkem „Smazat zkoušku“ a aplikace se vrátí k předchozí soutěži.</div><div class="merr err"></div>`,
+  [{ label: "Zrušit" }, { label: "Vytvořit", cls: "primary", action: async () => {
+    const t = new Date(), id = `zkouska-${String(t.getDate()).padStart(2, "0")}${String(t.getMonth() + 1).padStart(2, "0")}-${String(t.getHours()).padStart(2, "0")}${String(t.getMinutes()).padStart(2, "0")}${String(t.getSeconds()).padStart(2, "0")}`;
+    const jury = { A: "Porotce A", B: "Porotce B", C: "Porotce C", D: "Porotce D" };
+    const names = Object.fromEntries(SAMPLE_NAMES.map((n, i) => [String(i + 1), n]));
+    const b = writeBatch(db);
+    b.set(doc(db, "competitions", id), { name: `Zkouška ${t.toLocaleDateString("cs-CZ")} ${fmtTime(t.getTime())}`, createdAt: Date.now(), jury, names, test: true });
+    b.set(doc(db, "competitions", id, "categories", nextId()), { name: "Zkouška LAT", dances: ["S", "C", "J"], couples: SAMPLE_NAMES.map((_, i) => i + 1), key: [6], groups: 2, judges: ["A", "B", "C", "D"], created: Date.now(), order: 0 });
+    await b.commit();
+    if (!compDoc.test) store.set("ac_prev_comp", comp);
+    comp = id; startComp(); log(`Založena zkušební soutěž ${id}`);
+    setTimeout(showTestLinks, 50);
+  } }]);
+function showTestLinks() {
+  const letters = lettersOf(compDoc.jury).length ? lettersOf(compDoc.jury) : ["A", "B", "C", "D"];
+  modal("Odkazy pro porotce", `<div class="hint" style="margin-top:0">Každý porotce naskenuje svůj kód fotoaparátem telefonu.</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px">${letters.map(j => `<div style="text-align:center"><b>Porotce ${j}</b><div class="qrbox">${qrSvg(judgeUrl(j), 150)}</div></div>`).join("")}</div>`,
+    [{ label: "Zavřít", cls: "primary", value: true }]);
+}
+async function deleteTestComp(btn) {
+  if (!compDoc.test) return;
+  if (!await confirmBox(`Smazat zkušební soutěž <b>${esc(compDoc.name || comp)}</b> se všemi daty?`, "Smazat", "danger")) return;
+  runAction("deltest", btn, async () => {
+    const id = comp; await deleteCompData(id);
+    comp = store.get("ac_prev_comp") || "test"; startComp();
+    toast("Zkouška smazána", `Otevřena soutěž ${comp}`, "ok");
+  }, "Mazání zkoušky");
+}
+
+// ===================== v4.0: DENÍK PŘENOSU =====================
+function diagRows() {
+  return lettersOf(compDoc.jury).map(j => {
+    const p = presence.get(j) || {}, g = p.diag || {}, ps = presenceState(j);
+    return { j, name: compDoc.jury?.[j] || "", state: ps.text, ver: p.ver || "–", sends: g.sends || 0, delivered: g.delivered || 0,
+      avg: g.delivered ? Math.round(g.deliverSum / g.delivered) : null, max: g.deliverMax ?? null, offN: g.offCount || 0, offS: Math.round((g.offMs || 0) / 1000),
+      fails: g.fails || 0, qr: g.qr || 0, takeovers: g.takeovers || 0, wake: g.wake === false ? "ne" : g.wake === true ? "ano" : "–", events: g.events || [] };
+  });
+}
+const sec = ms => ms == null ? "–" : ms < 1000 ? `${ms} ms` : `${(ms / 1000).toFixed(1)} s`;
+$("diagBtn").onclick = () => {
+  const rows = diagRows();
+  modal("Deník přenosu", `<div class="hint" style="margin-top:0">Údaje posílá telefon každého porotce (doba doručení měří telefon sám, nezávisle na hodinách).</div>
+    <div style="overflow-x:auto;margin-top:10px"><table class="tbl"><tr><th>Porotce</th><th>Stav</th><th>Odesláno</th><th>Doručení ø / max</th><th>Výpadky</th><th>Bez signálu</th><th>Odmítnuto</th><th>QR</th><th>Převzetí</th><th>Displej drží</th><th>Verze</th></tr>
+    ${rows.map(r => `<tr><td class="l"><b>${r.j}</b> ${esc(r.name)}</td><td>${r.state}</td><td>${r.delivered}/${r.sends}</td><td>${sec(r.avg)} / ${sec(r.max)}</td><td>${r.offN}×</td><td>${r.offS} s</td><td>${r.fails}</td><td>${r.qr}</td><td>${r.takeovers}</td><td>${r.wake}</td><td>${esc(r.ver)}</td></tr>`).join("")}</table></div>`,
+    [{ label: "Stáhnout souhrn", action: () => { downloadText(`denik_prenosu_${comp}_${stampNow()}.txt`, diagText(rows)); return false; } }, { label: "Zavřít", cls: "primary", value: true }]);
+};
+function diagText(rows) {
+  const L = [`Deník přenosu – ${compDoc.name || comp} (${comp})`, `Vytvořeno: ${new Date().toLocaleString("cs-CZ")}`, ""];
+  for (const r of rows) {
+    L.push(`Porotce ${r.j}${r.name ? " – " + r.name : ""} | stav: ${r.state} | verze ${r.ver}`);
+    L.push(`  odesláno ${r.sends}, doručeno ${r.delivered}, doručení průměr ${sec(r.avg)}, max ${sec(r.max)}`);
+    L.push(`  výpadky ${r.offN}× (celkem ${r.offS} s), odmítnuté zápisy ${r.fails}, QR ${r.qr}, převzetí ${r.takeovers}, displej drží: ${r.wake}`);
+    for (const e of r.events) L.push(`    ${new Date(e.t).toLocaleTimeString("cs-CZ")}  ${e.e}`);
+    L.push("");
+  }
+  return L.join("\n");
+}
+function downloadText(name, text) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["﻿" + text], { type: "text/plain;charset=utf-8" }));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
+
+// ===================== v4.0: SEZNAM SOUTĚŽÍCÍCH =====================
+const nm = c => compDoc.names?.[String(c)] || "";
+const NAMES_TEMPLATE = `# Seznam soutěžících – ArtimoCounter
+# Na každém řádku: startovní číslo - jméno
+# Oddělovač může být pomlčka, dvojtečka, středník, tabulátor nebo mezera.
+# Řádky začínající # a prázdné řádky se ignorují. Uložte jako text v kódování UTF-8.
+
+1 - Jan Novák – Eva Malá
+2 - Martin Hejhal – Lucie Dvořáková
+3 - Tomáš Černý – Anna Procházková
+4 - Jakub Veselý – Tereza Horáková
+12 - Ondřej Marek – Barbora Pokorná
+`;
+// Rozbor textu: vrací { names, errors[], lines }
+function parseNames(text) {
+  const names = {}, errors = [], firstLine = {};
+  String(text).replace(/^﻿/, "").split(/\r?\n/).forEach((raw, i) => {
+    const line = raw.trim(), no = i + 1;
+    if (!line || line.startsWith("#")) return;
+    const m = line.match(/^(\d{1,5})\s*(?:[-–—:;,.\t|)]\s*|\s+)(.+)$/);
+    if (!m) { errors.push(`Řádek ${no}: „${line.slice(0, 40)}“ – chybí číslo nebo jméno.`); return; }
+    const n = Number(m[1]), name = m[2].trim().replace(/\s+/g, " ");
+    if (n < 1 || n > 9999) { errors.push(`Řádek ${no}: číslo ${n} je mimo rozsah 1–9999.`); return; }
+    if (!name || /^[-–—:;,.|]+$/.test(name)) { errors.push(`Řádek ${no}: u čísla ${n} chybí jméno.`); return; }
+    if (name.length > 80) { errors.push(`Řádek ${no}: jméno u čísla ${n} je delší než 80 znaků.`); return; }
+    if (firstLine[n]) { errors.push(`Řádek ${no}: číslo ${n} už je na řádku ${firstLine[n]}.`); return; }
+    firstLine[n] = no; names[String(n)] = name;
+  });
+  return { names, errors };
+}
+function namesWarnings(names) {
+  const W = [], all = new Set();
+  for (const c of cats.values()) {
+    c.couples.forEach(x => all.add(x));
+    const miss = c.couples.filter(x => !names[String(x)]);
+    if (miss.length) W.push(`${c.name}: bez jména ${miss.length} ${miss.length === 1 ? "pár" : "párů"} (${fmtCouples(miss).slice(0, 60)})`);
+  }
+  const extra = Object.keys(names).map(Number).filter(x => cats.size && !all.has(x));
+  if (extra.length) W.push(`V žádné kategorii nejsou čísla: ${fmtCouples(extra).slice(0, 80)}`);
+  return W;
+}
+async function readTextFile(f) {
+  const buf = await f.arrayBuffer();
+  try { return new TextDecoder("utf-8", { fatal: true }).decode(buf); }
+  catch { return new TextDecoder("windows-1250").decode(buf); }      // soubor z Poznámkového bloku ve starém kódování
+}
+$("namesTplBtn").onclick = () => downloadText("vzor_soutezici.txt", NAMES_TEMPLATE);
+$("namesUpBtn").onclick = () => { if (!compExists) { alertBox("Nejdřív založte nebo otevřete soutěž."); return; } $("namesFile").click(); };
+$("namesFile").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  if (f.size > 500000) { alertBox("Soubor je příliš velký (max. 500 kB)."); return; }
+  let text; try { text = await readTextFile(f); } catch { alertBox("Soubor se nepodařilo přečíst."); return; }
+  const { names, errors } = parseNames(text), n = Object.keys(names).length;
+  if (!errors.length && !n) { alertBox("Soubor neobsahuje žádné soutěžící."); return; }
+  if (n > MAX_COUPLES * 10) { alertBox("Soubor obsahuje příliš mnoho řádků."); return; }
+  const warns = namesWarnings(names);
+  const preview = Object.entries(names).sort((a, b) => a[0] - b[0]).slice(0, 6).map(([k, v]) => `${k} – ${esc(v)}`).join("<br>");
+  if (errors.length) {
+    modal("Kontrola seznamu soutěžících", `<p style="margin:4px 0 0">Soubor <b>${esc(f.name)}</b> obsahuje chyby, <b>nic nebylo uloženo</b>. Opravte je a nahrajte soubor znovu.</p>
+      <div class="hint" style="color:#ff8a8d">• ${errors.slice(0, 15).map(esc).join("<br>• ")}${errors.length > 15 ? `<br>… a dalších ${errors.length - 15}` : ""}</div>
+      <div class="hint">Správné řádky: ${n}</div>`, [{ label: "Zavřít", cls: "primary", value: true }]);
+    return;
+  }
+  modal("Kontrola seznamu soutěžících", `<p style="margin:4px 0 0">Soubor <b>${esc(f.name)}</b>: <b>${n}</b> soutěžících, bez chyb.</p>
+    <div class="hint">${preview}${n > 6 ? "<br>…" : ""}</div>
+    ${warns.length ? `<div class="hint" style="color:#ffb84d">Upozornění (uložit lze):<br>• ${warns.map(esc).join("<br>• ")}</div>` : `<div class="hint" style="color:var(--green)">✓ Jméno má každý pár ve všech kategoriích.</div>`}
+    ${Object.keys(compDoc.names || {}).length ? `<div class="hint">Stávající seznam (${Object.keys(compDoc.names).length} jmen) bude nahrazen.</div>` : ""}<div class="merr err"></div>`,
+    [{ label: "Zrušit" }, { label: "Uložit", cls: "primary", action: async () => {
+      await updateDoc(compRef(), { names }); audit("seznam soutěžících", { count: n }); log(`Nahrán seznam soutěžících (${n})`);
+    } }]);
+};
+$("namesDelBtn").onclick = async () => {
+  if (!await confirmBox("Odebrat seznam jmen soutěžících? Výsledky zůstanou, jen bez jmen.", "Odebrat", "danger")) return;
+  runAction("names", $("namesDelBtn"), () => updateDoc(compRef(), { names: null }), "Odebrání seznamu");
+};
+
+// ===================== v4.0: POŘADÍ V KATEGORII =====================
+// Pár vyřazený v postupovém kole: místa za všemi postupujícími; mezi sebou podle počtu křížků, shoda = dělené místo.
+function standings(cat, rs = roundsOfCat(cat.id)) {
+  const info = new Map();
+  const get = c => { if (!info.has(c)) info.set(c, { c, status: rs.length ? "dns" : "waiting" }); return info.get(c); };
+  cat.couples.forEach(get);
+  for (const r of rs) {
+    for (const c of r.couples) Object.assign(get(c), { status: "active", round: r });
+    if (r.type === "prelim" && r.status === "evaluated" && Array.isArray(r.qualified)) {
+      const q = new Set(r.qualified), t = r.result?.totals || {};
+      const out = r.couples.filter(c => !q.has(c)).sort((a, b) => (t[b] ?? 0) - (t[a] ?? 0) || a - b);
+      let i = 0;
+      while (i < out.length) {
+        let k = i; while (k + 1 < out.length && (t[out[k + 1]] ?? 0) === (t[out[i]] ?? 0)) k++;
+        const from = q.size + 1 + i, to = q.size + 1 + k;
+        for (let x = i; x <= k; x++) Object.assign(get(out[x]), { status: "out", place: from, label: from === to ? `${from}.` : `${from}.–${to}.`, round: r, crosses: t[out[x]] ?? 0 });
+        i = k + 1;
+      }
+    }
+    if (r.type === "final" && r.status === "evaluated" && r.result?.overall) {
+      const pl = r.couples.map(c => Number(r.result.overall[c]));
+      const labels = placeLabels(pl);
+      r.couples.forEach((c, i) => Object.assign(get(c), { status: "placed", place: pl[i], label: labels[i], round: r }));
+    }
+  }
+  const rank = o => o.status === "placed" || o.status === "out" ? o.place : o.status === "active" ? 0.5 : 1e6;
+  return [...info.values()].sort((a, b) => rank(a) - rank(b) || a.c - b.c);
+}
+
+// pravý sloupec: soutěžící vybrané (nebo právě běžící) kategorie
+function rosterCat() {
+  if (selCat && cats.has(selCat)) return cats.get(selCat);
+  const open = [...rounds.values()].filter(r => r.status === "open").sort(byCreated).pop();
+  return open && cats.get(open.categoryId) || null;
+}
+function renderRoster() {
+  const el = $("roster"); if (!el) return;
+  const cat = rosterCat();
+  if (!cat) { el.innerHTML = `<div class="sect" style="padding:12px 14px"><div class="sec-t" style="margin-top:0">Soutěžící</div><div class="hint">Vyberte kategorii vlevo.</div></div>`; return; }
+  const st = standings(cat), done = st.some(o => o.status === "placed");
+  const list = done ? st : [...st].sort((a, b) => a.c - b.c);
+  const inGame = st.filter(o => o.status === "active").length;
+  const row = o => {
+    const medal = o.status === "placed" && o.place <= 3.5 ? ` p${Math.min(3, Math.round(o.place))}` : "";
+    const stt = o.status === "placed" ? o.label : o.status === "out" ? `${o.label} · ${esc(o.round.label)}` : o.status === "active" ? (o.round?.type === "final" ? "finále" : esc(o.round.label)) : o.status === "dns" ? "nenastoupil" : "";
+    return `<div class="rl-row ${o.status}${medal}" title="${esc(nm(o.c))}"><span class="n">${o.c}</span><span class="nm">${esc(nm(o.c)) || '<span class="faint">—</span>'}</span><span class="st">${stt}</span></div>`;
+  };
+  el.innerHTML = `<div class="sect" style="padding:12px 14px"><div class="sec-t" style="margin-top:0">${esc(cat.name)}</div>
+    <div class="faint" style="font-size:11px;margin-bottom:6px">${pary(cat.couples.length)}${done ? " · výsledky" : inGame ? ` · v soutěži ${inGame}` : ""}</div>
+    ${list.map(row).join("")}</div>`;
+}
+
+// ===================== v4.0: VÝSLEDKOVÁ LISTINA =====================
+async function resultsHtml(catIds) {
+  const parts = [];
+  const jury = compDoc.jury || {};
+  for (const cid of catIds) {
+    const cat = cats.get(cid); if (!cat) continue;
+    const rs = roundsOfCat(cid), st = standings(cat);
+    const fin = rs.find(r => r.type === "final" && r.status === "evaluated");
+    const judges = [...new Set(rs.flatMap(r => r.judges))].sort();
+    let h = `<div class="cat"><h2>${esc(cat.name)}</h2>
+      <div class="rmeta">${esc(compDoc.name || comp)} · ${new Date(compDoc.startedAt || Date.now()).toLocaleDateString("cs-CZ")} · ${cat.dances.map(d => DANCES[d]).join(", ")} · ${pary(cat.couples.length)}
+      ${judges.length ? `<br>Porota: ${judges.map(j => `${j}${jury[j] ? " – " + esc(jury[j]) : ""}`).join(", ")}` : ""}
+      ${fin ? "" : `<br><b>Kategorie zatím není dokončená – listina je průběžná.</b>`}</div>
+      <table><tr><th>Místo</th><th>Číslo</th><th class="l">Soutěžící</th><th>Kolo</th><th>Křížky</th></tr>
+      ${st.filter(o => o.status !== "waiting").map(o => `<tr><td><b>${o.status === "placed" || o.status === "out" ? o.label : "–"}</b></td><td>${o.c}</td><td class="l">${esc(nm(o.c))}</td>
+        <td>${o.status === "placed" ? "finále" : o.status === "out" ? esc(o.round.label) : o.status === "active" ? `v soutěži (${esc(o.round.label)})` : "nenastoupil"}</td><td>${o.status === "out" ? o.crosses : ""}</td></tr>`).join("")}</table>`;
+    if (fin) {
+      const list = await sheetsOf(fin.id), by = new Map(list.map(x => [`${x.dance}_${x.judge}`, x]));
+      try {
+        const m = fin.dances.map(d => fin.judges.map(j => fin.couples.map(c => Number(by.get(`${d}_${j}`)?.placings?.[c]))));
+        const sk = skatingFinal(m), labels = placeLabels(sk.overall);
+        const ord = fin.couples.map((c, i) => ({ c, i })).sort((a, b) => sk.overall[a.i] - sk.overall[b.i] || a.c - b.c);
+        h += `<h4>Finále – umístění v tancích</h4><table><tr><th>Místo</th><th>Číslo</th><th class="l">Soutěžící</th>${fin.dances.map(d => `<th>${DANCES[d]}</th>`).join("")}<th>Součet</th><th>Pravidlo</th></tr>
+          ${ord.map(o => `<tr><td><b>${labels[o.i]}</b></td><td>${o.c}</td><td class="l">${esc(nm(o.c))}</td>${fin.dances.map((d, t) => `<td>${fmtNum(sk.byDance[t][o.i])}</td>`).join("")}<td>${fmtNum(sk.sums[o.i])}</td><td>${{ "10": "10", "11": "11" }[sk.rule[o.i]] ?? ""}</td></tr>`).join("")}</table>`;
+        fin.dances.forEach((d, t) => {
+          const dl = placeLabels(sk.byDance[t]);
+          const o2 = fin.couples.map((c, i) => ({ c, i })).sort((a, b) => sk.byDance[t][a.i] - sk.byDance[t][b.i] || a.c - b.c);
+          h += `<h4>${DANCES[d]}</h4><table><tr><th>Číslo</th>${fin.judges.map(j => `<th>${j}</th>`).join("")}${fin.couples.map((_, k) => `<th>${k === 0 ? "1" : "1–" + (k + 1)}</th>`).join("")}<th>Místo</th></tr>
+            ${o2.map(({ c, i }) => {
+              const mk = fin.judges.map((_, k) => m[t][k][i]);
+              const cols = fin.couples.map((_, k) => { if (k + 1 > sk.decidedCol[t][i]) return "<td></td>"; const cnt = mk.filter(v => v <= k + 1).length; return `<td>${cnt || "–"}</td>`; }).join("");
+              return `<tr><td><b>${c}</b></td>${mk.map(v => `<td>${v}</td>`).join("")}${cols}<td><b>${dl[i]}</b></td></tr>`;
+            }).join("")}</table>`;
+        });
+      } catch (e) { h += `<div class="rmeta">Tabulky finále nelze sestavit: ${esc(e.message)}</div>`; }
+    }
+    parts.push(h + "</div>");
+  }
+  return `<div class="res">${parts.join("") || "<p>Žádné kategorie.</p>"}<div class="rmeta" style="margin-top:14px">ArtimoCounter · vytištěno ${new Date().toLocaleString("cs-CZ")}</div></div>`;
+}
+$("resultsBtn").onclick = () => {
+  const cl = [...cats.values()].sort((a, b) => (a.order ?? a.created ?? 0) - (b.order ?? b.created ?? 0));
+  if (!cl.length) { alertBox("Soutěž zatím nemá žádné kategorie."); return; }
+  const def = selCat && cats.has(selCat) ? selCat : "all";
+  modal("Výsledková listina", `<div class="row"><select class="in" id="resSel" style="max-width:320px"><option value="all">Celá soutěž (${cl.length} kategorií)</option>
+    ${cl.map(c => `<option value="${c.id}" ${c.id === def ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
+    <div id="resPrev" style="max-height:58vh;overflow:auto;margin-top:10px;padding:10px;border:1px solid var(--stroke);border-radius:10px">Načítám…</div>`,
+    [{ label: "Zavřít" }, { label: "Tisk / PDF", cls: "primary", action: async root => {
+      const v = root.querySelector("#resSel").value;
+      $("printArea").innerHTML = await resultsHtml(v === "all" ? cl.map(c => c.id) : [v]);
+      document.body.classList.add("printres");
+      const done = () => { document.body.classList.remove("printres"); removeEventListener("afterprint", done); };
+      addEventListener("afterprint", done); window.print(); setTimeout(done, 1500);
+      return false;
+    } }],
+    root => {
+      const sel = root.querySelector("#resSel"), prev = root.querySelector("#resPrev");
+      const upd = async () => { prev.innerHTML = "Načítám…"; try { const v = sel.value; const html = await resultsHtml(v === "all" ? cl.map(c => c.id) : [v]); if (prev.isConnected && sel.value === v) prev.innerHTML = html; } catch (e) { prev.textContent = errText(e); } };
+      sel.onchange = upd; upd();
+    });
+};
 
 // ===================== KONTROLNÍ (REGRESNÍ) TESTY =====================
 // Referenční finále spočítaná Python implementací z dokumentu „Skating system ČSTS v5“ (vč. pravidel 10 a 11).
@@ -1691,14 +2252,38 @@ function runSelfTests() {
   // QR
   throws("QR: cizí kód", () => parseQr("hello"), /Není to QR/);
   const qr = { id: "r1", type: "prelim", couples: [1,2,3,4], dances: ["S","C"], judges: ["A"], label: "1. kolo" };
-  ok("QR: platný kód předkola", qrToSheets(parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;S=1.2;C=3.4"), qr).length === 2);
-  throws("QR: chybějící tanec", () => qrToSheets(parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;S=1.2"), qr), /neobsahuje tance/);
-  throws("QR: opakovaný pár", () => qrToSheets(parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;S=1.1;C=3.4"), qr), /Opakované/);
+  ok("QR: platný kód předkola", qrToSheets(parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;S=1.2;C=3.4"), { ...qr, required: 2 }).length === 2);
+  throws("QR: chybějící tanec", () => qrToSheets(parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;S=1.2"), { ...qr, required: 2 }), /neobsahuje tance/);
+  throws("QR: opakovaný pár", () => qrToSheets(parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;S=1.1;C=3.4"), { ...qr, required: 2 }), /Opakované/);
   throws("QR: neúplné finále", () => qrToSheets(parseQr("AC2;c=x;r=f;j=A;t=f;ts=1;S=1.2"), { ...qr, type: "final", dances: ["S"], couples: [1,2,3] }), /chybí umístění/);
   // import
   ok("Import: neúplný soubor se odmítne", validateExport({ format: "artimo-counter/soutez", competition: { id: "abc" } }).length > 0);
   ok("Import: lístek bez křížků se odmítne", validateExport({ competition: { id: "abc" }, categories: [], rounds: [{ id: "r", type: "prelim", status: "open", dances: ["S"], couples: [1,2], judges: ["A"], required: 1, sheets: [{ id: "S_A", dance: "S", judge: "A" }] }] }).length === 1);
   ok("Import: platný minimální soubor projde", validateExport({ competition: { id: "abc", jury: { A: "" } }, categories: [], rounds: [] }).length === 0);
+  const rr = (o = {}) => ({ id: "r", type: "prelim", status: "open", dances: ["S"], couples: [1,2,3], judges: ["A"], required: 1, ...o });
+  ok("Import: postup ≥ počet párů se odmítne", validateExport({ competition: { id: "abc" }, categories: [], rounds: [rr({ required: 3 })] }).some(e => /menší než počet párů/.test(e)));
+  ok("Import: duplicitní tanec a porotce se odmítnou", validateExport({ competition: { id: "abc" }, categories: [], rounds: [rr({ dances: ["S","S"], judges: ["A","A"] })] }).length === 2);
+  ok("Import: vyhodnocené kolo bez postupujících se odmítne", validateExport({ competition: { id: "abc" }, categories: [], rounds: [rr({ status: "evaluated" })] }).some(e => /postupujících/.test(e)));
+  ok("Import: duplicitní lístek se odmítne", validateExport({ competition: { id: "abc" }, categories: [], rounds: [rr({ sheets: [{ id: "S_A", dance: "S", judge: "A", marks: [1] }, { id: "S_A", dance: "S", judge: "A", marks: [2] }] })] }).some(e => /duplicitní lístek/.test(e)));
+  ok("Import: lístek s jiným typem se odmítne", validateExport({ competition: { id: "abc" }, categories: [], rounds: [rr({ sheets: [{ id: "S_A", dance: "S", judge: "A", type: "final", marks: [1] }] })] }).some(e => /typ lístku/.test(e)));
+  ok("Import: neúplný lístek = varování, ne chyba", exportWarnings({ rounds: [rr({ required: 2, sheets: [{ id: "S_A", dance: "S", judge: "A", marks: [1] }] })] }).length === 1);
+  throws("QR: špatný počet křížků", () => qrToSheets(parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;S=1.2.3;C=3.4"), { ...qr, required: 2 }), /vyžaduje 2/);
+  const ex = rounds => validateExport({ competition: { id: "abc" }, categories: [], rounds });
+  ok("Import: finále se stejným umístěním se odmítne", ex([rr({ type: "final", required: undefined, couples: [1,2,3], sheets: [{ id: "S_A", dance: "S", judge: "A", type: "final", placings: { "1": 1, "2": 1, "3": 3 } }] })]).some(e => /stejné umístění/.test(e)));
+  ok("Import: pár ve dvou skupinách se odmítne", ex([rr({ groups: [{ n: 1, couples: [1,2] }, { n: 2, couples: [2,3] }] })]).some(e => /více skupinách/.test(e)));
+  ok("Import: skupina s cizím párem se odmítne", ex([rr({ groups: [{ n: 1, couples: [1,2] }, { n: 2, couples: [9] }] })]).some(e => /není v kole/.test(e)));
+  ok("Import: pár mimo skupiny se odmítne", ex([rr({ groups: [{ n: 1, couples: [1,2] }] })]).some(e => /žádné skupině/.test(e)));
+  ok("Import: duplicitní postupující se odmítnou", ex([rr({ qualified: [1,1] })]).some(e => /duplicitní postupující/.test(e)));
+  ok("Import: platné skupiny projdou", ex([rr({ groups: [{ n: 1, couples: [1,2] }, { n: 2, couples: [3] }] })]).length === 0);
+  { const p = parseNames("\ufeff# komentář\n1 - Jan Novák – Eva Malá\n2: Petr\n3;Anna\n4\tKlára\n5 Tomáš Černý\n\n");
+    ok("Jména: různé oddělovače", Object.keys(p.names).length === 5 && p.names["1"] === "Jan Novák – Eva Malá" && p.names["5"] === "Tomáš Černý" && !p.errors.length); }
+  { const p = parseNames("1 - A\n1 - B\nx - C\n2 -\n0 - D"); ok("Jména: duplicita, chybné číslo a prázdné jméno se ohlásí", p.errors.length === 4 && p.names["1"] === "A"); }
+  { const cat = { id: "k", couples: [1,2,3,4,5,6,7,8] };
+    const rs = [{ id: "r1", type: "prelim", status: "evaluated", couples: [1,2,3,4,5,6,7], qualified: [1,2,3], result: { totals: { 1: 9, 2: 8, 3: 7, 4: 5, 5: 5, 6: 3, 7: 1 } }, label: "1. kolo" },
+                { id: "r2", type: "final", status: "evaluated", couples: [1,2,3], result: { overall: { 1: 2, 2: 1, 3: 3 } }, label: "Finále" }];
+    const st = standings(cat, rs), by = Object.fromEntries(st.map(o => [o.c, o]));
+    ok("Pořadí: vyřazení sdílí místa podle křížků", by[4].label === "4.–5." && by[5].label === "4.–5." && by[6].label === "6." && by[7].label === "7." && by[2].label === "1." && by[8].status === "dns" && st[0].c === 2); }
+  ok("QR: revize lístků se přečte", parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;v=S3.C0;S=1").v === "S3.C0");
   return { res, ms: Math.round(performance.now() - t0) };
 }
 $("selfTestBtn").onclick = () => {
