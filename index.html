@@ -30,6 +30,11 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.22);background-clip:padding-box;border:2px solid transparent}
 ::-webkit-scrollbar-corner{background:transparent}
 .logo{height:30px;width:auto;display:block}
+.lock{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:radial-gradient(900px 600px at 20% -10%,#111766 0%,transparent 60%),var(--bg)}
+.lock.hidden{display:none}
+.lockbox{width:min(320px,calc(100% - 40px));padding:26px;border-radius:18px;background:var(--glass);border:1px solid var(--stroke);box-shadow:var(--shadow)}
+.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .jchip{height:30px;padding:0 10px 0 4px;border-radius:15px;display:inline-flex;align-items:center;gap:6px}
 .jchip i{font-style:normal;width:22px;height:22px;border-radius:11px;background:rgba(255,255,255,.12);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--text)}
 .chip.on.jchip i{background:rgba(255,255,255,.25)}
@@ -38,7 +43,7 @@ button,input,select,textarea{font-family:inherit;font-size:13px;color:inherit}
 .issues .ok{padding:7px 9px;border-radius:8px;background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.3);margin-top:6px}
 .issues .ed{padding:7px 9px;border-radius:8px;background:rgba(255,159,10,.08);border:1px solid rgba(255,159,10,.35);margin-top:6px}
 .stale{opacity:.55}
-.toasts{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:8px;width:min(560px,calc(100% - 32px));pointer-events:none}
+.toasts{position:fixed;left:20px;bottom:20px;z-index:80;display:flex;flex-direction:column-reverse;gap:8px;width:300px;max-width:calc(100% - 40px);pointer-events:none}
 .toast{pointer-events:auto;padding:11px 14px;border-radius:12px;background:#3a1420;border:1px solid rgba(255,90,95,.55);color:#ffd5d6;box-shadow:0 12px 30px rgba(0,0,0,.45);font-size:13px;line-height:1.45;cursor:pointer;animation:pop .18s}
 .toast.ok{background:#0f2e1c;border-color:rgba(52,199,89,.55);color:#c8f5d6}
 .toast b{display:block;margin-bottom:2px}
@@ -181,7 +186,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
 .rcard:hover{border-color:var(--stroke2)}
 .rcard b{display:block;font-size:14px;margin-bottom:4px}
 .plan{margin-top:14px;padding:14px;border-radius:12px;background:rgba(245,211,168,.07);border:1px solid rgba(245,211,168,.22)}
-.warn{padding:10px 12px;border-radius:10px;background:rgba(255,90,95,.1);border:1px solid rgba(255,90,95,.35);line-height:1.5;margin-top:10px}
+.warn{padding:10px 12px;border-radius:10px;background:rgba(245,211,168,.08);border:1px solid rgba(245,211,168,.35);line-height:1.5;margin-top:10px}
 .okbox{padding:10px 12px;border-radius:10px;background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.35);margin-top:10px}
 .infobox{padding:10px 12px;border-radius:10px;background:var(--glass);margin-top:10px;line-height:1.5}
 
@@ -197,7 +202,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
 .xtab tr.q td.cpl{background:var(--accent);color:var(--ink)}
 .xtab tr.q td{background:rgba(245,211,168,.05)}
 .xtab tr.cut td{border-bottom:2px solid var(--accent)}
-.xtab tr.tie td{background:rgba(255,90,95,.08)}
+.xtab tr.tie td{background:rgba(245,211,168,.07)}
 .ctrl{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
 .stepper{display:inline-flex;align-items:center;background:rgba(255,255,255,.07);border-radius:9px;padding:2px}
 .stepper button{width:30px;height:28px;border:none;background:transparent;color:var(--text);font-size:16px;cursor:pointer;border-radius:7px}
@@ -216,11 +221,11 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
 .sk td.place{font-weight:700;font-size:14px;color:var(--accent)}
 .sk td.mk{color:var(--text3)}
 .sk th.cols{color:var(--text3)}
-.sk th.bad{color:#ff8a8d}
+.sk th.bad{color:#ffb84d}
 .sk small{font-size:10px;opacity:.7}
 .mk-in{width:34px;height:24px;text-align:center;border-radius:6px;border:1px solid transparent;background:rgba(255,255,255,.08);color:var(--text);font-weight:600;outline:none}
 .mk-in:focus{border-color:var(--blue)}
-.mk-in.bad{border-color:var(--red);background:rgba(255,90,95,.15)}
+.mk-in.bad{border-color:rgba(255,159,10,.7)}
 .dance-h{display:flex;align-items:center;gap:8px;margin:22px 0 6px}
 .dance-h h3{margin:0;font-size:15px}
 .legend{font-size:11px;color:var(--text3);margin-top:8px;line-height:1.5}
@@ -246,6 +251,17 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
 </style>
 </head>
 <body>
+<div id="lock" class="lock">
+  <form class="lockbox" id="lockForm" autocomplete="off">
+    <img src="data:image/png;base64,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" alt="Artimo" style="height:56px;margin:0 auto 14px;display:block">
+    <div class="brand" style="text-align:center;font-size:20px">ARTIMO <span>COUNTER</span></div>
+    <div class="hint" style="text-align:center;margin:6px 0 18px">Sčitatel – zadejte heslo</div>
+    <input class="in" type="password" id="lockPw" placeholder="Heslo" autofocus style="height:38px;font-size:15px;text-align:center">
+    <button class="btn primary lg full" style="margin-top:12px" type="submit">Vstoupit</button>
+    <div class="err" id="lockErr" style="text-align:center;min-height:16px"></div>
+  </form>
+  <div class="credit" style="position:absolute;bottom:0;left:0;right:0">ArtimoCounter, created by Martin Hejhal, 2026, v3.0</div>
+</div>
 <header>
   <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABgCAYAAADFNvbQAAAMC0lEQVR42u1de9BUZRn/PWf3QwIRUSSVW0KCXVSSckDCxBzNqamsiREnpiknc7RGvKTdZEqsHMdEhjEaS8cuZppTknaxLEusCEzJSzFBFkokCSgKBXy759cf53nHp9ez+52z39k97/LtO3Nmd7/v7J7zvr/n9j63I+iNoAbJCEAkIjXv7yMATAMwG8DJAHYB+E43TUxIRiSrelT0c6Tv3d+jLgRNSFZ9IEkeR3IRyR+Q/BuTsZPkEpJju2lylZzfqeT9Tlnc5t8nyRMUoMf4yrGU5KH2+xL6BEUkdkACmKnH8QAmAjgQgAB4CcAGAGsAPCQim404gvuNgOZVAUAztyMBzAewAMCJKV+5D8BnROQRPb8KoC4iDBm8ir72kTyf5KPMNl4keRfJ0/zfCoTjIvN5BskVJHeY+49J7tH320h+zJxfVUIOXrQ48OaQfMSbXL8eNe9wf7Pj+yQnG6oNQg2QPIXkD737dXOI9fO9JI9KA75bwLtIJ0R9rWfkwFgXw52/leSZZYHoAXciyZXe/fYbwiTJfSQvtVzXdcYKyS97YLQ6+s3vnN1JcapcI/p+AsmbzFz8ebn73EDypK7jOo/zPutR5mBHXY8ayVM6AaLlGpIXkPy3JyrTiOwetzXoGq5LAW9eweD5i7aF5GHtom63V9X3ryd5fwpQvj4nyeWhGVytbND7SD7RgEqLGG6xbmnHQnm67kKSL5m5xE3Au6orRaYvbkie3UbwrN6pkTzW7hMLnMM4knc3EZe+/vt0V20Pmil7kqsLMFqycuGNRekaA94s4+5qpALs/C7rSn2X4rh17qO4YL3XyKAhyU0khxsPz2Ct5g+S/G8DXZcmNi/pes7zqPeKASZftCglyZmtilEFz20RvpBCIM3Au7xIzitbaTpf3gkdvGZdX2e0sgYGcCF5M4DF+pts8lt1AFUAi0XkWpJ9frio1VG2/HVO5kluUTp47aNada6TPADAHQDeA6A2wDq6/y8TkSUkqyLSX9QkSgXQeNNHlgDgmBY4jyRfBeBuAKcD6AfQNwC3VwHcLyKLVGfWi5xEKPuOuETxnRk8AMMMeLUBwIsBVABsAnCO6kwWHQKKQrBCAbyQd1ELGNuzGixGOnzPcF51AOKgnjdfRJ7TNInCCbVsDnTXf6qDADpANmQEr6ILfyuA92YQm050VgBcISJrVO/V27mAZY+1HSaaGMCjGcR3RURqJK8DsDAHeFUAPxGRpS56Duy/GVggeXQbHNiNNvIxyb8MtIk2e9Tzc+xRXeTjeZLjrXO73SKsLCs0VtN8A4BV3j6tXcaSALhD92GVRo5p5bzTAdxoRGIWwygCcKmI/LNdei/UUNK72uyNiZU7dpEc38gLY6TCFM1ViTNmAzgf5/1d7+MchEP7122MSOzT1ysbhZOcf5PkMJJrc9yLc1LvI/nGIiMd3QbgNOWQeo4cmDxRiDUad6yk6T+j976aUxo4kJd2ZVC2YFFq44L1AsHbbDLUoibXn58TPGcYbSN5qM2FGYog+pbfYHSijQA8bURbpYkEmKh6L48EcNz3ySHLfQ1AfD/JZz0w4owcYUF/gOSkZotruO+nOXWw476/kxwxpLmvwYKOJ3mLB1zdJPf6hx3/0txSaWZUmGt9tAWOd0BfMOQsz5xJQm8hebPhyGZi8xGSl5M8LMXn2kh0TtDNdz2HM8Gd+wzJkTbI28kRLMWISF0XJBKRtQDWkhwDYBaS4pYpAEYD2ANgK4CNAFaLyGPehrzeZDMt6kxYBuBg3bBHOZwCLs63W/2dtY6vU540Aj1fWojd0Xrp84ZUlIMkq0M4S/WOA5fkOwHcm8Pb4uYhAJ4HcDSAHV58szwOdFRvAKJSMYuKFjgvv1mMuNnkvRKz/7s3j5hivd9ahuu74OwNBhDkSMuoArhdRLY7YihDUlUNZ0W6kHGaP5LkaACHABiLJJp9iIqwA5FE1Iepp16QBDt36/EigGcBbFNRt1VE9ug5aaA2BFT/VsRCRcp9lwB4bYa0iFdEKfQ+vuaIoTRV0wCoaQCO1WMagMkAxilgwwZxvb0K4jMA1gN4DMATAJ4Uka0pRowYoioyAkIA4wH8WYlPcnCgE7UPichcW4RaFgceCmAqgDkATkVSAXtEhmhzHpHqOPwAJAlMk/R6brxA8gkAvwPwSwAPi8gOXwcOJGqz20cSk1wMYFQL3OfGt734YjkcqBWgFwOY7lFZ3eibVo2XLOBHKZbfc0jCS/cgSQja7BkoLXGl4b5jAKxT4PJwn9OVLwKYJiJbSUrppc7qfT+J5DJ1O/mb1XYHWmNToeq7sHZqNesCkgd5jQyiFh0E323RTec27iuDcZv5m0+So3Wxft6gkpQdyp6upbi0NmkHh6l5gXQRCJLH5qz4TQPwI2mtQUqvjk1peTFTi/B3lgRkIzB3kfwGyRk+QBm4784Wuc/NeXezgHBIYNpuCpNJXj1ApWmnwOz3iOlbJI9r1snBgHdyirM7L/c92DUBW78RDckjSH6R5PaCatgHy5U22v51F+9L8aU6AM8x38sLojt/cdc5rn15rxx5kxErtQ6L1UZA7tBKp+E+N5pclzkk17egDpzOfGvXxv1SgJxN8sGSxWqaaF1Hcl4KB7rXg40lmqUuMTYtSw4cTF1hiC1BhOQnTLehsrgxDcjrSY70AsVWtC4ynFXPoP/u268SlrxeKFNJ/jhDsWMnho3rPW56r7ithCXAMzzia6b/Pr9fBm49sfpxNbU7VXGbxfDodzXpnj50XHkcyaea3LMjxjP327wX2yZDa97XlbRvbMaNtxmRWvFAnODds6//9pJ8zX6f82kWZCTJb6YsYtm68WGSU9L0oqYF/t4DsW7aYPV1vQHTQj7LJYHoRQvKFpKzGoB4EMlV5nynF+8dUmmDnqHwbiZ9PMvcavgW5S6S72gA4mjlVJr2IdcNycwzI3ZmqjM6BOOmbjw472sA4uEqNp0IPnfIpg6axZlM8smAQHSb+AUNQJyuKfMkOXdIZ16bxXk1X26fHAKIDsizvPt0r6cqp04fclVHTUI6Y00r5VogIO4l+fYGnLiASWNyDPnUebMo49RLEgqILvo/w7vPoDlOygJR0/qOBPAbJKl9eRJr0aby6wjA0wBmi8gW05kp2FJpKZMTFcRpAB4CcJhZxLKGI6LVAN6mn+OQn88QlVz7UBWRvwI4C0nOKMpMklXwakjqL1ZotvXQrvdroWNv2ZapvYfzekWb+Tb7VwcCoov073H5NqGCKKG43UxXpJ8BOCMAo8Zd/09InmcUpD6MAqkFJIBYgVwIYHPZKetGHx4P4MpQ9aGEtkdU42YegF956f1ldRSO9ZgpIo+HtqWIAqzKrYrIAwC+pBQfB0DgfQCWh0j0IScWV427rR5ICOrs0AwaCdXdptz4JgB/MBVMUqKXRlQ3vwFJ4SpDMGiigBscVEXkUQDXByBKI9XHE5F0IoxDMWgkZFGq9zccSSXvlAFa+3fCoCGSx70eg6TSWMo2aKKA24xQF+g/AC5TMFkyscdIyswv0/uLehyYXR/+AsBpJW/wHQHtAvA6AFvK5sJuii5/SsGTkgm+jqS2/sIQuDB4AJX7KiLyRwB36j3XSl4zAvgwyVHq/pMegANKUgqAqwDsM4tY1prFAA4H8AG87HbrAThAp6ZIRNYjefhGFEAr/xjAeSU+eabrdKDjwmsC4EKXOXBXz73WWkLU7SXGDV3z9Gsx1NMMWwFQfaUn5ngcQDsi9cuzdMbojeZPe/ltB1MSbXXTV3rgFZND86EOAWgbKSzpgVdQZymSY0zdQtzmhF+SvKgHXvHGzK1tNGb6TRna/F5T8/YYM6e1IeBr9d1Gkm/ugdc+MTrc1BzWC66n/xHJcT3w2m/MrChIjPYbo+hzaeXivdEePXjGIDnQNiZaZ3rKRL1NemfE6ChtgZXXGq2b7UGN5DVMutj3RGYJXJinB6jfIG8Vydk9kVmuHjw3A4B+n9D1JBdmbRjbG+11q01vAl7d47intcndCJOH2tN1JevBiukBWm/wuLqNTB6KNaYnLsPUg7cpePs8DlyjInZEs7bMvVG+HrzYgPYPJs/BnZvmwemtWpgcOJfkSn0G7mgf5P0VuP8Bqf5jC67jOKQAAAAASUVORK5CYII=" alt="Artimo">
   <div class="brand">ARTIMO <span>COUNTER</span><small id="compTitle">Sčitatel</small></div>
@@ -334,7 +350,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
   <main class="main"><div class="card pad" id="evalMain"></div></main>
 </div>
 
-<div class="credit">ArtimoCounter, created by Martin Hejhal, 2026</div>
+<div class="credit">ArtimoCounter, created by Martin Hejhal, 2026, v3.0</div>
 <div id="modalRoot"></div>
 <div class="toasts" id="toasts"></div>
 
@@ -836,10 +852,10 @@ function selectRound(rid) {
 
 $("compName").addEventListener("change", () => saveComp({ name: $("compName").value.trim() }));
 $("compStateRow").addEventListener("click", e => { const b = e.target.closest("[data-cstate]"); if (b) runAction("cstate", b, () => setCompState(comp, b.dataset.cstate), "Změna stavu soutěže"); });
-async function setCompState(id, a) {
+async function setCompState(id, a, ask = true) {
   const ref = doc(db, "competitions", id);
   if (a === "start") await updateDoc(ref, { startedAt: Date.now(), finishedAt: null });
-  if (a === "finish") { if (!await confirmBox("Ukončit soutěž? Porotcům zmizí z nabídky.", "Ukončit")) return false; await updateDoc(ref, { finishedAt: Date.now() }); }
+  if (a === "finish") { if (ask && !await confirmBox("Ukončit soutěž? Porotcům zmizí z nabídky.", "Ukončit")) return false; await updateDoc(ref, { finishedAt: Date.now() }); }
   if (a === "reopen") await updateDoc(ref, { finishedAt: null });
   log(`Soutěž ${id}: ${a}`); return true;
 }
@@ -862,48 +878,76 @@ async function deleteCompData(id) {
   await commitOps(ops);
   log(`Smazána soutěž ${id} (${ops.length} záznamů)`);
 }
+// Správce zůstává otevřený, dokud ho uživatel nezavře. Potvrzení mazání je přímo v řádku (žádná vnořená okna).
+let mgr = null;
+const mgrState = c => c.finishedAt ? "done" : c.startedAt ? "live" : "ready";
 async function openManager() {
-  const root = $("modalRoot");
-  let snap;
-  try { snap = await getDocs(collection(db, "competitions")); } catch (e) { showError(e, "Seznam soutěží se nenačetl"); return; }
-  const list = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-    .sort((a, b) => (b.startedAt || b.createdAt || 0) - (a.startedAt || a.createdAt || 0));
-  const st = c => c.finishedAt ? "done" : c.startedAt ? "live" : "ready";
-  root.innerHTML = `<div class="backdrop"><div class="modal wide"><div class="mh">Správce soutěží</div><div class="mb">
-    <div class="hint" style="margin-top:0">Porotcům se v aplikaci nabízejí soutěže, které nejsou ukončené a mají je v porotě. Probíhající soutěž se jim zvýrazní.</div>
-    <div style="margin-top:10px">${list.length ? list.map(c => `<div class="mrow ${c.id === comp ? "cur" : ""}">
+  mgr = { list: [], confirm: null, msg: null, loading: true };
+  renderManager(); await refreshManager();
+}
+async function refreshManager() {
+  if (!mgr) return;
+  try {
+    const snap = await getDocs(collection(db, "competitions"));
+    mgr.list = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.startedAt || b.createdAt || 0) - (a.startedAt || a.createdAt || 0));
+  } catch (e) { mgr.msg = { bad: true, text: "Seznam soutěží se nenačetl: " + errText(e) }; }
+  mgr.loading = false; renderManager();
+}
+function renderManager() {
+  const root = $("modalRoot"); if (!mgr) { root.innerHTML = ""; return; }
+  const keepId = root.querySelector("#mDelId")?.value || "";
+  const badge = c => `<span class="badge ${mgrState(c) === "live" ? "open" : mgrState(c) === "done" ? "done" : "ready"}">${{ live: "probíhá", done: "ukončená", ready: "připravená" }[mgrState(c)]}</span>`;
+  const confirmRow = (id, name) => `<div class="mrow" style="background:rgba(255,90,95,.08);border-radius:10px;padding:10px">
+      <div class="nm"><b>Smazat natrvalo „${esc(name)}“?</b><small>Všechny kategorie, kola a hodnocení. Nelze vrátit – pokud ji chcete zachovat, nejdřív ji exportujte.</small></div>
+      <button class="btn sm" data-m="cancel">Zrušit</button><button class="btn sm danger" data-m="confirmDel" data-id="${esc(id)}">Smazat natrvalo</button></div>`;
+  const rows = mgr.loading ? `<div class="hint">Načítám…</div>` : mgr.list.length ? mgr.list.map(c => mgr.confirm === c.id ? confirmRow(c.id, c.name || c.id) : `<div class="mrow ${c.id === comp ? "cur" : ""}">
       <div class="nm"><b>${esc(c.name || c.id)}</b><small>ID ${esc(c.id)} · založeno ${fmtDT(c.createdAt)}${c.startedAt ? ` · zahájeno ${fmtDT(c.startedAt)}` : ""}${c.finishedAt ? ` · ukončeno ${fmtDT(c.finishedAt)}` : ""} · porota ${Object.keys(c.jury || {}).sort().join("") || "–"}</small></div>
-      <span class="badge ${st(c) === "live" ? "open" : st(c) === "done" ? "done" : "ready"}">${{ live: "probíhá", done: "ukončená", ready: "připravená" }[st(c)]}</span>
-      ${st(c) === "ready" ? `<button class="btn sm" data-m="start" data-id="${esc(c.id)}">Zahájit</button>` : st(c) === "live" ? `<button class="btn sm" data-m="finish" data-id="${esc(c.id)}">Ukončit</button>` : `<button class="btn sm" data-m="reopen" data-id="${esc(c.id)}">Otevřít</button>`}
+      ${badge(c)}
+      ${mgrState(c) === "ready" ? `<button class="btn sm" data-m="start" data-id="${esc(c.id)}">Zahájit</button>` : mgrState(c) === "live" ? `<button class="btn sm" data-m="finish" data-id="${esc(c.id)}">Ukončit</button>` : `<button class="btn sm" data-m="reopen" data-id="${esc(c.id)}">Otevřít</button>`}
       <button class="btn sm" data-m="open" data-id="${esc(c.id)}" ${c.id === comp ? "disabled" : ""}>${c.id === comp ? "Otevřená" : "Přepnout"}</button>
-      <button class="btn sm danger" data-m="del" data-id="${esc(c.id)}">Smazat</button></div>`).join("") : `<div class="hint">Žádné soutěže.</div>`}</div>
+      <button class="btn sm danger" data-m="del" data-id="${esc(c.id)}">Smazat</button></div>`).join("") : `<div class="hint">Žádné soutěže.</div>`;
+  const orphan = typeof mgr.confirm === "string" && mgr.confirm.startsWith("id:") ? mgr.confirm.slice(3) : null;
+  root.innerHTML = `<div class="backdrop"><div class="modal wide"><div class="mh">Správce soutěží</div><div class="mb">
+    <div class="hint" style="margin-top:0">Porotcům se nabízejí soutěže, které nejsou ukončené a mají je v porotě. Probíhající soutěž je nutné před smazáním ukončit.</div>
+    ${mgr.msg ? `<div class="${mgr.msg.bad ? "warn" : "okbox"}" style="${mgr.msg.bad ? "border-color:rgba(255,90,95,.5);background:rgba(255,90,95,.1)" : ""}">${mgr.msg.text}</div>` : ""}
+    <div style="margin-top:10px">${rows}</div>
     <div class="sec-t">Zbytková data</div>
     <div class="hint" style="margin-top:0">Starší testovací data bez záznamu soutěže (např. ID „test“ z první verze) smažete podle ID.</div>
-    <div class="row" style="margin-top:6px"><input class="in" id="mDelId" placeholder="ID soutěže"><button class="btn sm danger" data-m="delid">Smazat data</button></div>
-    <div class="merr err"></div></div>
-    <div class="mf"><button class="btn primary" data-m="close">Zavřít</button></div></div></div>`;
-  const close = () => { root.innerHTML = ""; };
-  root.querySelector(".backdrop").onmousedown = e => { if (e.target.classList.contains("backdrop")) close(); };
-  root.querySelector(".modal").onclick = e => {
+    ${orphan ? confirmRow("id:" + orphan, orphan) : `<div class="row" style="margin-top:6px"><input class="in" id="mDelId" placeholder="ID soutěže" value="${esc(keepId)}"><button class="btn sm danger" data-m="delid">Smazat data</button></div>`}
+    </div><div class="mf"><button class="btn primary" data-m="close">Zavřít</button></div></div></div>`;
+  const box = root.querySelector(".backdrop");
+  box.onmousedown = e => { if (e.target === box && !locks.has("manager")) closeManager(); };
+  box.querySelector(".modal").onclick = e => {
     const b = e.target.closest("[data-m]"); if (!b) return;
-    runAction("manager", b, () => managerAction(b), "Správce soutěží");
+    runAction("manager", b, () => managerAction(b.dataset.m, b.dataset.id), "Správce soutěží");
   };
-  async function managerAction(b) {
-    const m = b.dataset.m, id = b.dataset.id;
-    if (m === "close") return close();
-    if (m === "open") { comp = id; startComp(); return close(); }
-    if (["start", "finish", "reopen"].includes(m)) { close(); try { await setCompState(id, m); } finally { openManager(); } return; }
-    if (m === "del" || m === "delid") {
-      const did = m === "del" ? id : root.querySelector("#mDelId").value.trim().toLowerCase();
-      if (!did) return;
-      const c = list.find(x => x.id === did);
-      close();
-      if (!await confirmBox(`Opravdu smazat soutěž <b>${esc(c?.name || did)}</b> (ID ${esc(did)}) včetně všech kategorií, kol a hodnocení? Tuto akci nelze vrátit. Pokud ji chcete zachovat, nejdřív ji exportujte.`, "Smazat natrvalo", "danger")) return openManager();
-      try { await deleteCompData(did); } catch (e) { showError(e, "Mazání se nezdařilo – část dat mohla zůstat, zkuste to znovu"); return openManager(); }
-      toast("Soutěž smazána", did, "ok");
-      if (did === comp) startComp();
-      return openManager();
-    }
+}
+function closeManager() { mgr = null; $("modalRoot").innerHTML = ""; }
+async function managerAction(m, id) {
+  const c = mgr.list.find(x => x.id === id);
+  mgr.msg = null;
+  if (m === "close") return closeManager();
+  if (m === "open") { comp = id; startComp(); return closeManager(); }
+  if (m === "cancel") { mgr.confirm = null; return renderManager(); }
+  if (["start", "finish", "reopen"].includes(m)) { await setCompState(id, m, false); return refreshManager(); }
+  if (m === "del") {
+    if (c && mgrState(c) === "live") { mgr.msg = { bad: true, text: `Soutěž <b>${esc(c.name || c.id)}</b> právě probíhá. Nejdřív ji ukončete tlačítkem Ukončit, potom ji půjde smazat.` }; return renderManager(); }
+    mgr.confirm = id; return renderManager();
+  }
+  if (m === "delid") {
+    const did = ($("mDelId")?.value || "").trim().toLowerCase(); if (!did) return;
+    const known = mgr.list.find(x => x.id === did);
+    if (known && mgrState(known) === "live") { mgr.msg = { bad: true, text: `Soutěž ${esc(did)} právě probíhá. Nejdřív ji ukončete.` }; return renderManager(); }
+    mgr.confirm = "id:" + did; return renderManager();
+  }
+  if (m === "confirmDel") {
+    const did = id.startsWith("id:") ? id.slice(3) : id;
+    mgr.confirm = null; renderManager();
+    try { await deleteCompData(did); }
+    catch (e) { mgr.msg = { bad: true, text: "Mazání se nezdařilo – část dat mohla zůstat, zkuste to znovu. (" + esc(errText(e)) + ")" }; return refreshManager(); }
+    mgr.msg = { bad: false, text: `Soutěž ${esc(did)} byla smazána.` };
+    if (did === comp) startComp();
+    return refreshManager();
   }
 }
 
@@ -1362,6 +1406,12 @@ function renderEvalList() {
 }
 $("evalList").addEventListener("click", e => { const it = e.target.closest("[data-rid]"); if (it) { evalRid = it.dataset.rid; editMode = false; watchEvalSheets(evalRid); renderAll(); } });
 
+// krátká poznámka v levém sloupci vyhodnocení (pracovní plochu nic nepřekrývá)
+function evalNote(html) {
+  const box = $("evalIssues"); if (!box) return;
+  const el = document.createElement("div"); el.className = "it"; el.innerHTML = html;
+  box.prepend(el); setTimeout(() => el.remove(), 8000);
+}
 // Při psaní do buňky (ruční úpravy) se tabulka nepřekresluje – dorovná se, až uživatel buňky opustí.
 let evalPending = false;
 const typingInEval = () => { const a = document.activeElement; return !!a && a.classList?.contains("mk-in") && $("evalMain").contains(a); };
@@ -1538,7 +1588,7 @@ $("evalMain").addEventListener("change", e => {
   const [c, d, j] = ed.split("|");
   const v = e.target.value.trim() === "" ? null : Number(e.target.value);
   if (v !== null && (!Number.isInteger(v) || v < 1 || v > r.couples.length)) {
-    e.target.classList.add("bad"); toast("Neplatné umístění", `Zadejte číslo 1–${r.couples.length}.`); return;
+    e.target.classList.add("bad"); evalNote(`Neplatné umístění „${esc(e.target.value)}“ – zadejte číslo 1–${r.couples.length}.`); return;
   }
   runAction(`edit:${ed}`, null, async () => {
     const prev = evalSheets.get(`${d}_${j}`);
@@ -1587,7 +1637,7 @@ $("evalMain").addEventListener("click", e => {
     }
     if (act === "confirmFinal") {
       const { sk, stale, issues } = finalData(r);
-      if (!sk || stale || issues.length) { toast("Výsledky nelze potvrdit", "Opravte nejdřív chyby v lístcích (vlevo)."); return; }
+      if (!sk || stale || issues.length) { evalNote("Výsledky nelze potvrdit – nejdřív opravte chyby v lístcích."); return; }
       await updateDoc(roundRef(r.id), { status: "evaluated", evaluatedAt: Date.now(), lockedAt: r.lockedAt || Date.now(),
         result: { kind: "final", overall: Object.fromEntries(r.couples.map((c, i) => [c, sk.overall[i]])), rule: Object.fromEntries(r.couples.map((c, i) => [c, sk.rule[i]])) } });
       editMode = false; log(`Výsledky finále potvrzeny: ${titleOf(r)}`);
@@ -1663,11 +1713,33 @@ $("selfTestBtn").onclick = () => {
     [{ label: "Zavřít", cls: "primary", value: true }]);
 };
 
+// ===================== VSTUPNÍ HESLO =====================
+// Jen „psychologická“ ochrana – heslo je v kódu uložené jako otisk SHA-256, ne čitelně.
+const PW_HASH = "bc793fc0d588f5ac8eec1666321b5a2fa1ccf38bda09b52b5466312956bcb49f";
+async function sha256(t) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+let unlocked = false;
+try { unlocked = sessionStorage.getItem("ac_unlocked") === "1"; } catch {}
+function unlock() { unlocked = true; $("lock").classList.add("hidden"); try { sessionStorage.setItem("ac_unlocked", "1"); } catch {} bootSession(); }
+$("lockForm").onsubmit = async e => {
+  e.preventDefault();
+  let ok = false;
+  try { ok = (await sha256($("lockPw").value.trim())) === PW_HASH; } catch { ok = $("lockPw").value.trim() === "mioner"; }
+  if (ok) unlock();
+  else { $("lockErr").textContent = "Nesprávné heslo."; const b = $("lockForm"); b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake"); $("lockPw").select(); }
+};
+
 // ===================== PŘIPOJENÍ =====================
 function setConn(cls, text) { $("connDot").className = "dot " + cls; $("connText").textContent = text; }
-let started = false;
-onAuthStateChanged(auth, user => { if (user && !started) { started = true; startComp(); } });
-signInAnonymously(auth).catch(e => { setConn("bad", "Přihlášení selhalo"); log("CHYBA přihlášení: " + e.code); });
+let started = false, sessionBooted = false;
+function bootSession() {
+  if (sessionBooted) return; sessionBooted = true;
+  onAuthStateChanged(auth, user => { if (user && !started) { started = true; startComp(); } });
+  signInAnonymously(auth).catch(e => { setConn("bad", "Přihlášení selhalo"); log("CHYBA přihlášení: " + e.code); });
+}
+if (unlocked) unlock(); else setTimeout(() => $("lockPw").focus(), 50);
 </script>
 </body>
 </html>
