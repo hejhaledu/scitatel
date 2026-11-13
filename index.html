@@ -114,17 +114,72 @@ select.in option{background:#11154a}
 .rl-row.out .st{opacity:.6}
 .rl-row.p1 .st{color:#f5d36a;font-weight:700}.rl-row.p2 .st{color:#d8dde8;font-weight:700}.rl-row.p3 .st{color:#e0a370;font-weight:700}
 .rl-row.dns .nm,.rl-row.dns .n{opacity:.35}
-.cname{display:block;font-size:10.5px;font-weight:500;color:var(--text2);line-height:1.2;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cname{display:block;font-size:10.5px;font-weight:500;color:var(--text2);line-height:1.2;max-width:150px;margin:0 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod.p1 .cname{color:rgba(10,12,40,.7)}
+.xtab td.cpl.wd{text-decoration:line-through;opacity:.55}
 #printArea{display:none}
-.res{font-size:12px;line-height:1.4}
-.res h2{font-size:17px;margin:18px 0 2px}.res h2:first-child{margin-top:0}
-.res .rmeta{font-size:11px;color:var(--text2);margin-bottom:8px}
-.res table{border-collapse:collapse;width:100%;margin:6px 0 12px}
-.res th,.res td{border:1px solid var(--stroke);padding:3px 6px;text-align:center}
-.res td.l,.res th.l{text-align:left}
-.res h4{margin:10px 0 2px;font-size:12.5px;break-after:avoid}.res tr{break-inside:avoid}
-.res .cat{break-inside:auto}
-.res .cat + .cat{break-before:page;margin-top:24px}
+.sup{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:18px 20px;max-width:1600px;margin:0 auto}
+.sup-wide{grid-column:1 / -1}
+@media(max-width:980px){.sup{grid-template-columns:1fr}}
+.page.on#page-support{display:block}
+.dev-l{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--stroke)}
+.dev-l:first-child{border-top:0}
+.dev-letter{width:40px;height:40px;border-radius:12px;background:rgba(245,211,168,.12);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:18px}
+.dev-letter small{display:block;font-size:9px;font-weight:600;color:var(--text2);margin-top:-6px}
+.dev-row{display:grid;grid-template-columns:18px minmax(120px,1.2fr) minmax(160px,2fr) 110px auto;gap:10px;align-items:center;padding:5px 0;font-size:13px}
+.dev-row .ph{color:var(--text2);font-size:12px}
+.dev-row.kicked{opacity:.55}
+.dev-row .acts{display:flex;gap:6px;justify-content:flex-end}
+.pill{display:inline-block;font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:9px;background:rgba(255,255,255,.08);color:var(--text2)}
+.pill.ok{background:rgba(48,209,88,.16);color:#7be39a}.pill.bad{background:rgba(255,69,58,.16);color:#ff8a8d}
+.rl-row{cursor:pointer}.rl-row:hover{background:rgba(255,255,255,.04)}
+.rl-row.wd .n,.rl-row.wd .nm{opacity:.42;text-decoration:line-through}.rl-row.wd .st{color:#ffb84d}
+.modal.wide{width:min(1120px,96vw);max-width:none}
+.paper-prev{max-height:62vh;overflow:auto;margin-top:12px;border-radius:10px;background:#fff;padding:22px 26px}
+/* papírová (černobílá) výsledková listina – stejná v náhledu i v tisku */
+.paper{color:#111;font:11px/1.35 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#fff}
+.paper .pp-cat + .pp-cat{break-before:page;margin-top:40px}
+.paper .pp-head{display:flex;align-items:center;gap:12px;border-bottom:2.5px solid #111;padding-bottom:8px;margin-bottom:14px}
+.paper .pp-head img{height:34px;filter:invert(1) grayscale(1)}
+.paper .pp-comp{font-size:13px;font-weight:700;letter-spacing:.02em;text-transform:uppercase}
+.paper .pp-date{font-size:10.5px;color:#444}
+.paper h1{font-size:22px;margin:0 0 3px;letter-spacing:-.01em}
+.paper .pp-meta{font-size:10.5px;color:#333;margin-bottom:10px}
+.paper .pp-note{border:1px solid #111;padding:5px 8px;font-weight:600;margin:8px 0}
+.paper .pp-jury{display:flex;flex-wrap:wrap;gap:4px 18px;border:1px solid #bbb;border-radius:4px;padding:6px 10px;margin:8px 0 4px}
+.paper .pp-jury .pp-h3{width:100%;margin:0 0 2px}
+.paper .pp-jury span b{display:inline-block;width:14px}
+.paper .pp-h2{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:18px 0 6px;padding-bottom:3px;border-bottom:1px solid #111;break-after:avoid}
+.paper .pp-sub{font-weight:400;text-transform:none;letter-spacing:0;color:#444;font-size:10.5px;margin-left:6px}
+.paper .pp-h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px}
+.paper .pp-small{font-size:9.5px;color:#444;margin-top:4px}
+.paper .pp-t{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.paper .pp-t th{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;border-bottom:1.5px solid #111;padding:4px 5px;text-align:center}
+.paper .pp-t td{border-bottom:1px solid #ccc;padding:3px 5px;text-align:center}
+.paper .pp-t .l{text-align:left}
+.paper .pp-t tr{break-inside:avoid}
+.paper .pp-t td.pl{font-weight:700;white-space:nowrap}
+.paper .pp-t tr.top td{background:#efefef}
+.paper .pp-t tr.top td.pl{font-size:12px}
+.paper .pp-t tr.wd td{color:#666}
+.paper .pp-rank td.l{font-size:11.5px}
+.paper .pp-dances{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
+.paper .pp-dance{break-inside:avoid}
+.paper .pp-sk th.j,.paper .pp-sk td.j{background:#f4f4f4}
+.paper .pp-sk td.mj{color:#333;font-size:10px}
+.paper .pp-sk td.dec{font-weight:700;color:#000;outline:1.5px solid #111;outline-offset:-2px}
+.paper .pp-sk small{font-size:8.5px;margin-left:1px}
+.paper .pp-x td,.paper .pp-x th{padding:2px 3px}
+.paper .pp-x th.dg{border-bottom:1px solid #111}
+.paper .pp-x .dl{border-left:1.5px solid #111}
+.paper .pp-x td.x{font-weight:700;width:14px}
+.paper .pp-x td.nm{font-size:10px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.paper .pp-x tr.q td{background:#f4f4f4}
+.paper .pp-x tr.cut td{border-top:2px solid #111}
+.paper .pp-foot{margin-top:18px;padding-top:5px;border-top:1px solid #999;font-size:9px;color:#555}
+.paper .pp-round.wide{page:wide}
+@page{size:A4;margin:12mm 11mm 14mm}
+@page wide{size:A4 landscape;margin:10mm}
 .muted{color:var(--text2)}.faint{color:var(--text3)}
 .hint{font-size:12px;color:var(--text2);line-height:1.45;margin-top:4px}
 .err{color:#ff8a8d;font-size:12px;margin-top:6px}
@@ -273,8 +328,9 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
   .muted,.faint,.legend,.meta{color:#333}
   body.printres > *:not(#printArea){display:none!important}
   body.printres #printArea{display:block;color:#000}
-  body.printres .res th,body.printres .res td{border-color:#999;color:#000}
-  body.printres .res .rmeta{color:#333}
+  body.printres{background:#fff!important}
+  body.printres .paper{font-size:10.5px}
+  body.printres .pp-dances{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -288,7 +344,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
     <button class="btn primary lg full" style="margin-top:12px" type="submit">Vstoupit</button>
     <div class="err" id="lockErr" style="text-align:center;min-height:16px"></div>
   </form>
-  <div class="credit" style="position:absolute;bottom:0;left:0;right:0">ArtimoCounter, created by Martin Hejhal, 2026, v4.0</div>
+  <div class="credit" style="position:absolute;bottom:0;left:0;right:0">ArtimoCounter, created by Martin Hejhal, 2026, v4.1</div>
 </div>
 <header>
   <img class="logo" src="data:image/png;base64,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" alt="Artimo">
@@ -296,6 +352,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
   <div class="seg lg" id="pageSeg">
     <button data-page="run" class="on">Průběh soutěže</button>
     <button data-page="eval">Vyhodnocení<span class="badge-n" id="evalCnt" hidden></span></button>
+    <button data-page="support">Podpora<span class="badge-n" id="supCnt" hidden></span></button>
   </div>
   <div class="sp"></div>
   <div class="conn"><span class="dot" id="connDot"></span><span id="connText">Připojování…</span></div>
@@ -356,7 +413,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
       <div class="sect-body">
         <div id="juryList"></div>
         <button class="btn sm full" id="addJudgeBtn" style="margin-top:8px">+ Přidat porotce</button>
-        <div class="row wrap" style="margin-top:8px"><button class="btn sm" id="diagBtn">Deník přenosu…</button>
+        <div class="row wrap" style="margin-top:8px">
           <label class="row" style="gap:6px;font-size:12px;color:var(--text2)"><input type="checkbox" id="soundSw"> Zvuk, když dorazí všechny lístky</label></div>
       </div>
     </details>
@@ -371,17 +428,6 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
       </div>
     </details>
 
-
-    <details class="sect">
-      <summary>Kontrolní testy</summary>
-      <div class="sect-body"><div class="hint" style="margin-top:0">Ověří výpočty (skating, postup, shody, skupiny) a kontroly vstupů proti známým výsledkům. Nic nezapisuje do databáze.</div>
-        <button class="btn sm full" id="selfTestBtn" style="margin-top:8px">Spustit testy</button></div>
-    </details>
-
-    <details class="sect">
-      <summary>Log přenosu</summary>
-      <div class="sect-body"><div id="log" style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--text2);white-space:pre-wrap;max-height:200px;overflow:auto"></div></div>
-    </details>
   </aside>
   <main class="main" id="runMain"></main>
   <aside id="roster"></aside>
@@ -399,7 +445,32 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
   <main class="main"><div class="card pad" id="evalMain"></div></main>
 </div>
 
-<div class="credit">ArtimoCounter, created by Martin Hejhal, 2026, v4.0</div>
+<!-- ===================== PODPORA ===================== -->
+<div class="page" id="page-support">
+  <div class="sup">
+    <div class="card pad sup-wide">
+      <div class="row"><h2 style="margin:0;font-size:18px">Správa zařízení</h2><div class="grow"></div><span class="faint" id="devSum" style="font-size:12px"></span></div>
+      <div class="hint">Každý telefon, který se v této soutěži přihlásil jako porotce. Hodnotit může jen jedno zařízení na písmeno (✓). Odpojené zařízení se nemůže znovu přihlásit, dokud ho nepovolíte.</div>
+      <div id="devList" style="margin-top:10px"></div>
+    </div>
+    <div class="card pad sup-wide">
+      <div class="row"><h2 style="margin:0;font-size:18px">Deník přenosu</h2><div class="grow"></div><button class="btn sm" id="diagDl">Stáhnout souhrn</button></div>
+      <div class="hint">Údaje měří telefon každého porotce sám (nezávisle na hodinách) a posílá je s tepem jednou za minutu.</div>
+      <div id="diagBox" style="overflow-x:auto;margin-top:10px"></div>
+    </div>
+    <div class="card pad">
+      <h2 style="margin:0;font-size:18px">Log přenosu</h2>
+      <div id="log" style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--text2);white-space:pre-wrap;max-height:420px;overflow:auto;margin-top:10px"></div>
+    </div>
+    <div class="card pad">
+      <h2 style="margin:0;font-size:18px">Kontrolní testy</h2>
+      <div class="hint">Ověří výpočty (skating, postup, shody, skupiny, pořadí) a kontroly vstupů proti známým výsledkům. Nic nezapisuje do databáze.</div>
+      <button class="btn sm" id="selfTestBtn" style="margin-top:10px">Spustit testy</button>
+    </div>
+  </div>
+</div>
+
+<div class="credit">ArtimoCounter, created by Martin Hejhal, 2026, v4.1</div>
 <div id="modalRoot"></div>
 <div id="printArea"></div>
 <div class="toasts" id="toasts"></div>
@@ -561,6 +632,7 @@ const titleOf = r => r.category ? `${r.category} · ${r.label}` : (r.name || r.i
 const byCreated = (a, b) => (a.created || 0) - (b.created || 0);
 const nextId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
 const lettersOf = jury => Object.keys(jury || {}).sort();
+const compState = () => compExists ? (compDoc.finishedAt ? "done" : compDoc.startedAt ? "live" : "ready") : null;
 
 // ===================== LOGIKA (bez vazby na UI) =====================
 const MAX_COUPLE = 9999, MAX_COUPLES = 1000, MAX_FINAL = 12;
@@ -789,10 +861,10 @@ async function commitOps(ops) {
 
 // ----- modální okna -----
 // onOpen(root) se zavolá hned po vykreslení – žádné opožděné hledání prvků.
-function modal(title, bodyHtml, buttons, onOpen) {
+function modal(title, bodyHtml, buttons, onOpen, size = "") {
   return new Promise(resolve => {
     const root = $("modalRoot");
-    root.innerHTML = `<div class="backdrop"><div class="modal"><div class="mh">${title}</div><div class="mb">${bodyHtml}</div>
+    root.innerHTML = `<div class="backdrop"><div class="modal ${size}"><div class="mh">${title}</div><div class="mb">${bodyHtml}</div>
       <div class="mf">${buttons.map((b, i) => `<button class="btn ${b.cls || ""}" data-i="${i}">${b.label}</button>`).join("")}</div></div></div>`;
     const box = root.querySelector(".backdrop");
     let busy = false, closed = false;
@@ -832,7 +904,7 @@ const lastSk = new Map();
 // Fronta je klíčovaná „soutěž|kolo“ – po přepnutí soutěže se potvrzení zapíše do správné soutěže.
 // Neúspěšný zápis se vrátí do fronty a zkusí se znovu.
 const ackWatch = new Map(), ackSeen = new Map(), ackQueue = new Map(); let ackTimer = null;
-const heard = new Map(), completeRounds = new Set(), sheetCache = new Map();   // v4.0: přítomnost (čas příjmu), kompletní kola, lístky v paměti
+const heard = new Map(), devHeard = new Map(), completeRounds = new Set(), sheetCache = new Map();   // v4.0: přítomnost (čas příjmu), kompletní kola, lístky v paměti
 const ACK_AFTER_LOCK = 15 * 60000;   // zamčené kolo sledujeme ještě 15 min (QR, opožděné lístky)
 function ackWanted(r) {
   if (r.status === "open") return true;
@@ -900,6 +972,7 @@ function showPage(p) {
   document.querySelectorAll("#pageSeg button").forEach(b => b.classList.toggle("on", b.dataset.page === p));
   $("page-run").classList.toggle("on", p === "run");
   $("page-eval").classList.toggle("on", p === "eval");
+  $("page-support").classList.toggle("on", p === "support");
   renderAll();
 }
 
@@ -907,7 +980,7 @@ function showPage(p) {
 function startComp() {
   unsubs.forEach(u => u()); unsubs = []; unsubRun?.(); unsubEval?.(); unsubRun = unsubEval = null;
   compDoc = {}; compExists = false; cats.clear(); rounds.clear(); presence.clear(); runSheets.clear(); evalSheets.clear(); knownRevs.clear(); lastSk.clear(); advanceDraft.clear();
-  ackWatch.forEach(u => u()); ackWatch.clear(); ackSeen.clear(); heard.clear(); sheetCache.clear();
+  ackWatch.forEach(u => u()); ackWatch.clear(); ackSeen.clear(); heard.clear(); devHeard.clear(); sheetCache.clear();
   selCat = selRound = evalRid = null; editMode = false;
   store.set("ac_comp", comp);
   const lerr = e => showError(e, "Načítání dat");
@@ -921,8 +994,12 @@ function startComp() {
   }, err => { setConn("bad", "Chyba: " + err.code); log("CHYBA čtení kol: " + err.message); }));
   unsubs.push(onSnapshot(collection(db, "competitions", comp, "judges"), snap => {
     presence = new Map(snap.docs.map(d => [d.id, d.data({ serverTimestamps: "estimate" })]));
-    for (const [j, p] of presence) hearJudge(j, tsMs(p.lastSeen));
+    for (const [j, p] of presence) {
+      hearJudge(j, tsMs(p.lastSeen));
+      for (const [id, d] of Object.entries(p.devices || {})) if (d) hearDevice(`${j}|${id}`, tsMs(d.at));
+    }
     if (page === "run" && selRound) renderRunMain();
+    renderSupBadge(); if (page === "support") renderSupport();
   }, lerr));
   renderAll();
 }
@@ -961,6 +1038,7 @@ function renderAll() {
   $("evalCnt").hidden = !waiting; $("evalCnt").textContent = waiting;
   if (page === "run") { renderSide(); renderRunMain(); renderRoster(); }
   else { renderEvalList(); renderEvalMain(); }
+  renderSupBadge(); if (page === "support") renderSupport();
 }
 
 // ===================== POSTRANNÍ PANEL =====================
@@ -1339,7 +1417,7 @@ function planNext(cat, rs = roundsOfCat(cat.id)) {
   const last = rs[rs.length - 1];
   if (last && last.type === "final") return { blocked: last.status === "evaluated" ? "Kategorie je dokončená." : "Finále probíhá." };
   if (last && last.status !== "evaluated") return { blocked: `Nejdřív vyhodnoťte kolo „${last.label}“.` };
-  const couples = last ? (last.qualified || []) : cat.couples;
+  const couples = (last ? (last.qualified || []) : cat.couples).filter(c => !isWd(cat.id, c));
   const key = cat.key || [];
   let ki = last ? (last.keyIndex ?? -1) + 1 : 0;
   while (ki < key.length && key[ki] >= couples.length) ki++;
@@ -1683,9 +1761,12 @@ function prelimData(r, sh = evalSheets) {
   }
   return { crosses, totals, issues };
 }
-function prelimCut(r, t, n) {
+// Odstoupivší soutěžící nemůže postoupit – řadí se na konec (hodnota −1).
+function prelimCut(r, t0, n) {
+  const t = Object.fromEntries(r.couples.map(c => [c, isWd(r.categoryId, c) ? -1 : (t0[c] ?? 0)]));
   const sorted = [...r.couples].sort((a, b) => t[b] - t[a] || a - b);
-  n = Math.max(1, Math.min(n, sorted.length));
+  const active = sorted.filter(c => t[c] >= 0).length;
+  n = Math.max(1, Math.min(n, active || sorted.length));
   const v = t[sorted[n - 1]], next = sorted[n] !== undefined ? t[sorted[n]] : null;
   return { sorted, n, tie: next !== null && next === v, down: sorted.filter(c => t[c] > v).length, up: sorted.filter(c => t[c] >= v).length, value: v };
 }
@@ -1719,7 +1800,7 @@ function prelimView(r) {
       <tr><th></th><th></th>${multiG ? "<th></th>" : ""}${r.dances.map(d => r.judges.map((j, i) => `<th class="${i === 0 ? "d" : ""}" style="${i === 0 ? "" : "border-left:none"}">${j}${edited.has(`${d}_${j}`) ? '<span class="tag ed">✎</span>' : ""}</th>`).join("")).join("")}<th></th><th></th></tr>
       ${cut.sorted.map((c, i) => {
         const q = evaluated ? r.qualified.includes(c) : qualified.has(c), isCut = !evaluated && !cut.tie && i === cut.n - 1;
-        return `<tr class="${q ? "q" : ""} ${isCut ? "cut" : ""} ${tieSet.has(c) && !evaluated ? "tie" : ""}"><td class="faint">${i + 1}</td><td class="cpl">${c}</td>${multiG ? `<td class="faint">${groupOf[c] || ""}</td>` : ""}
+        return `<tr class="${q ? "q" : ""} ${isCut ? "cut" : ""} ${tieSet.has(c) && !evaluated ? "tie" : ""}"><td class="faint">${i + 1}</td><td class="cpl ${isWd(r.categoryId, c) ? "wd" : ""}" title="${esc(nm(c))}${isWd(r.categoryId, c) ? " – odstoupil" : ""}">${c}</td>${multiG ? `<td class="faint">${groupOf[c] || ""}</td>` : ""}
           ${r.dances.map(d => r.judges.map((j, k) => `<td class="x ${editMode ? "ed" : ""} ${k === 0 ? "dl" : ""}" ${editMode ? `data-tog="${c}|${d}|${j}"` : ""}>${crosses[c][d].has(j) ? "✕" : ""}</td>`).join("")).join("")}
           <td class="sum">${totals[c]}</td><td>${q ? "✓" : tieSet.has(c) && !evaluated ? "?" : ""}</td></tr>`;
       }).join("")}
@@ -1757,7 +1838,8 @@ function finalView(r) {
     const labels = placeLabels(sk.overall);
     const order = r.couples.map((c, i) => ({ c, i, p: sk.overall[i], l: labels[i] })).sort((a, b) => a.p - b.p || a.c - b.c);
     const pc = p => p === 1 ? "p1" : p > 1 && p <= 2.5 ? "p2" : p > 2 && p <= 3.5 ? "p3" : "";
-    html += `<div class="row no-print" style="margin-top:14px">${evaluated ? `<div class="okbox" style="margin:0;flex:1">✓ Výsledky potvrzeny ${fmtDT(r.evaluatedAt)}</div>` : `<button class="btn primary" data-act="confirmFinal" ${stale ? "disabled" : ""}>Potvrdit výsledky finále</button>${stale ? `<span class="muted">Zobrazen poslední platný výsledek – opravte chyby vlevo.</span>` : ""}`}</div>
+    html += `<div class="row no-print" style="margin-top:14px">${evaluated ? `<div class="okbox" style="margin:0;flex:1">✓ Výsledky potvrzeny ${fmtDT(r.evaluatedAt)}</div>` : `<button class="btn primary" data-act="confirmFinal" ${stale ? "disabled" : ""}>Potvrdit výsledky finále</button>${stale ? `<span class="muted">Zobrazen poslední platný výsledek – opravte chyby vlevo.</span>` : ""}`}
+      ${evaluated ? `<div class="grow"></div><button class="btn" data-act="results">Výsledková listina</button>${compState() === "live" ? `<button class="btn primary" data-act="finishComp">Ukončit soutěž</button>` : compState() === "done" ? `<span class="pill">Soutěž ukončena</span>` : ""}` : ""}</div>
       <div class="${stale ? "stale" : ""}"><div class="sec-t">Výsledky</div>
       <div class="podium">${order.map(o => `<div class="pod ${pc(o.p)}"><div class="pl">${o.l} místo</div><div class="cn">${o.c}</div>${nm(o.c) ? `<div class="cname" style="margin:2px auto 0">${esc(nm(o.c))}</div>` : ""}</div>`).join("")}</div>
       <div class="sec-t">Celkové pořadí</div>
@@ -1848,6 +1930,8 @@ $("evalMain").addEventListener("click", e => {
   const n = e.target.closest("[data-n]")?.dataset.n; if (n) { advanceDraft.set(r.id, +n); renderEvalMain(true); return; }
   const btn = e.target.closest("button"), act = e.target.closest("[data-act]")?.dataset.act; if (!act) return;
   if (act === "print") { window.print(); return; }
+  if (act === "results") { $("resultsBtn").onclick(); return; }
+  if (act === "finishComp") { runAction("cstate", btn, async () => { if (await setCompState(comp, "finish")) toast("Soutěž ukončena", "Výsledkovou listinu najdete v panelu Soutěž.", "ok"); }, "Ukončení soutěže"); return; }
   if (act === "dlQual") { download(`postup_${slug(r.category || "kategorie")}_${slug(r.label)}.json`,
     { format: "artimo-counter/postup", version: 2, competition: comp, category: r.category, fromRound: r.label, couples: r.qualified, createdAt: new Date().toISOString() }); return; }
   if (act === "nextRound") { const c = cats.get(r.categoryId); if (c) startRoundModal(c); else alertBox("Kolo nepatří k žádné kategorii."); return; }
@@ -1992,13 +2076,13 @@ function diagRows() {
   });
 }
 const sec = ms => ms == null ? "–" : ms < 1000 ? `${ms} ms` : `${(ms / 1000).toFixed(1)} s`;
-$("diagBtn").onclick = () => {
+function diagTable() {
   const rows = diagRows();
-  modal("Deník přenosu", `<div class="hint" style="margin-top:0">Údaje posílá telefon každého porotce (doba doručení měří telefon sám, nezávisle na hodinách).</div>
-    <div style="overflow-x:auto;margin-top:10px"><table class="tbl"><tr><th>Porotce</th><th>Stav</th><th>Odesláno</th><th>Doručení ø / max</th><th>Výpadky</th><th>Bez signálu</th><th>Odmítnuto</th><th>QR</th><th>Převzetí</th><th>Displej drží</th><th>Verze</th></tr>
-    ${rows.map(r => `<tr><td class="l"><b>${r.j}</b> ${esc(r.name)}</td><td>${r.state}</td><td>${r.delivered}/${r.sends}</td><td>${sec(r.avg)} / ${sec(r.max)}</td><td>${r.offN}×</td><td>${r.offS} s</td><td>${r.fails}</td><td>${r.qr}</td><td>${r.takeovers}</td><td>${r.wake}</td><td>${esc(r.ver)}</td></tr>`).join("")}</table></div>`,
-    [{ label: "Stáhnout souhrn", action: () => { downloadText(`denik_prenosu_${comp}_${stampNow()}.txt`, diagText(rows)); return false; } }, { label: "Zavřít", cls: "primary", value: true }]);
-};
+  if (!rows.length) return `<div class="hint">Soutěž nemá porotu.</div>`;
+  return `<table class="tbl"><tr><th class="l">Porotce</th><th>Stav</th><th>Odesláno</th><th>Doručení ø / max</th><th>Výpadky</th><th>Bez signálu</th><th>Odmítnuto</th><th>QR</th><th>Převzetí</th><th>Displej drží</th><th>Verze</th></tr>
+    ${rows.map(r => `<tr><td class="l"><b>${r.j}</b> ${esc(r.name)}</td><td>${r.state}</td><td>${r.delivered}/${r.sends}</td><td>${sec(r.avg)} / ${sec(r.max)}</td><td>${r.offN}×</td><td>${r.offS} s</td><td>${r.fails}</td><td>${r.qr}</td><td>${r.takeovers}</td><td>${r.wake}</td><td>${esc(r.ver)}</td></tr>`).join("")}</table>`;
+}
+$("diagDl").onclick = () => downloadText(`denik_prenosu_${comp}_${stampNow()}.txt`, diagText(diagRows()));
 function diagText(rows) {
   const L = [`Deník přenosu – ${compDoc.name || comp} (${comp})`, `Vytvořeno: ${new Date().toLocaleString("cs-CZ")}`, ""];
   for (const r of rows) {
@@ -2102,7 +2186,10 @@ function standings(cat, rs = roundsOfCat(cat.id)) {
     for (const c of r.couples) Object.assign(get(c), { status: "active", round: r });
     if (r.type === "prelim" && r.status === "evaluated" && Array.isArray(r.qualified)) {
       const q = new Set(r.qualified), t = r.result?.totals || {};
-      const out = r.couples.filter(c => !q.has(c)).sort((a, b) => (t[b] ?? 0) - (t[a] ?? 0) || a - b);
+      const allOut = r.couples.filter(c => !q.has(c)), wdOut = allOut.filter(c => isWd(cat.id, c));
+      const out = allOut.filter(c => !isWd(cat.id, c)).sort((a, b) => (t[b] ?? 0) - (t[a] ?? 0) || a - b);
+      if (wdOut.length) { const from = q.size + out.length + 1, to = q.size + allOut.length;
+        for (const c of wdOut) Object.assign(get(c), { status: "wd", place: from, label: from === to ? `${from}.` : `${from}.–${to}.`, round: r, crosses: t[c] ?? 0 }); }
       let i = 0;
       while (i < out.length) {
         let k = i; while (k + 1 < out.length && (t[out[k + 1]] ?? 0) === (t[out[i]] ?? 0)) k++;
@@ -2117,7 +2204,8 @@ function standings(cat, rs = roundsOfCat(cat.id)) {
       r.couples.forEach((c, i) => Object.assign(get(c), { status: "placed", place: pl[i], label: labels[i], round: r }));
     }
   }
-  const rank = o => o.status === "placed" || o.status === "out" ? o.place : o.status === "active" ? 0.5 : 1e6;
+  for (const o of info.values()) if ((o.status === "active" || o.status === "dns" || o.status === "waiting") && isWd(cat.id, o.c)) { o.status = "wd"; o.place = null; o.label = ""; }
+  const rank = o => o.status === "placed" || o.status === "out" ? o.place : o.status === "wd" ? (o.place ?? 1e5) : o.status === "active" ? 0.5 : 1e6;
   return [...info.values()].sort((a, b) => rank(a) - rank(b) || a.c - b.c);
 }
 
@@ -2136,74 +2224,197 @@ function renderRoster() {
   const inGame = st.filter(o => o.status === "active").length;
   const row = o => {
     const medal = o.status === "placed" && o.place <= 3.5 ? ` p${Math.min(3, Math.round(o.place))}` : "";
-    const stt = o.status === "placed" ? o.label : o.status === "out" ? `${o.label} · ${esc(o.round.label)}` : o.status === "active" ? (o.round?.type === "final" ? "finále" : esc(o.round.label)) : o.status === "dns" ? "nenastoupil" : "";
-    return `<div class="rl-row ${o.status}${medal}" title="${esc(nm(o.c))}"><span class="n">${o.c}</span><span class="nm">${esc(nm(o.c)) || '<span class="faint">—</span>'}</span><span class="st">${stt}</span></div>`;
+    const stt = o.status === "placed" ? o.label : o.status === "out" ? `${o.label} · ${esc(o.round.label)}` : o.status === "wd" ? `odstoupil${o.round ? " · " + esc(o.round.label) : ""}` : o.status === "active" ? (o.round?.type === "final" ? "finále" : esc(o.round.label)) : o.status === "dns" ? "nenastoupil" : "";
+    return `<div class="rl-row ${o.status}${medal}" data-wd="${cat.id}|${o.c}" title="${esc(nm(o.c))} – klepnutím označíte odstoupení"><span class="n">${o.c}</span><span class="nm">${esc(nm(o.c)) || '<span class="faint">—</span>'}</span><span class="st">${stt}</span></div>`;
   };
   el.innerHTML = `<div class="sect" style="padding:12px 14px"><div class="sec-t" style="margin-top:0">${esc(cat.name)}</div>
-    <div class="faint" style="font-size:11px;margin-bottom:6px">${pary(cat.couples.length)}${done ? " · výsledky" : inGame ? ` · v soutěži ${inGame}` : ""}</div>
+    <div class="faint" style="font-size:11px;margin-bottom:6px">${cat.couples.length} startujících${done ? " · výsledky" : inGame ? ` · v soutěži ${inGame}` : ""}${st.some(o => o.status === "wd") ? ` · odstoupilo ${st.filter(o => o.status === "wd").length}` : ""}</div>
     ${list.map(row).join("")}</div>`;
 }
 
-// ===================== v4.0: VÝSLEDKOVÁ LISTINA =====================
-async function resultsHtml(catIds) {
+// ===================== v4.1: ODSTOUPENÍ =====================
+// Uloženo v dokumentu soutěže: withdrawn: { <ID kategorie>: { "<číslo>": { at, round } } }
+const isWd = (cid, c) => !!compDoc.withdrawn?.[cid]?.[String(c)];
+$("roster").addEventListener("click", e => {
+  const row = e.target.closest("[data-wd]"); if (!row) return;
+  const [cid, cs] = row.dataset.wd.split("|"), c = Number(cs), cat = cats.get(cid); if (!cat) return;
+  const wd = isWd(cid, c), who = `<b>${c}</b>${nm(c) ? " – " + esc(nm(c)) : ""}`;
+  const cur = roundsOfCat(cid).filter(r => r.couples.includes(c)).pop();
+  if (!wd) {
+    modal("Odstoupení", `<p style="line-height:1.5;margin:4px 0 0">${who} v kategorii <b>${esc(cat.name)}</b> odstoupil?</p>
+      <div class="hint">Nebude zařazen do dalších kol a nemůže postoupit. V otevřeném kole ho porotci uvidí přeškrtnutého a nepůjde označit. Ve výsledcích bude uveden jako „odstoupil“. Lístky, které už porotci odeslali, se nemění.</div><div class="merr err"></div>`,
+      [{ label: "Zrušit" }, { label: "Odstoupil", cls: "danger", action: async () => {
+        await updateDoc(compRef(), { [`withdrawn.${cid}.${c}`]: { at: Date.now(), round: cur?.id || null } });
+        audit("odstoupení", { category: cid, couple: c, round: cur?.id || null }); log(`Odstoupil: ${c} (${cat.name})`);
+      } }]);
+  } else {
+    modal("Vrátit do soutěže", `<p style="line-height:1.5;margin:4px 0 0">${who} je v kategorii <b>${esc(cat.name)}</b> označen jako odstoupivší. Vrátit ho do soutěže?</p>
+      <div class="hint">Do kola, které mezitím vzniklo bez něj, se automaticky nepřidá.</div><div class="merr err"></div>`,
+      [{ label: "Zrušit" }, { label: "Vrátit", cls: "primary", action: async () => {
+        await updateDoc(compRef(), { [`withdrawn.${cid}.${c}`]: null });
+        audit("zrušení odstoupení", { category: cid, couple: c }); log(`Vrácen do soutěže: ${c} (${cat.name})`);
+      } }]);
+  }
+});
+
+// ===================== v4.1: SPRÁVA ZAŘÍZENÍ =====================
+// Každý telefon porotce zapisuje svůj záznam do judges/{L}.devices.<id> = { at, phase, model, ver, kicked }
+function hearDevice(k, v) {
+  const h = devHeard.get(k);
+  if (!h) { devHeard.set(k, { v, at: v ? Math.min(Date.now(), v) : 0 }); return; }
+  if (v && v !== h.v) { h.v = v; h.at = Date.now(); }
+}
+function devState(k) {
+  const h = devHeard.get(k); if (!h || !h.at) return { cls: "", text: "neznámo", st: "none" };
+  const age = Date.now() - h.at;
+  if (age < 150000) return { cls: "ok", text: "aktivní", st: "active" };
+  if (age < 600000) return { cls: "idle", text: `před ${Math.max(2, Math.round(age / 60000))} min`, st: "idle" };
+  return { cls: "bad", text: `naposledy ${fmtTime(h.at)}`, st: "off" };
+}
+function devicesOf(L) {
+  const p = presence.get(L) || {};
+  return Object.entries(p.devices || {}).filter(([, d]) => d && typeof d === "object")
+    .map(([id, d]) => ({ id, L, ...d, holder: p.deviceId === id, s: devState(`${L}|${id}`) }))
+    .sort((a, b) => (b.holder - a.holder) || (tsMs(b.at) || 0) - (tsMs(a.at) || 0));
+}
+function renderSupBadge() {
+  const multi = [...new Set([...lettersOf(compDoc.jury), ...presence.keys()])].filter(L => devicesOf(L).filter(d => !d.kicked && d.s.st === "active").length > 1).length;
+  $("supCnt").hidden = !multi; $("supCnt").textContent = multi || "";
+}
+function renderSupport() {
+  const letters = [...new Set([...lettersOf(compDoc.jury), ...presence.keys()])].sort();
+  let total = 0, act = 0;
+  $("devList").innerHTML = letters.length ? letters.map(L => {
+    const ds = devicesOf(L), live = ds.filter(d => !d.kicked && d.s.st === "active").length;
+    total += ds.length; act += live;
+    return `<div class="dev-l"><div class="dev-letter">${L}</div><div>
+      <div class="row" style="gap:8px"><b>${esc(compDoc.jury?.[L] || "Porotce " + L)}</b>
+        <span class="pill ${live > 1 ? "bad" : live === 1 ? "ok" : ""}">${live === 0 ? "žádné aktivní zařízení" : live === 1 ? "1 aktivní zařízení" : `${live} aktivní zařízení`}</span>
+        ${live > 1 ? `<span class="faint" style="font-size:12px">hodnotí jen to označené ✓, ostatní můžete odpojit</span>` : ""}</div>
+      ${ds.length ? ds.map(d => `<div class="dev-row ${d.kicked ? "kicked" : ""}">
+        <span class="dot ${d.kicked ? "bad" : d.s.cls}"></span>
+        <span>${d.holder ? "✓ " : ""}<b>${esc(d.model || "zařízení")}</b> <span class="faint" style="font-size:11px">${esc(d.ver || "")} · ${esc(d.id.slice(0, 4))}</span></span>
+        <span class="ph">${d.kicked ? "odpojeno sčitatelem" : esc(d.phase || "–")}</span>
+        <span class="ph">${d.kicked ? "" : d.s.text}</span>
+        <span class="acts">${d.kicked ? `<button class="btn sm" data-dev="allow" data-k="${L}|${d.id}">Povolit</button>` : `<button class="btn sm danger" data-dev="kick" data-k="${L}|${d.id}">Odpojit</button>`}
+          ${d.kicked || d.s.st === "off" ? `<button class="btn sm plain" data-dev="remove" data-k="${L}|${d.id}">Odebrat</button>` : ""}</span>
+      </div>`).join("") : `<div class="faint" style="font-size:12px;padding:6px 0">Zatím se nepřihlásilo žádné zařízení.</div>`}
+    </div></div>`;
+  }).join("") : `<div class="hint">Soutěž nemá porotu.</div>`;
+  $("devSum").textContent = `${total} zařízení · aktivních ${act}`;
+  $("diagBox").innerHTML = diagTable();
+}
+$("devList").addEventListener("click", async e => {
+  const b = e.target.closest("[data-dev]"); if (!b) return;
+  const [L, id] = b.dataset.k.split("|"), act = b.dataset.dev, d = devicesOf(L).find(x => x.id === id); if (!d) return;
+  const ref = doc(db, "competitions", comp, "judges", L);
+  if (act === "kick") {
+    if (!await confirmBox(`Odpojit zařízení <b>${esc(d.model || id)}</b> porotce ${L}?${d.holder ? "<br>Toto zařízení právě hodnotí – písmeno se uvolní pro jiné zařízení." : ""}<br>Zařízení se nebude moci znovu přihlásit, dokud ho nepovolíte.`, "Odpojit", "danger")) return;
+    runAction(`dev:${b.dataset.k}`, b, async () => {
+      await updateDoc(ref, { [`devices.${id}.kicked`]: true, [`devices.${id}.kickedAt`]: Date.now(), ...(d.holder ? { deviceId: null } : {}) });
+      audit("odpojení zařízení", { judge: L, device: id, model: d.model || "" }); log(`Odpojeno zařízení ${d.model || id} (porotce ${L})`);
+    }, "Odpojení zařízení");
+  }
+  if (act === "allow") runAction(`dev:${b.dataset.k}`, b, async () => {
+    await updateDoc(ref, { [`devices.${id}.kicked`]: false });
+    audit("povolení zařízení", { judge: L, device: id }); log(`Povoleno zařízení ${d.model || id} (porotce ${L})`);
+  }, "Povolení zařízení");
+  if (act === "remove") runAction(`dev:${b.dataset.k}`, b, async () => { await updateDoc(ref, { [`devices.${id}`]: null }); }, "Odebrání zařízení");
+});
+setInterval(() => { if (page === "support") renderSupport(); renderSupBadge(); }, 20000);
+
+// ===================== v4.1: VÝSLEDKOVÁ LISTINA (tisk, černobílá) =====================
+function placeTxt(p) { return p == null ? "" : String(p).replace(".", ","); }
+async function resultsHtml(catIds, opt = { prelim: true, final: true }) {
+  const jury = compDoc.jury || {}, logo = document.querySelector("header .logo")?.src || "";
+  const date = new Date(compDoc.startedAt || compDoc.createdAt || Date.now()).toLocaleDateString("cs-CZ");
+  const head = `<div class="pp-head"><img src="${logo}" alt=""><div><div class="pp-comp">${esc(compDoc.name || comp)}</div><div class="pp-date">${date}</div></div></div>`;
   const parts = [];
-  const jury = compDoc.jury || {};
   for (const cid of catIds) {
     const cat = cats.get(cid); if (!cat) continue;
     const rs = roundsOfCat(cid), st = standings(cat);
     const fin = rs.find(r => r.type === "final" && r.status === "evaluated");
     const judges = [...new Set(rs.flatMap(r => r.judges))].sort();
-    let h = `<div class="cat"><h2>${esc(cat.name)}</h2>
-      <div class="rmeta">${esc(compDoc.name || comp)} · ${new Date(compDoc.startedAt || Date.now()).toLocaleDateString("cs-CZ")} · ${cat.dances.map(d => DANCES[d]).join(", ")} · ${pary(cat.couples.length)}
-      ${judges.length ? `<br>Porota: ${judges.map(j => `${j}${jury[j] ? " – " + esc(jury[j]) : ""}`).join(", ")}` : ""}
-      ${fin ? "" : `<br><b>Kategorie zatím není dokončená – listina je průběžná.</b>`}</div>
-      <table><tr><th>Místo</th><th>Číslo</th><th class="l">Soutěžící</th><th>Kolo</th><th>Křížky</th></tr>
-      ${st.filter(o => o.status !== "waiting").map(o => `<tr><td><b>${o.status === "placed" || o.status === "out" ? o.label : "–"}</b></td><td>${o.c}</td><td class="l">${esc(nm(o.c))}</td>
-        <td>${o.status === "placed" ? "finále" : o.status === "out" ? esc(o.round.label) : o.status === "active" ? `v soutěži (${esc(o.round.label)})` : "nenastoupil"}</td><td>${o.status === "out" ? o.crosses : ""}</td></tr>`).join("")}</table>`;
-    if (fin) {
+    let h = `<section class="pp-cat">${head}
+      <h1>${esc(cat.name)}</h1>
+      <div class="pp-meta">${cat.dances.map(d => DANCES[d]).join(" · ")} &nbsp;|&nbsp; ${cat.couples.length} startujících &nbsp;|&nbsp; ${rs.map(r => esc(r.label)).join(" → ") || "bez kol"}</div>
+      ${fin ? "" : `<div class="pp-note">Kategorie zatím není dokončená – listina je průběžná.</div>`}
+      ${judges.length ? `<div class="pp-jury"><div class="pp-h3">Porota</div>${judges.map(j => `<span><b>${j}</b> ${esc(jury[j] || "")}</span>`).join("")}</div>` : ""}
+      <div class="pp-h2">Konečné pořadí</div>
+      <table class="pp-t pp-rank"><thead><tr><th>Místo</th><th>Číslo</th><th class="l">Soutěžící</th><th>Dosažené kolo</th><th>Křížky</th></tr></thead><tbody>
+      ${st.filter(o => o.status !== "waiting").map(o => `<tr class="${o.status === "placed" && o.place <= 3.5 ? "top" : ""} ${o.status === "wd" ? "wd" : ""}"><td class="pl">${o.status === "placed" || o.status === "out" || (o.status === "wd" && o.label) ? o.label : "–"}</td><td><b>${o.c}</b></td><td class="l">${esc(nm(o.c))}</td>
+        <td>${o.status === "placed" ? "Finále" : o.status === "out" ? esc(o.round.label) : o.status === "wd" ? `odstoupil${o.round ? " (" + esc(o.round.label) + ")" : ""}` : o.status === "active" ? `v soutěži (${esc(o.round.label)})` : "nenastoupil"}</td><td>${o.status === "out" || o.status === "wd" ? (o.crosses ?? "") : ""}</td></tr>`).join("")}</tbody></table>`;
+    if (fin && opt.final) {
       const list = await sheetsOf(fin.id), by = new Map(list.map(x => [`${x.dance}_${x.judge}`, x]));
       try {
+        const N = fin.couples.length, X = fin.judges.length;
         const m = fin.dances.map(d => fin.judges.map(j => fin.couples.map(c => Number(by.get(`${d}_${j}`)?.placings?.[c]))));
         const sk = skatingFinal(m), labels = placeLabels(sk.overall);
         const ord = fin.couples.map((c, i) => ({ c, i })).sort((a, b) => sk.overall[a.i] - sk.overall[b.i] || a.c - b.c);
-        h += `<h4>Finále – umístění v tancích</h4><table><tr><th>Místo</th><th>Číslo</th><th class="l">Soutěžící</th>${fin.dances.map(d => `<th>${DANCES[d]}</th>`).join("")}<th>Součet</th><th>Pravidlo</th></tr>
-          ${ord.map(o => `<tr><td><b>${labels[o.i]}</b></td><td>${o.c}</td><td class="l">${esc(nm(o.c))}</td>${fin.dances.map((d, t) => `<td>${fmtNum(sk.byDance[t][o.i])}</td>`).join("")}<td>${fmtNum(sk.sums[o.i])}</td><td>${{ "10": "10", "11": "11" }[sk.rule[o.i]] ?? ""}</td></tr>`).join("")}</table>`;
+        h += `<div class="pp-h2">Finále – výsledek</div>
+          <table class="pp-t"><thead><tr><th>Místo</th><th>Číslo</th><th class="l">Soutěžící</th>${fin.dances.map(d => `<th>${DANCES[d]}</th>`).join("")}<th>Součet</th><th>Pravidlo</th></tr></thead><tbody>
+          ${ord.map(o => `<tr class="${sk.overall[o.i] <= 3.5 ? "top" : ""}"><td class="pl">${labels[o.i]}</td><td><b>${o.c}</b></td><td class="l">${esc(nm(o.c))}</td>${fin.dances.map((d, t) => `<td>${placeTxt(sk.byDance[t][o.i])}</td>`).join("")}<td><b>${placeTxt(sk.sums[o.i])}</b></td><td>${sk.rule[o.i] === "10" || sk.rule[o.i] === "11" ? sk.rule[o.i] : ""}</td></tr>`).join("")}</tbody></table>
+          <div class="pp-small">Většina: ${sk.majority} z ${X} porotců. Pravidlo 9 = nižší součet umístění; 10 = při shodě rozhoduje počet tanců s umístěním na dané místo či lepší, pak jejich součet; 11 = spojené známky všech tanců.</div>`;
+        h += `<div class="pp-h2">Finále – tabulky hodnocení</div><div class="pp-dances">`;
         fin.dances.forEach((d, t) => {
           const dl = placeLabels(sk.byDance[t]);
           const o2 = fin.couples.map((c, i) => ({ c, i })).sort((a, b) => sk.byDance[t][a.i] - sk.byDance[t][b.i] || a.c - b.c);
-          h += `<h4>${DANCES[d]}</h4><table><tr><th>Číslo</th>${fin.judges.map(j => `<th>${j}</th>`).join("")}${fin.couples.map((_, k) => `<th>${k === 0 ? "1" : "1–" + (k + 1)}</th>`).join("")}<th>Místo</th></tr>
+          const cnt = (i, k) => m[t].reduce((a, row) => a + (row[i] <= k ? 1 : 0), 0);
+          const sum = (i, k) => m[t].reduce((a, row) => a + (row[i] <= k ? row[i] : 0), 0);
+          h += `<div class="pp-dance"><div class="pp-h3">${DANCES[d]}</div><table class="pp-t pp-sk"><thead><tr><th>Č.</th>${fin.judges.map(j => `<th class="j">${j}</th>`).join("")}${Array.from({ length: N }, (_, k) => `<th class="mj">${k === 0 ? "1" : "1–" + (k + 1)}</th>`).join("")}<th>Místo</th></tr></thead><tbody>
             ${o2.map(({ c, i }) => {
-              const mk = fin.judges.map((_, k) => m[t][k][i]);
-              const cols = fin.couples.map((_, k) => { if (k + 1 > sk.decidedCol[t][i]) return "<td></td>"; const cnt = mk.filter(v => v <= k + 1).length; return `<td>${cnt || "–"}</td>`; }).join("");
-              return `<tr><td><b>${c}</b></td>${mk.map(v => `<td>${v}</td>`).join("")}${cols}<td><b>${dl[i]}</b></td></tr>`;
-            }).join("")}</table>`;
+              const dc = sk.decidedCol[t][i];
+              // součet v závorce jen tam, kde o místě rozhodl součet (shodný počet u jiného páru ve stejném sloupci)
+              const tieAt = k => fin.couples.some((_, i2) => i2 !== i && sk.decidedCol[t][i2] === k && cnt(i2, k) === cnt(i, k));
+              const cols = Array.from({ length: N }, (_, k0) => { const k = k0 + 1; if (k > dc) return `<td class="mj"></td>`; const n = cnt(i, k); return `<td class="mj ${k === dc ? "dec" : ""}">${n ? n + (k === dc && tieAt(k) ? `<small>(${sum(i, k)})</small>` : "") : "–"}</td>`; }).join("");
+              return `<tr><td><b>${c}</b></td>${fin.judges.map((_, j) => `<td class="j">${m[t][j][i]}</td>`).join("")}${cols}<td class="pl">${dl[i]}</td></tr>`;
+            }).join("")}</tbody></table></div>`;
         });
-      } catch (e) { h += `<div class="rmeta">Tabulky finále nelze sestavit: ${esc(e.message)}</div>`; }
+        h += `</div>`;
+      } catch (e) { h += `<div class="pp-note">Tabulky finále nelze sestavit: ${esc(e.message)}</div>`; }
     }
-    parts.push(h + "</div>");
+    if (opt.prelim) {
+      for (const r of rs.filter(x => x.type === "prelim" && x.status === "evaluated")) {
+        const sh = new Map((await sheetsOf(r.id)).map(x => [`${x.dance}_${x.judge}`, x]));
+        const { crosses, totals } = prelimData(r, sh), q = new Set(r.qualified || []);
+        const ord = [...r.couples].sort((a, b) => (q.has(b) - q.has(a)) || (isWd(cat.id, a) - isWd(cat.id, b)) || totals[b] - totals[a] || a - b);
+        const cols = r.dances.length * r.judges.length;
+        h += `<div class="pp-round ${cols > 30 ? "wide" : ""}"><div class="pp-h2">${esc(r.label)} – křížky <span class="pp-sub">${r.couples.length} → postup ${q.size} · požadováno ${r.required} křížků od porotce</span></div>
+          <table class="pp-t pp-x"><thead><tr><th rowspan="2">Č.</th><th rowspan="2" class="l">Soutěžící</th>${r.dances.map(d => `<th colspan="${r.judges.length}" class="dg">${DANCES[d]}</th>`).join("")}<th rowspan="2">Σ</th><th rowspan="2">Postup</th></tr>
+          <tr>${r.dances.map(() => r.judges.map((j, k) => `<th class="j ${k === 0 ? "dl" : ""}">${j}</th>`).join("")).join("")}</tr></thead><tbody>
+          ${ord.map((c, n) => `<tr class="${q.has(c) ? "q" : ""} ${n > 0 && q.has(ord[n - 1]) && !q.has(c) ? "cut" : ""}"><td><b>${c}</b></td><td class="l nm">${isWd(cat.id, c) ? "<i>odstoupil</i> " : ""}${esc(nm(c))}</td>
+            ${r.dances.map(d => r.judges.map((j, k) => `<td class="x ${k === 0 ? "dl" : ""}">${crosses[c][d].has(j) ? "×" : ""}</td>`).join("")).join("")}<td><b>${totals[c]}</b></td><td>${q.has(c) ? "✓" : ""}</td></tr>`).join("")}</tbody></table></div>`;
+      }
+    }
+    parts.push(h + `<div class="pp-foot">ArtimoCounter · ${esc(compDoc.name || comp)} · vytištěno ${new Date().toLocaleString("cs-CZ")}</div></section>`);
   }
-  return `<div class="res">${parts.join("") || "<p>Žádné kategorie.</p>"}<div class="rmeta" style="margin-top:14px">ArtimoCounter · vytištěno ${new Date().toLocaleString("cs-CZ")}</div></div>`;
+  return `<div class="paper">${parts.join("") || "<p>Žádné kategorie.</p>"}</div>`;
 }
+function resultsCats() { return [...cats.values()].sort((a, b) => (a.order ?? a.created ?? 0) - (b.order ?? b.created ?? 0)); }
 $("resultsBtn").onclick = () => {
-  const cl = [...cats.values()].sort((a, b) => (a.order ?? a.created ?? 0) - (b.order ?? b.created ?? 0));
+  const cl = resultsCats();
   if (!cl.length) { alertBox("Soutěž zatím nemá žádné kategorie."); return; }
-  const def = selCat && cats.has(selCat) ? selCat : "all";
-  modal("Výsledková listina", `<div class="row"><select class="in" id="resSel" style="max-width:320px"><option value="all">Celá soutěž (${cl.length} kategorií)</option>
-    ${cl.map(c => `<option value="${c.id}" ${c.id === def ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
-    <div id="resPrev" style="max-height:58vh;overflow:auto;margin-top:10px;padding:10px;border:1px solid var(--stroke);border-radius:10px">Načítám…</div>`,
+  modal("Výsledková listina", `<div class="row wrap" style="gap:12px"><select class="in" id="resSel" style="max-width:320px"><option value="all">Celá soutěž (${cl.length} ${cl.length === 1 ? "kategorie" : cl.length < 5 ? "kategorie" : "kategorií"})</option>
+    ${cl.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select>
+    <label class="row" style="gap:6px;font-size:13px"><input type="checkbox" id="resPre" checked> křížky z předkol</label>
+    <label class="row" style="gap:6px;font-size:13px"><input type="checkbox" id="resFin" checked> tabulky finále</label></div>
+    <div id="resPrev" class="paper-prev">Načítám…</div>`,
     [{ label: "Zavřít" }, { label: "Tisk / PDF", cls: "primary", action: async root => {
-      const v = root.querySelector("#resSel").value;
-      $("printArea").innerHTML = await resultsHtml(v === "all" ? cl.map(c => c.id) : [v]);
+      $("printArea").innerHTML = await build(root);
       document.body.classList.add("printres");
       const done = () => { document.body.classList.remove("printres"); removeEventListener("afterprint", done); };
       addEventListener("afterprint", done); window.print(); setTimeout(done, 1500);
       return false;
     } }],
     root => {
-      const sel = root.querySelector("#resSel"), prev = root.querySelector("#resPrev");
-      const upd = async () => { prev.innerHTML = "Načítám…"; try { const v = sel.value; const html = await resultsHtml(v === "all" ? cl.map(c => c.id) : [v]); if (prev.isConnected && sel.value === v) prev.innerHTML = html; } catch (e) { prev.textContent = errText(e); } };
-      sel.onchange = upd; upd();
-    });
+      const prev = root.querySelector("#resPrev");
+      const upd = async () => { prev.innerHTML = "Načítám…"; try { const html = await build(root); if (prev.isConnected) prev.innerHTML = html; } catch (e) { prev.textContent = errText(e); } };
+      root.querySelectorAll("#resSel,#resPre,#resFin").forEach(x => x.onchange = upd); upd();
+    }, "wide");
+  function build(root) {
+    const v = root.querySelector("#resSel").value;
+    return resultsHtml(v === "all" ? cl.map(c => c.id) : [v], { prelim: root.querySelector("#resPre").checked, final: root.querySelector("#resFin").checked });
+  }
 };
 
 // ===================== KONTROLNÍ (REGRESNÍ) TESTY =====================
@@ -2283,6 +2494,14 @@ function runSelfTests() {
                 { id: "r2", type: "final", status: "evaluated", couples: [1,2,3], result: { overall: { 1: 2, 2: 1, 3: 3 } }, label: "Finále" }];
     const st = standings(cat, rs), by = Object.fromEntries(st.map(o => [o.c, o]));
     ok("Pořadí: vyřazení sdílí místa podle křížků", by[4].label === "4.–5." && by[5].label === "4.–5." && by[6].label === "6." && by[7].label === "7." && by[2].label === "1." && by[8].status === "dns" && st[0].c === 2); }
+  { const saved = compDoc.withdrawn; compDoc.withdrawn = { k: { "2": { at: 1 } } };
+    try {
+      const r = { categoryId: "k", couples: [1, 2, 3, 4] }, cut = prelimCut(r, { 1: 1, 2: 9, 3: 5, 4: 3 }, 2);
+      ok("Odstoupení: nemůže postoupit", cut.sorted.slice(0, cut.n).join() === "3,4" && cut.sorted[3] === 2);
+      const st = standings({ id: "k", couples: [1, 2, 3, 4] }, [{ id: "r1", type: "prelim", status: "evaluated", couples: [1, 2, 3, 4], qualified: [3, 4], result: { totals: { 1: 1, 2: 9, 3: 5, 4: 3 } }, label: "1. kolo" }]);
+      const by = Object.fromEntries(st.map(o => [o.c, o]));
+      ok("Odstoupení: ve výsledcích za vyřazenými", by[1].label === "3." && by[2].status === "wd" && by[2].label === "4." && st[st.length - 1].c === 2);
+    } finally { compDoc.withdrawn = saved; } }
   ok("QR: revize lístků se přečte", parseQr("AC2;c=x;r=r1;j=A;t=p;ts=1;v=S3.C0;S=1").v === "S3.C0");
   return { res, ms: Math.round(performance.now() - t0) };
 }
