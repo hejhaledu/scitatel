@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- ArtimoCounter – Sčitatel – verze v5.2 – sestaveno 2026-11-16 – created by Martin Hejhal -->
 <html lang="cs">
 <head>
 <meta charset="utf-8">
@@ -117,6 +118,99 @@ select.in option{background:#11154a}
 .cname{display:block;font-size:10.5px;font-weight:500;color:var(--text2);line-height:1.2;max-width:150px;margin:0 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pod.p1 .cname{color:rgba(10,12,40,.7)}
 .xtab td.cpl.wd{text-decoration:line-through;opacity:.55}
+
+/* ===== v5.1: Správa akcí a soutěží ===== */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.col{display:flex;flex-direction:column}
+.adm{max-width:1400px;margin:0 auto;padding:24px 24px 40px;display:flex;flex-direction:column;gap:24px}
+.adm-row{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.adm-hero{flex:999 1 620px;min-width:0;padding:24px;display:flex;flex-direction:column;gap:20px}
+.adm-side{flex:1 1 340px;min-width:0;padding:24px;display:flex;flex-direction:column;gap:12px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text2)}
+.muted{color:var(--text2)}
+.title-in{display:block;width:100%;margin:6px 0 4px;padding:2px 0;font:700 28px/1.2 var(--font);letter-spacing:-.01em;color:var(--text);background:transparent;border:0;border-bottom:1px dashed transparent;outline:none}
+.title-in:hover{border-bottom-color:var(--stroke2)}.title-in:focus{border-bottom-color:var(--accent)}
+.title-in:disabled{color:var(--text2)}
+.stepper{list-style:none;margin:0;padding:0;display:flex;align-items:center;flex:1 1 380px;min-width:0}
+.stepper li{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);white-space:nowrap}
+.stepper li.ln{flex:1;height:2px;background:var(--stroke2);margin:0 10px;min-width:20px}
+.stepper li.ln.on{background:var(--green)}
+.stepper .dt{width:22px;height:22px;border-radius:50%;box-sizing:border-box;border:2px solid var(--stroke2);display:grid;place-items:center}
+.stepper li.past .dt{border:0;background:rgba(245,211,168,.18);color:var(--accent)}
+.stepper li.cur{color:#7be39a;font-weight:700}
+.stepper li.cur .dt{border:0;background:var(--green);box-shadow:0 0 0 5px rgba(52,199,89,.2)}
+.stepper li.cur.fin{color:var(--accent)}.stepper li.cur.fin .dt{background:var(--accent);box-shadow:0 0 0 5px rgba(245,211,168,.18)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.tile{background:rgba(255,255,255,.035);border:1px solid var(--stroke);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.tile .v{font-size:27px;font-weight:700;letter-spacing:-.02em}.tile .v small{font-size:14px;font-weight:500;color:var(--text2)}
+.pbar{height:6px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}.pbar span{display:block;height:100%;border-radius:6px;background:var(--accent)}
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.tool{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--stroke)}
+.tool:hover{background:rgba(255,255,255,.07)}.tool:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tool:disabled{opacity:.4;cursor:not-allowed}
+.ti{width:40px;height:40px;border-radius:12px;background:rgba(245,211,168,.12);color:var(--accent);display:grid;place-items:center;flex:none}
+.tt{display:flex;flex-direction:column;gap:3px;min-width:0}.tt b{font-size:14px}.tt small{font-size:12px;color:var(--text2)}
+.setrow{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--stroke);cursor:pointer}
+.setrow b{display:block;font-size:13.5px;margin-bottom:3px}.setrow small{display:block;font-size:12px;color:var(--text2);line-height:1.45}
+.jt{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:12px;background:rgba(255,255,255,.035)}
+.jt .jl{width:32px;height:32px;border-radius:10px;background:rgba(245,211,168,.14);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:15px;flex:none}
+.jt .in{background:transparent;padding:0 4px;height:26px;font-weight:600}
+.jt .in:hover{background:rgba(255,255,255,.05)}
+.jt .js{font-size:11.5px;display:inline-flex;align-items:center;gap:6px;color:var(--text2);padding-left:4px;white-space:nowrap}
+.jt .js i{width:7px;height:7px;border-radius:50%;background:var(--gray)}
+.jt .js.ok{color:#7be39a}.jt .js.ok i{background:var(--green)}
+.akgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.ak{padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.ak.cur{border-color:rgba(245,211,168,.5)}.ak.del{border-color:rgba(255,90,95,.45)}
+.ak h3{margin:0 0 3px;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ak .nums{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12.5px;color:var(--text2)}.ak .nums b{color:var(--text)}
+.ak .acts{display:flex;gap:8px;margin-top:auto}
+.ak .more{display:flex;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--stroke)}
+.ak .confirm{border-radius:12px;background:rgba(255,90,95,.1);border:1px solid rgba(255,90,95,.3);padding:12px;display:flex;flex-direction:column;gap:10px;font-size:13px;line-height:1.45}
+.newcard{all:unset;box-sizing:border-box;cursor:pointer;border:1.5px dashed rgba(245,211,168,.35);border-radius:14px;min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--accent)}
+.newcard:hover{background:rgba(245,211,168,.05)}.newcard:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.newcard .plus{width:46px;height:46px;border-radius:50%;background:rgba(245,211,168,.12);display:grid;place-items:center}
+.stag{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:11px;font-size:11.5px;font-weight:600;white-space:nowrap;background:rgba(255,255,255,.08);color:var(--text2)}
+.stag.live{background:rgba(52,199,89,.16);color:#7be39a}.stag.ready{background:rgba(245,211,168,.14);color:var(--accent)}.stag.cur{background:var(--accent);color:var(--ink)}
+.stag.warn{background:rgba(255,159,10,.15);color:#ffc46b}
+.stag i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.sz{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
+.sz-list{flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.sz-detail{flex:999 1 620px;min-width:0;padding:24px;display:flex;flex-direction:column;gap:20px}
+.szc{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:5px 10px;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--stroke);width:100%}
+.szc:hover{background:rgba(255,255,255,.06)}.szc:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.szc.sel{background:rgba(245,211,168,.09);border-color:rgba(245,211,168,.55)}
+.szc .no{font-size:12px;font-weight:700;color:var(--text2);grid-row:span 2}
+.szc .nm{display:flex;align-items:center;gap:8px;min-width:0}.szc .nm b{font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.szc .sub{grid-column:2 / 4;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text2);min-width:0}
+.rdots{display:flex;gap:3px;flex:none}.rdots i{width:20px;height:6px;border-radius:3px;background:rgba(255,255,255,.14)}
+.rdots i.ev{background:var(--accent)}.rdots i.op{background:var(--green)}.rdots i.lk{background:var(--orange)}
+.dropbox{border:1.5px dashed rgba(255,255,255,.16);border-radius:14px;padding:14px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 12px;transition:border-color .15s,background .15s}
+.dropbox.over{border-color:var(--accent);background:rgba(245,211,168,.06)}
+.pipe{display:flex;align-items:stretch;background:rgba(255,255,255,.03);border:1px solid var(--stroke);border-radius:14px;padding:16px;overflow-x:auto;gap:0}
+.pipe .pst{display:flex;flex-direction:column;gap:5px;flex:1 1 0;min-width:130px}
+.pipe .pst b{font-size:13.5px;display:flex;align-items:center;gap:8px}
+.pipe .pst b i{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.18)}
+.pipe .pst.ev b i{background:var(--accent)}.pipe .pst.op b i{background:var(--green);box-shadow:0 0 0 4px rgba(52,199,89,.2)}.pipe .pst.lk b i{background:var(--orange)}
+.pipe .pst .big{font-size:22px;font-weight:700;letter-spacing:-.02em}.pipe .pst.ppl .big{color:var(--text2)}
+.pipe .ar{align-self:center;margin:0 12px;color:var(--text3);flex:none}
+.szgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+@media(max-width:1100px){.szgrid{grid-template-columns:1fr}}
+.szgrid .lbl{margin:0 0 8px;font-weight:600;color:var(--text)}
+.szgrid .chip{height:30px;padding:0 12px;border-radius:9px;font-size:12.5px}
+.szgrid .chip.on{background:rgba(245,211,168,.16);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(245,211,168,.55)}
+.keyrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.keyrow .in{width:70px;text-align:center}
+.savebar{position:sticky;bottom:12px;z-index:5;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:#1a1f63;border:1px solid rgba(245,211,168,.4);box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.sttab{border:1px solid var(--stroke);border-radius:12px;overflow:hidden}
+.sttab table{width:100%;border-collapse:collapse;font-size:13px}
+.sttab th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);padding:8px 10px;background:rgba(255,255,255,.035)}
+.sttab td{padding:7px 10px;border-top:1px solid var(--stroke);text-align:left}
+.sttab td.n{font-weight:700;color:var(--accent);width:44px}
+.sttab tr.wd td.nm{text-decoration:line-through;color:var(--text2)}
+.sttab .scroll{max-height:440px;overflow:auto}
+.sttab tr.acts td{background:rgba(255,255,255,.03)}
+.danger-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;border-top:1px solid var(--stroke);padding-top:16px}
 #printArea{display:none}
 .sl-row{display:grid;grid-template-columns:1fr 240px;gap:4px 14px;align-items:center;padding:9px 0;border-top:1px solid var(--stroke)}
 .sl-row .sl-prev{font-size:11px;margin-top:2px}
@@ -360,7 +454,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
     <button class="btn primary lg full" style="margin-top:12px" type="submit">Vstoupit</button>
     <div class="err" id="lockErr" style="text-align:center;min-height:16px"></div>
   </form>
-  <div class="credit" style="position:absolute;bottom:0;left:0;right:0">ArtimoCounter, created by Martin Hejhal, 2026, v5.0</div>
+  <div class="credit" style="position:absolute;bottom:0;left:0;right:0">ArtimoCounter, created by Martin Hejhal, 2026, v5.2</div>
 </div>
 <header>
   <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABgCAYAAADFNvbQAAAMC0lEQVR42u1de9BUZRn/PWf3QwIRUSSVW0KCXVSSckDCxBzNqamsiREnpiknc7RGvKTdZEqsHMdEhjEaS8cuZppTknaxLEusCEzJSzFBFkokCSgKBXy759cf53nHp9ez+52z39k97/LtO3Nmd7/v7J7zvr/n9j63I+iNoAbJCEAkIjXv7yMATAMwG8DJAHYB+E43TUxIRiSrelT0c6Tv3d+jLgRNSFZ9IEkeR3IRyR+Q/BuTsZPkEpJju2lylZzfqeT9Tlnc5t8nyRMUoMf4yrGU5KH2+xL6BEUkdkACmKnH8QAmAjgQgAB4CcAGAGsAPCQim404gvuNgOZVAUAztyMBzAewAMCJKV+5D8BnROQRPb8KoC4iDBm8ir72kTyf5KPMNl4keRfJ0/zfCoTjIvN5BskVJHeY+49J7tH320h+zJxfVUIOXrQ48OaQfMSbXL8eNe9wf7Pj+yQnG6oNQg2QPIXkD737dXOI9fO9JI9KA75bwLtIJ0R9rWfkwFgXw52/leSZZYHoAXciyZXe/fYbwiTJfSQvtVzXdcYKyS97YLQ6+s3vnN1JcapcI/p+AsmbzFz8ebn73EDypK7jOo/zPutR5mBHXY8ayVM6AaLlGpIXkPy3JyrTiOwetzXoGq5LAW9eweD5i7aF5GHtom63V9X3ryd5fwpQvj4nyeWhGVytbND7SD7RgEqLGG6xbmnHQnm67kKSL5m5xE3Au6orRaYvbkie3UbwrN6pkTzW7hMLnMM4knc3EZe+/vt0V20Pmil7kqsLMFqycuGNRekaA94s4+5qpALs/C7rSn2X4rh17qO4YL3XyKAhyU0khxsPz2Ct5g+S/G8DXZcmNi/pes7zqPeKASZftCglyZmtilEFz20RvpBCIM3Au7xIzitbaTpf3gkdvGZdX2e0sgYGcCF5M4DF+pts8lt1AFUAi0XkWpJ9frio1VG2/HVO5kluUTp47aNada6TPADAHQDeA6A2wDq6/y8TkSUkqyLSX9QkSgXQeNNHlgDgmBY4jyRfBeBuAKcD6AfQNwC3VwHcLyKLVGfWi5xEKPuOuETxnRk8AMMMeLUBwIsBVABsAnCO6kwWHQKKQrBCAbyQd1ELGNuzGixGOnzPcF51AOKgnjdfRJ7TNInCCbVsDnTXf6qDADpANmQEr6ILfyuA92YQm050VgBcISJrVO/V27mAZY+1HSaaGMCjGcR3RURqJK8DsDAHeFUAPxGRpS56Duy/GVggeXQbHNiNNvIxyb8MtIk2e9Tzc+xRXeTjeZLjrXO73SKsLCs0VtN8A4BV3j6tXcaSALhD92GVRo5p5bzTAdxoRGIWwygCcKmI/LNdei/UUNK72uyNiZU7dpEc38gLY6TCFM1ViTNmAzgf5/1d7+MchEP7122MSOzT1ysbhZOcf5PkMJJrc9yLc1LvI/nGIiMd3QbgNOWQeo4cmDxRiDUad6yk6T+j976aUxo4kJd2ZVC2YFFq44L1AsHbbDLUoibXn58TPGcYbSN5qM2FGYog+pbfYHSijQA8bURbpYkEmKh6L48EcNz3ySHLfQ1AfD/JZz0w4owcYUF/gOSkZotruO+nOXWw476/kxwxpLmvwYKOJ3mLB1zdJPf6hx3/0txSaWZUmGt9tAWOd0BfMOQsz5xJQm8hebPhyGZi8xGSl5M8LMXn2kh0TtDNdz2HM8Gd+wzJkTbI28kRLMWISF0XJBKRtQDWkhwDYBaS4pYpAEYD2ANgK4CNAFaLyGPehrzeZDMt6kxYBuBg3bBHOZwCLs63W/2dtY6vU540Aj1fWojd0Xrp84ZUlIMkq0M4S/WOA5fkOwHcm8Pb4uYhAJ4HcDSAHV58szwOdFRvAKJSMYuKFjgvv1mMuNnkvRKz/7s3j5hivd9ahuu74OwNBhDkSMuoArhdRLY7YihDUlUNZ0W6kHGaP5LkaACHABiLJJp9iIqwA5FE1Iepp16QBDt36/EigGcBbFNRt1VE9ug5aaA2BFT/VsRCRcp9lwB4bYa0iFdEKfQ+vuaIoTRV0wCoaQCO1WMagMkAxilgwwZxvb0K4jMA1gN4DMATAJ4Uka0pRowYoioyAkIA4wH8WYlPcnCgE7UPichcW4RaFgceCmAqgDkATkVSAXtEhmhzHpHqOPwAJAlMk/R6brxA8gkAvwPwSwAPi8gOXwcOJGqz20cSk1wMYFQL3OfGt734YjkcqBWgFwOY7lFZ3eibVo2XLOBHKZbfc0jCS/cgSQja7BkoLXGl4b5jAKxT4PJwn9OVLwKYJiJbSUrppc7qfT+J5DJ1O/mb1XYHWmNToeq7sHZqNesCkgd5jQyiFh0E323RTec27iuDcZv5m0+So3Wxft6gkpQdyp6upbi0NmkHh6l5gXQRCJLH5qz4TQPwI2mtQUqvjk1peTFTi/B3lgRkIzB3kfwGyRk+QBm4784Wuc/NeXezgHBIYNpuCpNJXj1ApWmnwOz3iOlbJI9r1snBgHdyirM7L/c92DUBW78RDckjSH6R5PaCatgHy5U22v51F+9L8aU6AM8x38sLojt/cdc5rn15rxx5kxErtQ6L1UZA7tBKp+E+N5pclzkk17egDpzOfGvXxv1SgJxN8sGSxWqaaF1Hcl4KB7rXg40lmqUuMTYtSw4cTF1hiC1BhOQnTLehsrgxDcjrSY70AsVWtC4ynFXPoP/u268SlrxeKFNJ/jhDsWMnho3rPW56r7ithCXAMzzia6b/Pr9fBm49sfpxNbU7VXGbxfDodzXpnj50XHkcyaea3LMjxjP327wX2yZDa97XlbRvbMaNtxmRWvFAnODds6//9pJ8zX6f82kWZCTJb6YsYtm68WGSU9L0oqYF/t4DsW7aYPV1vQHTQj7LJYHoRQvKFpKzGoB4EMlV5nynF+8dUmmDnqHwbiZ9PMvcavgW5S6S72gA4mjlVJr2IdcNycwzI3ZmqjM6BOOmbjw472sA4uEqNp0IPnfIpg6axZlM8smAQHSb+AUNQJyuKfMkOXdIZ16bxXk1X26fHAKIDsizvPt0r6cqp04fclVHTUI6Y00r5VogIO4l+fYGnLiASWNyDPnUebMo49RLEgqILvo/w7vPoDlOygJR0/qOBPAbJKl9eRJr0aby6wjA0wBmi8gW05kp2FJpKZMTFcRpAB4CcJhZxLKGI6LVAN6mn+OQn88QlVz7UBWRvwI4C0nOKMpMklXwakjqL1ZotvXQrvdroWNv2ZapvYfzekWb+Tb7VwcCoov073H5NqGCKKG43UxXpJ8BOCMAo8Zd/09InmcUpD6MAqkFJIBYgVwIYHPZKetGHx4P4MpQ9aGEtkdU42YegF956f1ldRSO9ZgpIo+HtqWIAqzKrYrIAwC+pBQfB0DgfQCWh0j0IScWV427rR5ICOrs0AwaCdXdptz4JgB/MBVMUqKXRlQ3vwFJ4SpDMGiigBscVEXkUQDXByBKI9XHE5F0IoxDMWgkZFGq9zccSSXvlAFa+3fCoCGSx70eg6TSWMo2aKKA24xQF+g/AC5TMFkyscdIyswv0/uLehyYXR/+AsBpJW/wHQHtAvA6AFvK5sJuii5/SsGTkgm+jqS2/sIQuDB4AJX7KiLyRwB36j3XSl4zAvgwyVHq/pMegANKUgqAqwDsM4tY1prFAA4H8AG87HbrAThAp6ZIRNYjefhGFEAr/xjAeSU+eabrdKDjwmsC4EKXOXBXz73WWkLU7SXGDV3z9Gsx1NMMWwFQfaUn5ngcQDsi9cuzdMbojeZPe/ltB1MSbXXTV3rgFZND86EOAWgbKSzpgVdQZymSY0zdQtzmhF+SvKgHXvHGzK1tNGb6TRna/F5T8/YYM6e1IeBr9d1Gkm/ugdc+MTrc1BzWC66n/xHJcT3w2m/MrChIjPYbo+hzaeXivdEePXjGIDnQNiZaZ3rKRL1NemfE6ChtgZXXGq2b7UGN5DVMutj3RGYJXJinB6jfIG8Vydk9kVmuHjw3A4B+n9D1JBdmbRjbG+11q01vAl7d47intcndCJOH2tN1JevBiukBWm/wuLqNTB6KNaYnLsPUg7cpePs8DlyjInZEs7bMvVG+HrzYgPYPJs/BnZvmwemtWpgcOJfkSn0G7mgf5P0VuP8Bqf5jC67jOKQAAAAASUVORK5CYII=" alt="Artimo">
@@ -375,6 +469,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
     <button class="btn" data-page="souteze">Správa soutěží</button>
   </div>
   <div class="sp"></div>
+  <span id="scWarn" hidden title="Stejnou akci má otevřenou další okno nebo počítač" style="font-size:11.5px;font-weight:600;color:#ffb84d;border:1px solid rgba(255,184,77,.45);border-radius:999px;padding:3px 10px;white-space:nowrap">Otevřeno i jinde</span>
   <div class="conn"><span class="dot" id="connDot"></span><span id="connText">Připojování…</span></div>
 </header>
 
@@ -409,59 +504,83 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
 
 <!-- ===================== SPRÁVA AKCÍ ===================== -->
 <div class="page" id="page-akce">
-  <div class="sup">
-    <div class="card pad">
-      <h2 class="ph2">Otevřená akce</h2>
-      <label class="lbl" for="compName">Název</label>
-      <input class="in" id="compName" placeholder="např. Artimo Open Cup 2026" autocomplete="off">
-      <div class="row" style="margin-top:10px"><div class="grow"><div class="faint" style="font-size:11px">ID akce</div><b id="compIdShow"></b></div></div>
-      <div class="hint" id="compTimes"></div>
-      <div class="row wrap" style="margin-top:10px" id="compStateRow"></div>
-      <div class="sec-t">Data a výpisy</div>
-      <div class="row wrap">
-        <button class="btn sm" id="exportBtn">Export</button>
-        <button class="btn sm" id="backupsBtn">Zálohy…</button>
-        <button class="btn sm" id="resultsBtn">Výsledková listina…</button>
-      </div>
-      <div class="hint">Export uloží celou akci do souboru (záloha, přenos na jiný počítač). Výsledková listina vytiskne jednu soutěž nebo celou akci.</div>
+  <div class="adm">
+    <div class="adm-row">
+      <section class="card adm-hero" aria-label="Otevřená akce">
+        <div class="row wrap" style="align-items:flex-start;gap:14px">
+          <div class="grow" style="min-width:240px">
+            <div class="eyebrow">Otevřená akce</div>
+            <label class="sr" for="compName">Název akce</label>
+            <input id="compName" class="title-in" placeholder="Název akce" autocomplete="off">
+            <div class="muted" id="compMeta" style="font-size:12.5px"></div>
+          </div>
+          <div class="row wrap" id="compTest" style="gap:8px"></div>
+        </div>
+        <div id="compWarn"></div>
+        <div class="row wrap" style="gap:14px;align-items:center">
+          <ol class="stepper" id="compSteps" aria-label="Stav akce"></ol>
+          <div id="compStateRow" class="row" style="gap:8px"></div>
+        </div>
+        <div class="tiles" id="compTiles"></div>
+        <div>
+          <div class="eyebrow" style="margin-bottom:10px">Data a výpisy</div>
+          <div class="tools">
+            <button type="button" class="tool" id="exportBtn"><span class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg></span><span class="tt"><b>Export</b><small>celá akce do souboru</small></span></button>
+            <button type="button" class="tool" id="backupsBtn"><span class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg></span><span class="tt"><b>Zálohy</b><small id="bkInfo">automatické zálohy</small></span></button>
+            <button type="button" class="tool" id="resultsBtn"><span class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg></span><span class="tt"><b>Výsledková listina</b><small>tisk nebo PDF</small></span></button>
+          </div>
+        </div>
+        <div>
+          <div class="eyebrow" style="margin-bottom:10px">Pravidla pro porotce</div>
+          <label class="setrow"><span class="switch"><input type="checkbox" id="lockSentSw"><span></span></span>
+            <span><b>Zamknout tanec po odeslání</b><small>Porotce se k odeslanému tanci nemůže vrátit a nic v něm změnit. Platí pro všechny porotce a tance této akce; opravy sčitatele fungují dál.</small></span></label>
+        </div>
+      </section>
+
+      <section class="card adm-side" aria-label="Porota akce">
+        <div class="row" style="gap:10px">
+          <div class="grow"><div class="eyebrow">Porota akce</div><div id="juryHead" style="font-size:19px;font-weight:700;margin-top:6px"></div></div>
+          <button type="button" class="btn" id="addJudgeBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Porotce</button>
+        </div>
+        <div id="juryList"></div>
+        <div class="muted" style="font-size:12px;line-height:1.5">Kdo hodnotí kterou soutěž, nastavíte ve Správě soutěží. Ikona QR ukáže odkaz pro telefon porotce.</div>
+      </section>
     </div>
-    <div class="card pad">
-      <h2 class="ph2">Porota akce</h2>
-      <div class="hint">Všichni porotci akce. Kdo hodnotí kterou soutěž, nastavíte ve Správě soutěží. Tlačítko ⧉ ukáže odkaz a QR kód pro telefon porotce.</div>
-      <div id="juryList" style="margin-top:10px"></div>
-      <button class="btn sm" id="addJudgeBtn" style="margin-top:8px">+ Přidat porotce</button>
-    </div>
-    <div class="card pad sup-wide">
-      <div class="row wrap"><h2 class="ph2">Všechny akce</h2><div class="grow"></div>
-        <button class="btn sm primary" id="newCompBtn">Nová akce…</button>
-        <button class="btn sm" id="importBtn">Import ze souboru…</button>
-        <button class="btn sm" id="testCompBtn">Zkušební akce…</button>
+
+    <section aria-label="Všechny akce" style="display:flex;flex-direction:column;gap:16px">
+      <div class="row wrap" style="gap:10px">
+        <h2 style="margin:0;font-size:21px" class="grow">Všechny akce</h2>
+        <div class="seg lg" id="mgrFilter" role="group" aria-label="Filtr akcí"></div>
+        <button type="button" class="btn lg" id="importBtn">Import ze souboru</button>
+        <button type="button" class="btn lg" id="testCompBtn">Zkušební akce</button>
+        <button type="button" class="btn lg primary" id="newCompBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Nová akce</button>
         <input type="file" id="importFile" accept=".json,application/json" hidden>
       </div>
-      <div id="mgrBody" style="margin-top:8px"></div>
-    </div>
+      <div id="mgrBody"></div>
+    </section>
   </div>
 </div>
 
 <!-- ===================== SPRÁVA SOUTĚŽÍ ===================== -->
 <div class="page" id="page-souteze">
-  <div class="sup">
-    <div class="card pad sup-wide">
-      <div class="row wrap"><h2 class="ph2">Soutěže akce <span id="szAkce" class="muted"></span></h2><div class="grow"></div>
-        <button class="btn sm primary" id="addCatBtn">+ Přidat soutěž</button>
-      </div>
-      <div class="hint">Každá soutěž má vlastní tance, porotu, postupový klíč a startující. Úpravy otevřete tlačítkem Upravit.</div>
-      <div id="catAdmin" style="margin-top:10px"></div>
+  <div class="adm">
+    <div class="row wrap" style="gap:12px">
+      <div class="grow" style="min-width:260px"><div class="eyebrow">Soutěže akce</div><h1 id="szAkce" style="margin:6px 0 0;font-size:25px"></h1></div>
+      <div class="row wrap" id="szPills" style="gap:6px"></div>
+      <button type="button" class="btn lg" id="namesUpBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>Startující z TXT</button>
+      <button type="button" class="btn lg primary" id="addCatBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Přidat soutěž</button>
+      <input type="file" id="namesFile" accept=".txt,.csv,text/plain" hidden>
     </div>
-    <div class="card pad sup-wide">
-      <h2 class="ph2">Startující – hromadně ze souboru</h2>
-      <div class="hint" id="namesInfo"></div>
-      <div class="row wrap" style="margin-top:10px">
-        <button class="btn sm" id="namesUpBtn">Nahrát startující (TXT)…</button>
-        <button class="btn sm" id="namesTplBtn">Stáhnout vzor</button>
-        <button class="btn sm plain" id="namesDelBtn" hidden>Odebrat všechna jména</button>
-        <input type="file" id="namesFile" accept=".txt,.csv,text/plain" hidden>
-      </div>
+    <div class="sz">
+      <aside class="sz-list" aria-label="Soutěže">
+        <div id="szList"></div>
+        <div class="dropbox" id="namesDrop">
+          <span class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15l3-3 3 3"/></svg></span>
+          <span class="muted" id="namesInfo" style="font-size:12.5px;line-height:1.5;flex:1 1 200px;min-width:0"></span>
+          <span class="row" style="gap:4px;width:100%;padding-left:52px"><button type="button" class="btn plain" id="namesTplBtn">Stáhnout vzor</button><button type="button" class="btn plain" id="namesDelBtn" hidden>Odebrat jména</button></span>
+        </div>
+      </aside>
+      <section class="card sz-detail" id="szDetail" aria-label="Detail soutěže"></section>
     </div>
   </div>
 </div>
@@ -483,7 +602,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
       <div class="row wrap"><h2 class="ph2">Offline přenos (QR)</h2><div class="grow"></div>
         <label class="row" style="gap:6px;font-size:12px;color:var(--text2)"><input type="checkbox" id="soundSw"> Zvuk, když dorazí všechny lístky kola</label></div>
       <div class="hint">Když porotci vypadne signál, ukáže na telefonu QR kód. Vyfoťte ho a fotku nahrajte sem – hodnocení se zapíše do příslušného kola.</div>
-      <div class="drop" id="qrDrop" style="margin-top:10px"><b>Přetáhněte sem fotky QR kódů</b><span>nebo</span><button class="btn sm" id="qrUploadBtn">Vybrat soubory…</button></div>
+      <div class="drop" id="qrDrop" style="margin-top:10px"><b>Přetáhněte sem fotky QR kódů</b><span>nebo</span><button class="btn sm" id="qrUploadBtn">Vybrat soubory</button></div>
       <input type="file" id="qrFiles" accept="image/*" multiple hidden>
       <div class="qrlog" id="qrLog"></div>
     </div>
@@ -499,7 +618,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
   </div>
 </div>
 
-<div class="credit">ArtimoCounter, created by Martin Hejhal, 2026, v5.0</div>
+<div class="credit">ArtimoCounter, created by Martin Hejhal, 2026, v5.2</div>
 <div id="modalRoot"></div>
 <div id="printArea"></div>
 <div class="toasts" id="toasts"></div>
@@ -742,6 +861,9 @@ function validateExport(d) {
   if (!c || typeof c.id !== "string" || !/^[a-z0-9-]{3,40}$/.test(c.id)) E.push("Chybí nebo je neplatné ID akce.");
   if (c && c.jury != null && (typeof c.jury !== "object" || Object.keys(c.jury).some(l => !isLetter(l)))) E.push("Neplatná porota akce.");
   if (c && c.names != null && (typeof c.names !== "object" || Array.isArray(c.names) || Object.entries(c.names).some(([k, v]) => !/^\d{1,4}$/.test(k) || +k < 1 || typeof v !== "string"))) E.push("Neplatný seznam soutěžících.");
+  if (c && c.withdrawn != null && (typeof c.withdrawn !== "object" || Array.isArray(c.withdrawn) || Object.values(c.withdrawn).some(m => m != null && (typeof m !== "object" || Array.isArray(m) || Object.keys(m).some(n => !/^\d{1,4}$/.test(n)))))) E.push("Neplatný seznam odstoupivších.");
+  if (c && c.lockSent != null && typeof c.lockSent !== "boolean") E.push("Neplatné nastavení zamykání tanců.");
+  for (const f of ["createdAt", "startedAt", "finishedAt"]) if (c && c[f] != null && typeof c[f] !== "number") E.push(`Neplatný časový údaj akce (${f}).`);
   if (!Array.isArray(d?.categories)) E.push("Chybí seznam soutěží.");
   if (!Array.isArray(d?.rounds)) E.push("Chybí seznam kol.");
   if (E.length) return E;
@@ -756,6 +878,8 @@ function validateExport(d) {
     if (!isIntArr(k.couples) || k.couples.length > MAX_COUPLES || new Set(k.couples).size !== k.couples.length) E.push(`${w}: neplatná nebo duplicitní čísla párů.`);
     if (k.key != null && !isIntArr(k.key, MAX_COUPLES)) E.push(`${w}: neplatný postupový klíč.`);
     if (k.judges != null && (!Array.isArray(k.judges) || k.judges.some(l => !isLetter(l)))) E.push(`${w}: neplatná porota.`);
+    if (k.groups != null && !(Number.isInteger(k.groups) && k.groups >= 1 && k.groups <= 4)) E.push(`${w}: neplatný počet skupin.`);
+    if (k.order != null && typeof k.order !== "number") E.push(`${w}: neplatné pořadí.`);
   });
   const roundIds = new Set();
   d.rounds.forEach((r, i) => {
@@ -858,7 +982,8 @@ async function runAction(key, btn, fn, ctx = "Operace se nezdařila", timeoutMs 
   let timer, deferred = false;
   const release = () => { locks.delete(key); waiting.delete(key); if (btn && btn.isConnected) btn.disabled = false; };
   const work = Promise.resolve().then(fn);
-  const slow = new Promise(res => { timer = setTimeout(() => res("__timeout__"), timeoutMs); });
+  // čas běží jen mimo otevřené okno (potvrzení čeká na člověka, ne na síť)
+  const slow = new Promise(res => { let left = timeoutMs; timer = setInterval(() => { if ($("modalRoot").firstChild) { left = timeoutMs; return; } left -= 500; if (left <= 0) res("__timeout__"); }, 500); });
   try {
     const r = await Promise.race([work, slow]);
     if (r === "__timeout__") {
@@ -872,7 +997,7 @@ async function runAction(key, btn, fn, ctx = "Operace se nezdařila", timeoutMs 
     return r;
   }
   catch (e) { showError(e, ctx); }
-  finally { clearTimeout(timer); if (!deferred) release(); }
+  finally { clearInterval(timer); if (!deferred) release(); }
 }
 // ----- auditní log (kolekce competitions/{akce}/log) -----
 const logRef = () => doc(collection(db, "competitions", comp, "log"));
@@ -891,14 +1016,18 @@ async function commitOps(ops) {
 
 // ----- modální okna -----
 // onOpen(root) se zavolá hned po vykreslení – žádné opožděné hledání prvků.
+let modalClose = null;
+function closeModal() { const c = modalClose; modalClose = null; if (c) c(null); $("modalRoot").innerHTML = ""; }
 function modal(title, bodyHtml, buttons, onOpen, size = "") {
   return new Promise(resolve => {
     const root = $("modalRoot");
+    if (modalClose) { const c = modalClose; modalClose = null; c(null); }      // předchozí okno se korektně ukončí
     root.innerHTML = `<div class="backdrop"><div class="modal ${size}"><div class="mh">${title}</div><div class="mb">${bodyHtml}</div>
       <div class="mf">${buttons.map((b, i) => `<button class="btn ${b.cls || ""}" data-i="${i}">${b.label}</button>`).join("")}</div></div></div>`;
     const box = root.querySelector(".backdrop");
     let busy = false, closed = false;
-    const close = v => { if (closed) return; closed = true; if (root.contains(box)) root.innerHTML = ""; resolve(v); };
+    const close = v => { if (closed) return; closed = true; if (modalClose === close) modalClose = null; if (root.contains(box)) root.innerHTML = ""; resolve(v); };
+    modalClose = close;
     box.addEventListener("mousedown", e => { if (e.target === box && !busy) close(null); });
     box.querySelectorAll("[data-i]").forEach(btn => btn.onclick = async () => {
       if (busy) return;
@@ -927,7 +1056,7 @@ let runSheets = new Map(), unsubRun = null;
 let evalRid = null, evalSheets = new Map(), unsubEval = null;
 let selectedCell = null, editMode = false;
 let unsubs = [];
-const knownRevs = new Map();
+const knownRevs = new Map(), knownEdited = new Map();
 const advanceDraft = new Map();
 const lastSk = new Map();
 // Potvrzení převzetí: sčitatel zapíše do kola, kterou revizi lístku přečetl (porotce pak vidí „Převzato sčitatelem“).
@@ -953,6 +1082,9 @@ function syncAckWatchers() {
       if (d.metadata?.hasPendingWrites) continue;
       const x = d.data(), rev = x.rev; if (!Number.isInteger(rev)) continue;
       const k = c + "|" + rid + "|" + d.id;
+      const isEd = !!(x.edited || x.source === "manual");
+      if (knownEdited.get(k) && !isEd && x.writer === "porotce") { toast("Porotce přepsal ruční opravu", `${titleOf(r)} · porotce ${x.judge} · ${DANCES[x.dance] || x.dance}. Zkontrolujte lístek (Historie změn).`); log(`POZOR: porotce ${x.judge} přepsal ruční opravu (${titleOf(r)} · ${DANCES[x.dance] || x.dance})`); }
+      knownEdited.set(k, isEd);
       if (rev > (r.acks?.[d.id] || 0) && (ackSeen.get(k) || 0) < rev) { ackSeen.set(k, rev); queueAck(c, rid, d.id, rev); if (!first && x.writer === "porotce") markActive(x.judge); }
     }
     // všechny lístky kola dorazily → zvuk + krátká hláška
@@ -1015,7 +1147,9 @@ function startComp() {
   ackWatch.forEach(u => u()); ackWatch.clear(); ackSeen.clear(); heard.clear(); devHeard.clear(); sheetCache.clear();
   selCat = selRound = evalRid = null; editMode = false;
   store.set("ac_comp", comp);
-  $("modalRoot").innerHTML = "";                    // okno patřící k předchozí akci nesmí zůstat otevřené
+  closeModal();                                     // okno patřící k předchozí akci nesmí zůstat otevřené (a jeho akce se ukončí)
+  Object.assign(sz, { sel: null, dirty: false, editStarters: false, more: null, q: "" }); szNewId = null;
+  knownEdited.clear(); scOthers.clear(); scWarned = false;
   refreshManager();
   const lerr = e => showError(e, "Načítání dat");
   unsubs.push(onSnapshot(compRef(), snap => { compExists = snap.exists(); compDoc = snap.data() || {}; renderAll(); }, lerr));
@@ -1027,7 +1161,9 @@ function startComp() {
     rounds = new Map(snap.docs.map(d => [d.id, { id: d.id, ...d.data() }])); syncAckWatchers(); renderAll();
   }, err => { setConn("bad", "Chyba: " + err.code); log("CHYBA čtení kol: " + err.message); }));
   unsubs.push(onSnapshot(collection(db, "competitions", comp, "judges"), snap => {
-    presence = new Map(snap.docs.map(d => [d.id, d.data({ serverTimestamps: "estimate" })]));
+    presence = new Map(snap.docs.filter(d => isLetter(d.id)).map(d => [d.id, d.data({ serverTimestamps: "estimate" })]));
+    scHear(snap.docs.find(d => d.id === SC_DOC)?.data());
+    if (page === "akce" && !$("juryList").contains(document.activeElement)) renderAkcePage();
     for (const [j, p] of presence) {
       hearJudge(j, tsMs(p.lastSeen));
       for (const [id, d] of Object.entries(p.devices || {})) if (d) hearDevice(`${j}|${id}`, tsMs(d.at));
@@ -1038,6 +1174,29 @@ function startComp() {
   renderAll();
 }
 setInterval(() => { if (page === "run" && selRound) renderRunMain(); }, 15000);
+// ----- v5.2: druhý otevřený Sčitatel -----
+// Každé okno Sčitatele se jednou za minutu ohlásí v judges/_sc. Ohlásí-li se jiné okno, objeví se varování.
+const SC_DOC = "_sc", scId = Math.random().toString(36).slice(2, 10);
+const scOthers = new Map(); let scWarned = false;
+function scHear(d) {
+  for (const [id, v] of Object.entries(d?.s || {})) {
+    if (id === scId || !v) continue;
+    const h = scOthers.get(id);
+    if (!h) { scOthers.set(id, { v, at: 0 }); continue; }           // první načtení: může jít o dávno zavřené okno
+    if (v !== h.v) { h.v = v; h.at = Date.now(); }
+  }
+  const multi = scMulti();
+  if (multi && !scWarned) { scWarned = true; toast("Sčitatel je otevřený i jinde", "Stejnou akci má otevřenou další okno nebo počítač. Pracujte jen v jednom, jinak si můžete přepsat změny."); log("POZOR: akce je otevřená ve druhém Sčitateli"); }
+  if (!multi) scWarned = false;
+  const el = $("scWarn"); if (el) el.hidden = !multi;
+}
+const scMulti = () => [...scOthers.values()].some(h => h.at && Date.now() - h.at < 150000);
+function scBeat() {
+  if (!compExists || document.visibilityState !== "visible" || !navigator.onLine) return;
+  setDoc(doc(db, "competitions", comp, "judges", SC_DOC), { s: { [scId]: Date.now() } }, { merge: true }).catch(() => {});
+}
+setInterval(scBeat, 60000); setTimeout(scBeat, 5000);
+setInterval(() => { const el = $("scWarn"); if (el) el.hidden = !scMulti(); }, 30000);
 
 function watchRunSheets(rid) {
   unsubRun?.(); runSheets.clear();
@@ -1121,7 +1280,12 @@ function renderSide() {
       ${rs.map(r => `<div class="rd-item ${selRound === r.id ? "sel" : ""}" data-rid="${r.id}"><span class="dot ${r.status === "open" ? "ok" : r.status === "locked" ? "wait" : ""}" style="${r.status === "evaluated" ? "background:var(--accent)" : ""}"></span>${esc(r.label)}<span class="sp"></span><span class="faint">${r.couples.length}</span></div>`).join("")}
       ${rs.length ? "" : `<div class="hint">Zatím žádné kolo. První spustíte v přehledu soutěže.</div>`}`;
 }
-$("akceSel").addEventListener("change", e => { const v = e.target.value; if (v && v !== comp) { comp = v; startComp(); } });
+const unsavedWork = () => sz.dirty || sz.editStarters || editMode;
+$("akceSel").addEventListener("change", async e => {
+  const v = e.target.value; if (!v || v === comp) return;
+  if (unsavedWork() && !await confirmBox("Máte neuložené změny soutěže nebo zapnuté ruční úpravy. Přepnutím akce se zahodí. Přepnout?", "Přepnout akci")) { e.target.value = comp; return; }
+  comp = v; startComp();
+});
 $("catSel").addEventListener("change", e => { const v = e.target.value; if (v && cats.has(v)) pickCat(v); });
 function pickCat(cid) { selCat = cid; selRound = null; store.set("ac_cat_" + comp, cid); watchRunSheets(null); renderAll(); }
 $("catList").addEventListener("click", e => {
@@ -1134,87 +1298,413 @@ function selectRound(rid) {
   watchRunSheets(rid); renderAll();
 }
 
-// ===================== STRÁNKA SPRÁVA AKCÍ =====================
+// ===================== STRÁNKA SPRÁVA AKCÍ (v5.1) =====================
+const ICO = {
+  check: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>`,
+  qr: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg>`,
+  x: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>`,
+  more: `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>`,
+  plus: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>`,
+  arrow: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`,
+  search: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>`
+};
+const pct = (a, b) => b > 0 ? Math.max(0, Math.min(100, Math.round(a / b * 100))) : 0;
+const plural = (n, one, few, many) => `${n} ${n === 1 ? one : n >= 2 && n <= 4 ? few : many}`;
 function renderAkcePage() {
-  if (document.activeElement !== $("compName")) $("compName").value = compDoc.name || "";
+  if (document.activeElement !== $("compName")) $("compName").value = compExists ? (compDoc.name || "") : "";
   $("compName").disabled = !compExists;
-  $("compIdShow").textContent = comp;
-  const list = [...rounds.values()], start = compDoc.startedAt, end = compDoc.finishedAt, cst = compState();
-  $("compStateRow").innerHTML = !compExists ? "" : `<span class="badge ${cst === "live" ? "open" : cst === "done" ? "done" : "ready"}">${stateWord(cst)}</span>
-    ${cst === "ready" ? `<button class="btn sm" data-cstate="start">Zahájit akci</button>` : cst === "live" ? `<button class="btn sm" data-cstate="finish">Ukončit akci</button>` : `<button class="btn sm" data-cstate="reopen">Znovu otevřít</button>`}
-    ${compDoc.test ? `<button class="btn sm" data-testlinks="1">Odkazy pro porotce</button><button class="btn sm danger" data-deltest="1">Smazat zkoušku</button>` : ""}`;
-  $("compTimes").innerHTML = (compDoc.importPending ? `<div style="color:#ff8a8d;margin-bottom:4px"><b>Import této akce nebyl dokončen.</b> Spusťte ho znovu se stejným souborem.</div>` : "") + (compExists
-    ? `Začátek: ${start ? fmtDT(start) : "zatím nezačala"}${end ? ` · Konec: ${fmtDT(end)}` : ""} · ${cats.size} soutěží · ${list.filter(r => r.status === "evaluated").length}/${list.length} kol vyhodnoceno`
-    : `<span style="color:var(--orange)">Akce s tímto ID zatím neexistuje.</span> Založte ji tlačítkem „Nová akce…“, načtěte ji importem, nebo níže přepněte na jinou.`);
-  for (const id of ["exportBtn", "backupsBtn", "resultsBtn", "addJudgeBtn"]) $(id).disabled = !compExists;
+  const list = [...rounds.values()], cst = compState();
+  $("compMeta").textContent = compExists
+    ? `ID ${comp} · založeno ${fmtDT(compDoc.createdAt)}${compDoc.startedAt ? ` · zahájeno ${fmtDT(compDoc.startedAt)}` : ""}${compDoc.finishedAt ? ` · ukončeno ${fmtDT(compDoc.finishedAt)}` : ""}`
+    : `Akce s ID „${comp}“ neexistuje. Založte ji tlačítkem Nová akce, načtěte ji importem, nebo níže otevřete jinou.`;
+  $("compWarn").innerHTML = (compDoc.importPending ? `<div class="warn" style="margin:0"><b>Import této akce nebyl dokončen.</b> Spusťte ho znovu se stejným souborem.</div>` : "")
+    + (memCache ? `<div class="hint" style="color:#ffb84d">Prohlížeč neukládá data offline – při výpadku nezavírejte stránku.</div>` : "");
+  // stav akce jako kroky
+  const steps = [["ready", "Připravená"], ["live", "Probíhá"], ["done", "Ukončená"]], ci = compExists ? steps.findIndex(s => s[0] === cst) : -1;
+  $("compSteps").innerHTML = steps.map(([k, t], i) => `${i ? `<li class="ln ${i <= ci && ci > 0 ? "on" : ""}" aria-hidden="true"></li>` : ""}<li class="${i < ci ? "past" : i === ci ? "cur" + (k === "done" ? " fin" : "") : ""}" ${i === ci ? 'aria-current="step"' : ""}><span class="dt">${i < ci ? ICO.check : ""}</span>${t}</li>`).join("");
+  $("compStateRow").innerHTML = !compExists ? "" : cst === "ready" ? `<button class="btn lg primary" data-cstate="start">Zahájit akci</button>`
+    : cst === "live" ? `<button class="btn lg primary" data-cstate="finish">Ukončit akci</button>` : `<button class="btn lg" data-cstate="reopen">Znovu otevřít</button>`;
+  $("compTest").innerHTML = compDoc.test ? `<span class="stag warn">zkušební akce</span><button class="btn" data-testlinks="1">Odkazy pro porotce</button><button class="btn danger" data-deltest="1">Smazat zkoušku</button>` : "";
+  // čísla
+  const cl = sortedCats(), done = cl.filter(catDone).length, running = cl.filter(c => !catDone(c) && roundsOfCat(c.id).length).length;
+  const ev = list.filter(r => r.status === "evaluated").length;
+  const starters = cl.reduce((a, c) => a + c.couples.length, 0), named = cl.reduce((a, c) => a + c.couples.filter(x => c.names?.[String(x)]).length, 0);
+  const letters = lettersOf(compDoc.jury), active = letters.filter(j => presenceState(j).st === "active").length;
+  const tile = (label, v, unit, p, note) => `<div class="tile"><span class="eyebrow" style="font-size:10.5px">${label}</span><span class="v">${v}${unit ? `<small> ${unit}</small>` : ""}</span><div class="pbar"><span style="width:${p}%"></span></div><span class="muted" style="font-size:12px">${note}</span></div>`;
+  $("compTiles").innerHTML = !compExists ? "" : [
+    tile("Soutěže", cl.length, "", pct(done, cl.length), cl.length ? `${done} hotové · ${running} probíhají · ${cl.length - done - running} čekají` : "zatím žádná"),
+    tile("Kola", ev, `/ ${list.length}`, pct(ev, list.length), "vyhodnoceno"),
+    tile("Startující", starters, "", pct(named, starters), starters ? `jména ${named} / ${starters}` : "zatím žádní"),
+    tile("Porota", letters.length, "", pct(active, letters.length), letters.length ? `aktivních ${active}` : "zatím nikdo")
+  ].join("");
+  const bk = readBackups();
+  $("bkInfo").textContent = bk.length ? `${plural(bk.length, "záloha", "zálohy", "záloh")} · poslední ${fmtTime(bk[0].at)}` : "zatím žádná";
+  for (const id of ["exportBtn", "backupsBtn", "resultsBtn", "addJudgeBtn", "lockSentSw"]) $(id).disabled = !compExists;
+  $("lockSentSw").checked = !!compDoc.lockSent;
+  // porota
+  $("juryHead").innerHTML = letters.length ? `${plural(letters.length, "porotce", "porotci", "porotců")} <span class="muted" style="font-size:13px;font-weight:500">· aktivních ${active}</span>` : "Zatím nikdo";
   if (!$("juryList").contains(document.activeElement)) {
-    const jury = compDoc.jury || {}, letters = lettersOf(jury);
-    $("juryList").innerHTML = letters.length ? letters.map(j => `<div class="jrow"><span class="jl">${j}</span>
-      <input class="in" data-jn="${j}" value="${esc(jury[j])}" placeholder="Jméno porotce" autocomplete="off">
-      <button class="btn icon sm" data-jlink="${j}" title="Odkaz a QR pro porotce">⧉</button>
-      <button class="btn icon sm" data-jdel="${j}" title="Odebrat">✕</button></div>`).join("")
-      : `<div class="hint" style="margin-top:0">${compExists ? "Přidejte porotce. Písmena se přidělují automaticky." : ""}</div>`;
+    const jury = compDoc.jury || {};
+    $("juryList").innerHTML = letters.length ? `<div class="col" style="gap:6px">${letters.map(j => {
+      const ps = presenceState(j), n = cl.filter(c => (c.judges || []).includes(j)).length;
+      return `<div class="jt"><span class="jl">${j}</span>
+        <span class="col grow" style="min-width:0;gap:1px"><input class="in" data-jn="${j}" value="${esc(jury[j])}" placeholder="Jméno porotce ${j}" aria-label="Jméno porotce ${j}" autocomplete="off">
+          <span class="js ${ps.st === "active" ? "ok" : ""}"><i></i>${ps.text} · ${plural(n, "soutěž", "soutěže", "soutěží")}</span></span>
+        <button class="btn icon" data-jlink="${j}" title="Odkaz a QR kód pro porotce ${j}" aria-label="Odkaz a QR kód pro porotce ${j}">${ICO.qr}</button>
+        <button class="btn icon" data-jdel="${j}" title="Odebrat porotce ${j}" aria-label="Odebrat porotce ${j}">${ICO.x}</button></div>`;
+    }).join("")}</div>` : `<div class="hint" style="margin-top:0">${compExists ? "Přidejte porotce tlačítkem nahoře. Písmena se přidělují automaticky." : ""}</div>`;
   }
   renderManager();
 }
-
-// ===================== STRÁNKA SPRÁVA SOUTĚŽÍ =====================
-function renderSoutezePage() {
-  $("szAkce").textContent = compExists ? (compDoc.name || comp) : "";
-  const withNames = [...cats.values()].filter(c => c.names && Object.keys(c.names).length);
-  const nn = withNames.reduce((a, c) => a + Object.keys(c.names).length, 0);
-  $("namesInfo").innerHTML = `Jeden textový soubor pro celou akci: nadpis <b>[Název soutěže]</b> a pod ním řádky <b>číslo - jméno</b>. „Stáhnout vzor“ vytvoří soubor s nadpisy soutěží této akce. Jednotlivé startující upravíte i ručně v úpravě soutěže.`
-    + (nn ? `<br>Teď má jména <b>${withNames.length}</b> z ${cats.size} soutěží (celkem ${nn} startujících).` : "");
-  $("namesDelBtn").hidden = !nn && !compDoc.names;
-  for (const id of ["addCatBtn", "namesUpBtn"]) $(id).disabled = !compExists;
-  const cl = sortedCats(), jury = compDoc.jury || {};
-  $("catAdmin").innerHTML = !compExists ? `<div class="hint">Akce „${esc(comp)}“ neexistuje. Založte ji nebo vyberte jinou ve Správě akcí.</div>`
-    : cl.length ? cl.map((c, i) => {
-      const rs = roundsOfCat(c.id), done = catDone(c), nNames = c.names ? c.couples.filter(x => c.names[String(x)]).length : 0;
-      const missJ = (c.judges || []).filter(j => !(j in jury));
-      return `<div class="ca-row" data-cid="${c.id}"><div>
-        <div class="nm">${esc(c.name)} ${done ? `<span class="badge done">hotovo</span>` : rs.length ? `<span class="badge open">probíhá · ${esc(rs[rs.length - 1].label)}</span>` : `<span class="badge ready">nezahájeno</span>`}</div>
-        <div class="mt">${c.dances.map(d => DANCES[d]).join(", ")}<br>
-          Startující: <b>${c.couples.length}</b>${c.couples.length ? ` (${esc(fmtCouples(c.couples).slice(0, 60))}${fmtCouples(c.couples).length > 60 ? "…" : ""}) · jména ${nNames}/${c.couples.length}` : ` <span style="color:var(--orange)">– zatím žádní</span>`}
-          · klíč ${c.key?.length ? c.key.join(" → ") + " (finále)" : "rovnou finále"}${c.groups > 1 ? ` · ${c.groups} skupiny` : ""}<br>
-          Porota: ${(c.judges || []).length ? c.judges.map(j => `<b>${j}</b>${jury[j] ? " " + esc(jury[j]) : ""}`).join(", ") : `<span style="color:var(--orange)">nevybrána</span>`}${missJ.length ? ` <span style="color:var(--orange)">(porotce ${missJ.join(", ")} už v akci není)</span>` : ""}</div></div>
-        <div class="acts">
-          <button class="btn sm icon" data-ca="up" title="Posunout nahoru" ${i === 0 ? "disabled" : ""}>↑</button>
-          <button class="btn sm icon" data-ca="down" title="Posunout dolů" ${i === cl.length - 1 ? "disabled" : ""}>↓</button>
-          <button class="btn sm" data-ca="results" ${rs.length ? "" : "disabled"}>Výsledky…</button>
-          <button class="btn sm" data-ca="open">Otevřít v průběhu</button>
-          <button class="btn sm primary" data-ca="edit">Upravit</button></div></div>`;
-    }).join("") : `<div class="hint">Akce zatím nemá žádnou soutěž. Přidejte první tlačítkem „+ Přidat soutěž“.</div>`;
-}
-$("catAdmin").addEventListener("click", e => {
-  const b = e.target.closest("[data-ca]"); if (!b) return;
-  const cid = b.closest("[data-cid]")?.dataset.cid, act = b.dataset.ca; if (!cid || !cats.has(cid)) return;
-  if (act === "edit") { editCategory(cid); return; }
-  if (act === "results") { openResults(cid); return; }
-  if (act === "open") { selCat = cid; selRound = null; store.set("ac_cat_" + comp, cid); watchRunSheets(null); showPage("run"); return; }
-  if (act === "up" || act === "down") runAction("catorder", b, async () => {
-    const cl = sortedCats(), i = cl.findIndex(c => c.id === cid), k = act === "up" ? i - 1 : i + 1;
-    if (i < 0 || k < 0 || k >= cl.length) return;
-    [cl[i], cl[k]] = [cl[k], cl[i]];
-    const batch = writeBatch(db);
-    cl.forEach((c, n) => { if (c.order !== n) batch.update(doc(db, "competitions", comp, "categories", c.id), { order: n }); });
-    await batch.commit();
-  }, "Změna pořadí");
+$("lockSentSw").addEventListener("change", e => {
+  const v = e.target.checked;
+  saveComp({ lockSent: v }); audit(v ? "zapnuto zamykání tanců po odeslání" : "vypnuto zamykání tanců po odeslání", {});
+  log(`Zamykání tanců po odeslání: ${v ? "zapnuto" : "vypnuto"}`);
 });
 
+// ----- seznam akcí jako karty -----
+function renderManager() {
+  const body = $("mgrBody");
+  if (body.contains(document.activeElement) && document.activeElement.id === "mDelId" && !mgr.confirm) return;   // nepřepisovat pole, do kterého se píše
+  const keepId = body.querySelector("#mDelId")?.value || "";
+  const list = mgr.list.map(c => c.id === comp && compExists ? { ...c, ...compDoc, id: c.id } : c);     // otevřená akce vždy s živým stavem
+  const cnt = { all: list.length, live: 0, ready: 0, done: 0 }; list.forEach(c => cnt[mgrState(c)]++);
+  $("mgrFilter").innerHTML = [["all", "Vše"], ["live", "Probíhá"], ["ready", "Připravené"], ["done", "Ukončené"]]
+    .map(([k, t]) => `<button type="button" data-mf="${k}" class="${mgr.filter === k ? "on" : ""}" aria-pressed="${mgr.filter === k}">${t} ${cnt[k]}</button>`).join("");
+  const shown = list.filter(c => mgr.filter === "all" || mgrState(c) === mgr.filter);
+  const card = c => {
+    const st = mgrState(c), cur = c.id === comp, id = esc(c.id), name = esc(c.name || c.id);
+    const pill = `<span class="stag ${st === "live" ? "live" : st === "ready" ? "ready" : ""}"><i></i>${stateWord(st)}</span>`;
+    let nums = `<span><b>${Object.keys(c.jury || {}).length}</b> porotců</span>`, prog = "";
+    if (cur && compExists) {
+      const rl = [...rounds.values()], ev = rl.filter(r => r.status === "evaluated").length;
+      nums = `<span><b>${cats.size}</b> soutěží</span>` + nums + `<span><b>${sortedCats().reduce((a, x) => a + x.couples.length, 0)}</b> startujících</span>`;
+      prog = `<div class="col" style="gap:6px"><div class="pbar"><span style="width:${pct(ev, rl.length)}%"></span></div><span class="muted" style="font-size:11.5px">${rl.length ? `vyhodnoceno ${ev} z ${rl.length} kol` : "zatím žádné kolo"}</span></div>`;
+    }
+    const date = st === "done" ? `ukončeno ${fmtDT(c.finishedAt)}` : st === "live" ? `zahájeno ${fmtDT(c.startedAt)}` : `založeno ${fmtDT(c.createdAt)}`;
+    if (mgr.confirm === c.id) return `<article class="card ak del">${pill}<div><h3>${name}</h3><div class="muted" style="font-size:12px">ID ${id}</div></div>
+      <div class="confirm"><span>Smazat akci <b>${name}</b> se všemi soutěžemi, lístky a výsledky? Nejde to vrátit – pokud ji chcete zachovat, nejdřív ji exportujte.</span>
+      <div class="row" style="gap:8px;justify-content:flex-end"><button class="btn" data-m="cancel">Zrušit</button><button class="btn danger" data-m="confirmDel" data-id="${id}">Smazat natrvalo</button></div></div></article>`;
+    const stateBtn = st === "ready" ? `<button class="btn" data-m="start" data-id="${id}">Zahájit</button>` : st === "live" ? `<button class="btn" data-m="finish" data-id="${id}">Ukončit</button>` : `<button class="btn" data-m="reopen" data-id="${id}">Znovu otevřít</button>`;
+    return `<article class="card ak ${cur ? "cur" : ""}">
+      <div class="row" style="gap:8px">${pill}${cur ? `<span class="stag cur">otevřená</span>` : ""}${c.test ? `<span class="stag warn">zkouška</span>` : ""}<span class="grow"></span>
+        <button class="btn icon" data-m="more" data-id="${id}" aria-label="Další volby akce ${name}" aria-expanded="${mgr.more === c.id}">${ICO.more}</button></div>
+      <div><h3 title="${name}">${name}</h3><div class="muted" style="font-size:12px">ID ${id} · ${date}</div></div>
+      <div class="nums">${nums}</div>${prog}
+      ${mgr.more === c.id ? `<div class="more">${stateBtn}<button class="btn danger" data-m="del" data-id="${id}">Smazat</button></div>` : ""}
+      <div class="acts"><button class="btn lg ${cur ? "" : "primary"} grow" data-m="open" data-id="${id}" ${cur ? "disabled" : ""}>${cur ? "Otevřená" : "Otevřít"}</button>${mgr.more === c.id ? "" : stateBtn.replace('class="btn"', 'class="btn lg"')}</div>
+    </article>`;
+  };
+  const orphan = typeof mgr.confirm === "string" && mgr.confirm.startsWith("id:") ? mgr.confirm.slice(3) : null;
+  body.innerHTML = `${mgr.msg ? `<div class="${mgr.msg.bad ? "warn" : "okbox"}" style="margin:0 0 14px;${mgr.msg.bad ? "border-color:rgba(255,90,95,.5);background:rgba(255,90,95,.1)" : ""}">${mgr.msg.text}</div>` : ""}
+    <div class="akgrid">${mgr.loading ? `<div class="hint">Načítám akce</div>` : shown.map(card).join("")}
+      <button type="button" class="newcard" data-m="new"><span class="plus">${ICO.plus}</span><b style="font-size:15px">Nová akce</b><span class="muted" style="font-size:12px">název, ID a porota</span></button></div>
+    ${!mgr.loading && !shown.length && list.length ? `<div class="hint">V tomto filtru žádná akce není.</div>` : ""}
+    <details class="adv" ${orphan || keepId ? "open" : ""} style="margin-top:18px;border-top:1px solid var(--stroke);padding-top:12px">
+      <summary class="muted" style="cursor:pointer;font-size:13px">Pokročilé – smazat zbytková data podle ID</summary>
+      <div class="hint">Starší testovací data bez záznamu akce (např. ID „test“ z první verze).</div>
+      ${orphan ? `<div class="ak confirm" style="margin-top:8px"><span>Smazat všechna data s ID <b>${esc(orphan)}</b>? Nejde to vrátit.</span><div class="row" style="gap:8px;justify-content:flex-end"><button class="btn" data-m="cancel">Zrušit</button><button class="btn danger" data-m="confirmDel" data-id="id:${esc(orphan)}">Smazat natrvalo</button></div></div>`
+        : `<div class="row" style="margin-top:8px;max-width:520px"><input class="in" id="mDelId" placeholder="ID akce" aria-label="ID akce ke smazání" value="${esc(keepId)}"><button class="btn danger" data-m="delid">Smazat data</button></div>`}
+    </details>`;
+}
+$("mgrFilter").addEventListener("click", e => { const b = e.target.closest("[data-mf]"); if (b) { mgr.filter = b.dataset.mf; renderManager(); } });
+
+// ===================== STRÁNKA SPRÁVA SOUTĚŽÍ (v5.1) =====================
+// Vlevo seznam soutěží, vpravo trvalý detail vybrané soutěže (úpravy bez dalšího okna).
+const sz = { sel: null, dirty: false, editStarters: false, more: null, q: "" };
+const NEW = "__new__";
+async function szSelect(id) {
+  if (sz.dirty && id !== sz.sel && !await confirmBox("Neuložené změny soutěže se zahodí. Pokračovat?", "Zahodit změny")) return false;
+  sz.sel = id; sz.dirty = false; sz.editStarters = false; sz.more = null; sz.q = ""; szNewId = id === NEW ? nextId() : null;
+  if (id && id !== NEW) { selCat = id; selRound = null; store.set("ac_cat_" + comp, id); watchRunSheets(null); }
+  renderSoutezePage(true); return true;
+}
+let szNewId = null;
+function catStateInfo(c) {
+  const rs = roundsOfCat(c.id), last = rs[rs.length - 1];
+  if (catDone(c)) return { cls: "", text: "hotovo" };
+  if (last) return { cls: "live", text: last.status === "open" ? `probíhá · ${last.label}` : last.status === "locked" ? `${last.label} · uzavřeno` : `${last.label} · vyhodnoceno` };
+  return { cls: "ready", text: "čeká" };
+}
+// průběh kol: skutečná kola + plán podle postupového klíče
+function catPipeline(c) {
+  const rs = roundsOfCat(c.id), out = [];
+  for (const r of rs) {
+    const q = Array.isArray(r.qualified) ? r.qualified.length : null;
+    out.push({ cls: r.status === "evaluated" ? "ev" : r.status === "open" ? "op" : "lk", t: r.label,
+      big: r.type === "final" ? `${r.couples.length}` : `${r.couples.length} → ${q ?? r.required ?? "?"}`,
+      sub: r.status === "evaluated" ? (r.type === "final" ? "výsledky potvrzeny" : "vyhodnoceno") : r.status === "open" ? "probíhá" : "uzavřeno, čeká na vyhodnocení" });
+  }
+  const last = rs[rs.length - 1];
+  if (last && last.type === "final") return out;
+  let n = last ? (Array.isArray(last.qualified) ? last.qualified.length : last.required) : c.couples.filter(x => !isWd(c.id, x)).length;
+  let ki = last ? (last.keyIndex ?? -1) + 1 : 0, k = rs.length;
+  const key = c.key || [];
+  for (; ki < key.length; ki++) { if (!n || key[ki] >= n) continue; k++; out.push({ cls: "ppl", t: `${k}. kolo`, big: `${n} → ${key[ki]}`, sub: "plán" }); n = key[ki]; }
+  out.push({ cls: "ppl", t: "Finále", big: n ? `${n}` : "–", sub: "plán" });
+  return out;
+}
+function renderSoutezePage(force = false) {
+  $("szAkce").textContent = compExists ? (compDoc.name || comp) : "Akce neexistuje";
+  const cl = sortedCats();
+  for (const id of ["addCatBtn", "namesUpBtn"]) $(id).disabled = !compExists;
+  const done = cl.filter(catDone).length, run = cl.filter(c => !catDone(c) && roundsOfCat(c.id).length).length;
+  $("szPills").innerHTML = compExists && cl.length ? `<span class="stag">${plural(cl.length, "soutěž", "soutěže", "soutěží")}</span><span class="stag live">probíhá ${run}</span><span class="stag ready">čeká ${cl.length - done - run}</span><span class="stag">hotovo ${done}</span>` : "";
+  const withNames = cl.filter(c => c.names && Object.keys(c.names).length);
+  $("namesInfo").innerHTML = `Přetáhněte sem TXT se startujícími všech soutěží: nadpis <b>[Název soutěže]</b> a pod ním řádky <b>číslo - jméno</b>.${withNames.length ? ` Jména teď má ${withNames.length} z ${cl.length} soutěží.` : ""}`;
+  $("namesDelBtn").hidden = !withNames.length && !compDoc.names;
+  // výběr
+  if (sz.sel !== NEW && (!sz.sel || !cats.has(sz.sel))) { sz.sel = selCat && cats.has(selCat) ? selCat : (cl[0]?.id || null); sz.dirty = false; sz.editStarters = false; }
+  $("szList").innerHTML = !compExists ? `<div class="hint">Akce „${esc(comp)}“ neexistuje. Založte ji nebo vyberte jinou ve Správě akcí.</div>`
+    : cl.length || sz.sel === NEW ? `<div class="col" style="gap:8px">${cl.map((c, i) => {
+        const si = catStateInfo(c), rs = roundsOfCat(c.id), plan = catPipeline(c).length;
+        const dots = Array.from({ length: Math.max(plan, 1) }, (_, k) => { const r = rs[k]; return `<i class="${r ? (r.status === "evaluated" ? "ev" : r.status === "open" ? "op" : "lk") : ""}"></i>`; }).join("");
+        const disc = c.dances.every(d => STT.includes(d)) ? "STT" : c.dances.every(d => LAT.includes(d)) ? "LAT" : c.dances.length === 1 ? DANCES[c.dances[0]] : "mix";
+        const nN = c.couples.filter(x => c.names?.[String(x)]).length;
+        return `<button type="button" class="szc ${sz.sel === c.id ? "sel" : ""}" data-sz="${c.id}" aria-current="${sz.sel === c.id}">
+          <span class="no">${i + 1}</span><span class="nm"><b>${esc(c.name)}</b><span class="stag" style="height:18px;padding:0 7px">${esc(disc)}</span></span><span class="stag ${si.cls}">${esc(si.text)}</span>
+          <span class="sub"><span class="rdots" aria-hidden="true">${dots}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.couples.length ? `${plural(c.couples.length, "startující", "startující", "startujících")}${nN < c.couples.length ? ` · jména ${nN}/${c.couples.length}` : ""}` : "bez startujících"}</span></span></button>`;
+      }).join("")}${sz.sel === NEW ? `<div class="szc sel" aria-current="true"><span class="no">+</span><span class="nm"><b>Nová soutěž</b></span><span></span></div>` : ""}</div>`
+    : `<div class="hint" style="margin-top:0">Akce zatím nemá žádnou soutěž. Přidejte první tlačítkem Přidat soutěž.</div>`;
+  renderSzDetail(force);
+}
+$("szList").addEventListener("click", e => { const b = e.target.closest("[data-sz]"); if (b) szSelect(b.dataset.sz); });
+$("addCatBtn").onclick = () => { if (!compExists) { alertBox("Nejdřív založte nebo otevřete akci."); return; } szSelect(NEW); };
+// otevření soutěže k úpravě odkudkoli (průběh akce, starší volání)
+function editCategory(cid) { showPage("souteze"); szSelect(cid || NEW); }
+
+function renderSzDetail(force) {
+  const box = $("szDetail");
+  if (!compExists) { box.innerHTML = ""; box.hidden = true; return; }
+  box.hidden = false;
+  const isNew = sz.sel === NEW, c = isNew ? { id: szNewId, name: "", dances: LAT, couples: [], key: [], groups: 1, judges: lettersOf(compDoc.jury) } : cats.get(sz.sel);
+  if (!c) { box.innerHTML = `<div class="hint" style="margin-top:0">Vyberte soutěž vlevo, nebo přidejte novou.</div>`; return; }
+  const rs = isNew ? [] : roundsOfCat(c.id), si = isNew ? { cls: "ready", text: "nová" } : catStateInfo(c);
+  // formulář nepřepisujeme, když v něm jsou neuložené změny nebo se do něj právě píše
+  const formBox = box.querySelector("#szForm"), stBox = box.querySelector("#szStarters");
+  const keepForm = !force && formBox && box.dataset.cid === String(c.id) && (sz.dirty || isNew || formBox.contains(document.activeElement));
+  const keepSt = !force && stBox && box.dataset.cid === String(c.id) && (sz.editStarters || stBox.contains(document.activeElement));
+  const head = `<div class="row wrap" style="align-items:flex-start;gap:12px">
+      <div class="grow" style="min-width:240px"><div class="row wrap" style="gap:10px"><h2 style="margin:0;font-size:24px">${isNew ? "Nová soutěž" : esc(c.name)}</h2><span class="stag ${si.cls}">${esc(si.text)}</span></div>
+        <div class="muted" style="font-size:12.5px;margin-top:6px">${isNew ? "Vyplňte nastavení a uložte. Startující doplníte hned potom." : `${plural(c.couples.length, "startující", "startující", "startujících")} · ${c.dances.map(d => DANCES[d]).join(", ")} · porota ${(c.judges || []).join(", ") || "nevybrána"}`}</div></div>
+      ${isNew ? "" : (() => { const cl = sortedCats(), i = cl.findIndex(x => x.id === c.id);
+        return `<div class="row" style="gap:6px"><button class="btn icon" data-szact="up" aria-label="Posunout soutěž výš" title="Posunout výš" ${i <= 0 ? "disabled" : ""}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button><button class="btn icon" data-szact="down" aria-label="Posunout soutěž níž" title="Posunout níž" ${i >= cl.length - 1 ? "disabled" : ""}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button></div>
+          <button class="btn lg" data-szact="results" ${rs.length ? "" : "disabled"}>Výsledky</button><button class="btn lg primary" data-szact="open">Otevřít v průběhu</button>`; })()}</div>
+    ${isNew ? "" : `<div class="pipe" aria-label="Průběh kol">${catPipeline(c).map((p, i, a) => `<div class="pst ${p.cls}"><b><i></i>${esc(p.t)}</b><span class="big">${esc(p.big)}</span><span class="muted" style="font-size:12px">${esc(p.sub)}</span></div>${i < a.length - 1 ? `<span class="ar">${ICO.arrow}</span>` : ""}`).join("")}</div>`}`;
+  const headBox = box.querySelector("#szHead");
+  if (!headBox || box.dataset.cid !== String(c.id) || force || !keepForm) {
+    if (keepForm && headBox) headBox.innerHTML = head;
+    else {
+      box.dataset.cid = String(c.id);
+      box.innerHTML = `<div id="szHead" class="col" style="gap:18px">${head}</div>
+        <div class="szgrid"><div id="szForm" class="col mb" style="gap:18px;min-width:0"></div><div id="szStarters" class="col" style="gap:12px;min-width:0"></div></div>
+        <div id="szFoot"></div>`;
+    }
+  } else headBox.innerHTML = head;
+  if (!keepForm) box.querySelector("#szForm").innerHTML = szFormHtml(c, isNew, rs.length > 0);
+  if (!keepSt) box.querySelector("#szStarters").innerHTML = isNew ? `<div class="lbl">Startující</div><div class="hint" style="margin-top:0">Startující přidáte po uložení soutěže – ručně, nebo hromadně souborem TXT.</div>` : szStartersHtml(c);
+  box.querySelector("#szFoot").innerHTML = (sz.dirty || isNew ? `<div class="savebar"><span class="grow" style="font-size:13px">${isNew ? "Nová soutěž zatím není uložená." : "Máte neuložené změny nastavení."}</span><span class="err" id="szErr" style="font-size:12.5px"></span><button class="btn lg" data-szact="cancel">Zrušit</button><button class="btn lg primary" data-szact="save">${isNew ? "Přidat soutěž" : "Uložit změny"}</button></div>` : "")
+    + (isNew ? "" : `<div class="danger-row" style="margin-top:${sz.dirty ? 16 : 0}px"><span class="muted grow" style="font-size:12.5px">${rs.length ? "Soutěž se spuštěnými koly nejde smazat. Změny nastavení se projeví až v dalších kolech." : "Smazáním zmizí soutěž i její startující."}</span><button class="btn danger" data-szact="delete" ${rs.length ? "disabled" : ""}>Smazat soutěž</button></div>`);
+}
+function szFormHtml(c, isNew, started) {
+  const key = c.key || [];
+  return `<div><label class="lbl" for="cName">Název soutěže</label><input class="in" id="cName" value="${esc(c.name)}" placeholder="např. Junioři LAT" autocomplete="off" style="height:36px"></div>
+    <div><span class="lbl">Tance</span>${danceChipsHtml(c.dances)}</div>
+    <div><label class="lbl" for="cKey">Postupový klíč</label>
+      <div class="keyrow"><input class="in" id="cKey" value="${esc(key.join(", "))}" placeholder="např. 24, 12, 6" style="width:180px;text-align:left"><span class="muted" id="cKeyInfo" style="font-size:12px"></span></div>
+      <div class="hint">Kolik startujících postoupí z každého kola, poslední číslo = finalisté. Prázdné = rovnou finále.</div></div>
+    <div><span class="lbl">Skupiny v postupových kolech</span>${segHtml("groups", [[1, "1"], [2, "2"], [3, "3"], [4, "4"]], c.groups || 1)}</div>
+    <div><span class="lbl">Porota soutěže</span><div id="cJury">${judgeChipsHtml(c.judges || [])}</div></div>
+`;
+}
+// stav startujícího v soutěži
+function starterRows(c) {
+  const st = standings(c), by = new Map(st.map(o => [o.c, o]));
+  return [...c.couples].sort((a, b) => a - b).map(n => {
+    const o = by.get(n) || { status: "waiting" };
+    const text = o.status === "placed" ? `${o.label} místo` : o.status === "out" ? `${o.label} · ${o.round.label}` : o.status === "wd" ? `odstoupil${o.round ? " · " + o.round.label : ""}` : o.status === "active" ? `v soutěži · ${o.round.label}` : o.status === "dns" ? "nenastoupil" : "přihlášen";
+    const color = o.status === "active" ? "#7be39a" : o.status === "wd" ? "#ffc46b" : o.status === "placed" ? "var(--accent)" : "var(--text2)";
+    return { n, name: nm(n, c.id), status: o.status, text, color };
+  });
+}
+function szStartersHtml(c) {
+  const started = roundsOfCat(c.id).length > 0;
+  if (sz.editStarters) return `<div class="row" style="gap:8px"><label class="lbl grow" for="cCouples" style="margin:0">Startující – úprava seznamu</label></div>
+    <textarea class="in" id="cCouples" rows="14" spellcheck="false" placeholder="Na každý řádek jednoho startujícího:&#10;12 - Jan Novák – Eva Malá&#10;15 - Ondřej Marek&#10;&#10;Jen čísla bez jmen: 1-20, 25">${esc(startersText(c))}</textarea>
+    <div class="hint" id="cCoupleInfo" style="margin-top:0"></div>
+    <div class="hint" style="margin-top:0">Řádek = <b>číslo - jméno</b> (pár i sólista). Čísla bez jmen i hromadně: 1-20, 25.${started ? ` <span style="color:var(--orange)">Soutěž už běží – do probíhajících kol se nový startující nepřidá, jména se ale opraví všude.</span>` : ""}</div>
+    <div class="row" style="gap:8px;justify-content:flex-end"><span class="err grow" id="stErr" style="font-size:12.5px"></span><button class="btn lg" data-szact="stCancel">Zrušit</button><button class="btn lg primary" data-szact="stSave">Uložit startující</button></div>`;
+  const rows = starterRows(c), named = rows.filter(r => r.name).length;
+  const cnt = s => rows.filter(r => r.status === s).length;
+  const pills = [["active", "live", "v soutěži"], ["out", "", "vyřazeno"], ["placed", "ready", "umístěno"], ["wd", "warn", "odstoupilo"]].filter(([s]) => cnt(s)).map(([s, k, t]) => `<span class="stag ${k}">${t} ${cnt(s)}</span>`).join("");
+  return `<div class="row" style="gap:8px"><span class="lbl grow" style="margin:0">Startující <span class="muted" style="font-weight:500">· ${rows.length ? `jména ${named} / ${rows.length}` : "zatím žádní"}</span></span>
+      <button class="btn" data-szact="stEdit">${rows.length ? "Upravit seznam" : "Přidat startující"}</button></div>
+    ${rows.length ? `<label style="position:relative;display:block"><span class="muted" style="position:absolute;left:10px;top:8px" aria-hidden="true">${ICO.search}</span>
+      <input class="in" id="stSearch" placeholder="Hledat číslo nebo jméno" aria-label="Hledat startující" value="${esc(sz.q)}" style="padding-left:32px;height:32px"></label>
+      ${pills ? `<div class="row wrap" style="gap:6px">${pills}</div>` : ""}
+      <div class="sttab"><div class="scroll"><table><thead><tr><th>Č.</th><th>Jméno</th><th>Stav</th><th><span class="sr">Volby</span></th></tr></thead><tbody>
+      ${rows.map(r => `<tr class="${r.status === "wd" ? "wd" : ""}" data-row="${r.n}" data-q="${esc(normName(r.n + " " + r.name))}"><td class="n">${r.n}</td><td class="nm">${esc(r.name) || '<span class="muted">—</span>'}</td><td style="font-size:12px;color:${r.color}">${esc(r.text)}</td>
+        <td style="width:40px;padding:3px 6px"><button class="btn icon" data-stmore="${r.n}" aria-label="Volby startujícího ${r.n}" aria-expanded="${sz.more === r.n}">${ICO.more}</button></td></tr>
+        ${sz.more === r.n ? `<tr class="acts"><td colspan="4"><div class="row wrap" style="gap:8px;justify-content:flex-end">
+          <button class="btn" data-szact="wd" data-n="${r.n}">${r.status === "wd" ? "Vrátit do soutěže" : "Odstoupil"}</button>
+          <button class="btn danger" data-szact="stDel" data-n="${r.n}" ${started ? 'disabled title="Soutěž už běží"' : ""}>Odebrat</button></div></td></tr>` : ""}`).join("")}
+      </tbody></table></div></div>` : `<div class="hint" style="margin-top:0">Přidejte startující ručně tlačítkem výše, nebo všechny soutěže najednou souborem TXT vlevo.</div>`}`;
+}
+function szReadForm(root) {
+  const name = root.querySelector("#cName").value.trim();
+  const dances = Object.keys(DANCES).filter(d => chipVals(root, "dance").includes(d));
+  const keyStr = root.querySelector("#cKey").value.trim();
+  const key = keyStr ? keyStr.split(/[,;\s–→>-]+/).filter(Boolean).map(x => { const n = Number(x); if (!Number.isInteger(n) || n < 1 || n > MAX_COUPLES) throw new Error(`Neplatné číslo v klíči: „${x}“`); return n; }) : [];
+  if (key.length > 10) throw new Error("Postupový klíč může mít nejvýše 10 kol.");
+  for (let i = 1; i < key.length; i++) if (key[i] >= key[i - 1]) throw new Error("Postupový klíč musí klesat (např. 24, 12, 6).");
+  const groups = parseInt(segVal(root, "groups"), 10) || 1;
+  const judges = chipVals(root, "judge");
+  if (!name) throw new Error("Vyplňte název soutěže.");
+  if (!dances.length) throw new Error("Vyberte alespoň jeden tanec.");
+  if (!judges.length) throw new Error("Vyberte porotce, kteří soutěž hodnotí.");
+  return { name, dances, key, groups, judges };
+}
+function szKeyInfo() {
+  const box = $("szDetail"), inp = box.querySelector("#cKey"), out = box.querySelector("#cKeyInfo"); if (!inp || !out) return;
+  const v = inp.value.split(/[,;\s–→>-]+/).filter(Boolean);
+  out.textContent = !v.length ? "rovnou finále" : v.every(x => /^\d+$/.test(x)) ? `${v.length === 1 ? "1 postupové kolo" : v.length < 5 ? v.length + " postupová kola" : v.length + " postupových kol"} + finále (${v[v.length - 1]})` : "";
+}
+function szMarkDirty() {
+  if (sz.dirty || sz.sel === NEW) return;
+  sz.dirty = true; renderSzDetail(false);
+}
+// interaktivita detailu: stejné chipy a segmenty jako v oknech
+$("szDetail").addEventListener("click", e => {
+  const chip = e.target.closest("[data-chips] .chip"); if (chip) { chip.classList.toggle("on"); szMarkDirty(); return; }
+  const sb = e.target.closest("[data-seg] button"); if (sb) { sb.parentElement.querySelectorAll("button").forEach(b => b.classList.toggle("on", b === sb)); szMarkDirty(); return; }
+  const aj = e.target.closest("[data-alljudges]"); if (aj) { $("szDetail").querySelectorAll('[data-chips="judge"] .chip').forEach(c => c.classList.toggle("on", aj.dataset.alljudges === "1")); szMarkDirty(); return; }
+  const pr = e.target.closest("[data-preset]"); if (pr) { const set = pr.dataset.preset === "stt" ? STT : LAT; $("szDetail").querySelectorAll('[data-chips="dance"] .chip').forEach(c => c.classList.toggle("on", set.includes(c.dataset.v))); szMarkDirty(); return; }
+  const nj = e.target.closest("[data-newjudge]"); if (nj && !nj.disabled) { szNewJudge(nj); return; }
+  const more = e.target.closest("[data-stmore]"); if (more) { const n = Number(more.dataset.stmore); sz.more = sz.more === n ? null : n; $("szStarters").innerHTML = szStartersHtml(cats.get(sz.sel)); szFilter(); return; }
+  const b = e.target.closest("[data-szact]"); if (b && !b.disabled) szAction(b.dataset.szact, b);
+});
+$("szDetail").addEventListener("input", e => {
+  if (e.target.id === "stSearch") { sz.q = e.target.value; szFilter(); return; }
+  if (e.target.id === "cCouples") { szCoupleInfo(); return; }
+  if (e.target.closest("#szForm")) { if (e.target.id === "cKey") szKeyInfo(); szMarkDirty(); }
+});
+function szFilter() {
+  const q = normName(sz.q);
+  $("szDetail").querySelectorAll("tr[data-row]").forEach(tr => { const hide = q && !tr.dataset.q.includes(q); tr.hidden = hide; const nx = tr.nextElementSibling; if (nx?.classList.contains("acts")) nx.hidden = hide; });
+}
+function szCoupleInfo() {
+  const box = $("szDetail"), inp = box.querySelector("#cCouples"), info = box.querySelector("#cCoupleInfo"); if (!inp) return;
+  try { const r = parseStarters(inp.value), n = r.couples.length, k = Object.keys(r.names).length; info.style.color = ""; info.textContent = n ? `${n} startujících · jména ${k}/${n}` : "Zatím žádní startující."; }
+  catch (er) { info.style.color = "#ff8a8d"; info.textContent = er.message; }
+}
+async function szNewJudge(b) {
+  const box = $("szDetail").querySelector("#cJury"), jury = { ...(compDoc.jury || {}) };
+  const sel = chipVals($("szDetail"), "judge");
+  const free = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").find(l => !(l in jury)); if (!free) return;
+  b.disabled = true;
+  try { await updateDoc(compRef(), { [`jury.${free}`]: "" }); jury[free] = ""; if (box.isConnected) box.innerHTML = judgeChipsHtml([...sel, free], jury); szMarkDirty(); toast("Porotce přidán", `Porotce ${free} je v porotě akce. Jméno doplníte ve Správě akcí.`, "ok"); }
+  catch (er) { b.disabled = false; showError(er, "Přidání porotce"); }
+}
+function szAction(act, b) {
+  const box = $("szDetail"), isNew = sz.sel === NEW, c = isNew ? null : cats.get(sz.sel);
+  if (act === "open") { selCat = c.id; selRound = null; store.set("ac_cat_" + comp, c.id); watchRunSheets(null); showPage("run"); return; }
+  if (act === "results") { openResults(c.id); return; }
+  if (act === "up" || act === "down") {
+    runAction("catorder", b, async () => {
+      const cl = sortedCats(), i = cl.findIndex(x => x.id === c.id), k = act === "up" ? i - 1 : i + 1;
+      if (i < 0 || k < 0 || k >= cl.length) return;
+      [cl[i], cl[k]] = [cl[k], cl[i]];
+      const batch = writeBatch(db);
+      cl.forEach((x, n) => { if (x.order !== n) batch.update(doc(db, "competitions", comp, "categories", x.id), { order: n }); });
+      await batch.commit();
+    }, "Změna pořadí");
+    return;
+  }
+  if (act === "cancel") { if (isNew) { sz.sel = null; sz.dirty = false; renderSoutezePage(true); } else { sz.dirty = false; renderSzDetail(true); } return; }
+  if (act === "save") {
+    const err = box.querySelector("#szErr");
+    runAction("szsave", b, async () => {
+      let f; try { f = szReadForm(box); } catch (er) { if (err) err.textContent = er.message; return; }
+      const id = isNew ? szNewId : c.id;
+      if ([...cats.values()].some(x => x.id !== id && normName(x.name) === normName(f.name))) { if (err) err.textContent = "Soutěž s tímto názvem už v akci je (podle názvu se párují startující ze souboru)."; return; }
+      if (!isNew && f.key.length && c.couples.length && f.key[0] >= c.couples.length) { if (err) err.textContent = `První číslo klíče (${f.key[0]}) musí být menší než počet startujících (${c.couples.length}).`; return; }
+      if (isNew) await setDoc(doc(db, "competitions", comp, "categories", id), { ...f, couples: [], names: null, created: Date.now(),
+        order: Math.max(-1, ...[...cats.values()].map(x => Number.isFinite(x.order) ? x.order : -1)) + 1 });
+      else {
+        const bt = writeBatch(db);
+        bt.update(doc(db, "competitions", comp, "categories", id), f);
+        if (f.name !== c.name) for (const r of roundsOfCat(id)) bt.update(roundRef(r.id), { category: f.name });   // název i v již spuštěných kolech
+        await bt.commit();
+      }
+      sz.dirty = false;
+      for (let i = 0; i < 40 && !cats.has(id); i++) await new Promise(r => setTimeout(r, 50));   // počkat na místní kopii dat
+      if (isNew) { sz.sel = id; selCat = id; selRound = null; store.set("ac_cat_" + comp, id); watchRunSheets(null); sz.editStarters = true; }
+      toast(isNew ? "Soutěž přidána" : "Změny uloženy", f.name, "ok");
+      renderSoutezePage(true);
+    }, "Uložení soutěže");
+    return;
+  }
+  if (act === "delete") {
+    confirmBox(`Smazat soutěž <b>${esc(c.name)}</b> i s jejími startujícími?`, "Smazat", "danger").then(ok => {
+      if (!ok) return;
+      runAction("szdel", null, async () => {
+        await deleteDoc(doc(db, "competitions", comp, "categories", c.id));
+        if (selCat === c.id) { selCat = null; selRound = null; store.set("ac_cat_" + comp, ""); }
+        sz.sel = null; sz.dirty = false; renderSoutezePage(true);
+      }, "Smazání soutěže");
+    });
+    return;
+  }
+  if (act === "stEdit") { sz.editStarters = true; sz.more = null; $("szStarters").innerHTML = szStartersHtml(c); szCoupleInfo(); box.querySelector("#cCouples")?.focus(); return; }
+  if (act === "stCancel") { sz.editStarters = false; $("szStarters").innerHTML = szStartersHtml(c); szFilter(); return; }
+  if (act === "stSave") {
+    const err = box.querySelector("#stErr");
+    runAction("stsave", b, async () => {
+      let r; try { r = parseStarters(box.querySelector("#cCouples").value); } catch (er) { if (err) err.textContent = er.message; return; }
+      if (r.couples.length === 1) { if (err) err.textContent = "Soutěž potřebuje alespoň 2 startující."; return; }
+      if (c.key?.length && r.couples.length && c.key[0] >= r.couples.length) { if (err) err.textContent = `Postupový klíč začíná ${c.key[0]} – startujících musí být víc. Upravte nejdřív klíč.`; return; }
+      await updateDoc(doc(db, "competitions", comp, "categories", c.id), { couples: r.couples, names: Object.keys(r.names).length ? r.names : null });
+      audit("úprava startujících", { category: c.id, count: r.couples.length });
+      sz.editStarters = false; toast("Startující uloženi", `${c.name}: ${r.couples.length}`, "ok"); renderSoutezePage(true);
+    }, "Uložení startujících");
+    return;
+  }
+  if (act === "wd") { withdrawToggle(c.id, Number(b.dataset.n)); return; }
+  if (act === "stDel") {
+    const n = Number(b.dataset.n);
+    runAction("stdel", b, async () => {
+      const names = { ...(c.names || {}) }; delete names[String(n)];
+      await updateDoc(doc(db, "competitions", comp, "categories", c.id), { couples: c.couples.filter(x => x !== n), names: Object.keys(names).length ? names : null });
+      sz.more = null; toast("Startující odebrán", `${n}${nm(n, c.id) ? " – " + nm(n, c.id) : ""}`, "ok");
+    }, "Odebrání startujícího");
+  }
+}
+// hromadné nahrání přetažením na plochu vlevo
+(() => {
+  const d = $("namesDrop");
+  ["dragenter", "dragover"].forEach(t => d.addEventListener(t, e => { e.preventDefault(); d.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(t => d.addEventListener(t, e => { e.preventDefault(); d.classList.remove("over"); }));
+  d.addEventListener("drop", e => {
+    const f = e.dataTransfer?.files?.[0]; if (!f) return;
+    if (!compExists) { alertBox("Nejdřív založte nebo otevřete akci."); return; }
+    const dt = new DataTransfer(); dt.items.add(f); $("namesFile").files = dt.files; $("namesFile").dispatchEvent(new Event("change"));
+  });
+})();
+
 $("compName").addEventListener("change", () => saveComp({ name: $("compName").value.trim() }));
-$("compStateRow").addEventListener("click", e => {
+["compStateRow", "compTest"].forEach(id => $(id).addEventListener("click", e => {
   if (e.target.closest("[data-testlinks]")) { showTestLinks(); return; }
   const dt = e.target.closest("[data-deltest]"); if (dt) { deleteTestComp(dt); return; }
   const b = e.target.closest("[data-cstate]"); if (b) runAction("cstate", b, () => setCompState(comp, b.dataset.cstate), "Změna stavu akce");
-});
+}));
 async function setCompState(id, a, ask = true) {
   const ref = doc(db, "competitions", id);
-  setDoc(doc(collection(db, "competitions", id, "log")), { at: serverTimestamp(), ts: Date.now(), who: "sčitatel", action: { start: "zahájení akce", finish: "ukončení akce", reopen: "znovuotevření akce" }[a] || a }).catch(() => {});
+  if (a === "finish" && ask && !await confirmBox("Ukončit akci? Porotcům zmizí z nabídky.", "Ukončit")) return false;
   if (a === "start") await updateDoc(ref, { startedAt: Date.now(), finishedAt: null });
-  if (a === "finish") { if (ask && !await confirmBox("Ukončit akci? Porotcům zmizí z nabídky.", "Ukončit")) return false; await updateDoc(ref, { finishedAt: Date.now() }); }
+  if (a === "finish") await updateDoc(ref, { finishedAt: Date.now() });
+  setDoc(doc(collection(db, "competitions", id, "log")), { at: serverTimestamp(), ts: Date.now(), who: "sčitatel", action: { start: "zahájení akce", finish: "ukončení akce", reopen: "znovuotevření akce" }[a] || a }).catch(() => {});
   if (a === "reopen") await updateDoc(ref, { finishedAt: null });
-  log(`Akce ${id}: ${a}`); return true;
+  log(`Akce ${id}: ${a}`); refreshManager(); return true;
 }
 
 // ===================== SPRÁVCE AKCÍ =====================
@@ -1232,10 +1722,11 @@ async function deleteCompData(id) {
   }
   ops.push({ del: true, ref: doc(db, "competitions", id) });
   await commitOps(ops);
+  try { const bk = readBackups(id).slice(0, 1); if (bk.length) localStorage.setItem(`ac_bk_${id}`, JSON.stringify(bk)); else localStorage.removeItem(`ac_bk_${id}`); localStorage.removeItem("ac_cat_" + id); } catch {}
   log(`Smazána akce ${id} (${ops.length} záznamů)`);
 }
 // Seznam akcí žije na stránce Správa akcí; potvrzení mazání je přímo v řádku (žádná vnořená okna).
-const mgr = { list: [], confirm: null, msg: null, loading: true };
+const mgr = { list: [], confirm: null, msg: null, loading: true, filter: "all", more: null };
 const mgrState = c => c.finishedAt ? "done" : c.startedAt ? "live" : "ready";
 let bootPick = !new URLSearchParams(location.search).get("c");     // bez ?c= smí aplikace po startu sama otevřít existující akci
 let mgrSeq = 0;
@@ -1254,48 +1745,32 @@ async function refreshManager() {
   } catch (e) { if (seq !== mgrSeq) return; mgr.loading = false; mgr.msg = { bad: true, text: "Seznam akcí se nenačetl: " + esc(errText(e)) }; }
   renderManager(); if (page === "run") renderSide();
 }
-function renderManager() {
-  const body = $("mgrBody");
-  if (body.contains(document.activeElement) && document.activeElement.id === "mDelId" && !mgr.confirm) return;   // nepřepisovat pole, do kterého se píše
-  const keepId = body.querySelector("#mDelId")?.value || "";
-  const badge = c => `<span class="badge ${mgrState(c) === "live" ? "open" : mgrState(c) === "done" ? "done" : "ready"}">${{ live: "probíhá", done: "ukončená", ready: "připravená" }[mgrState(c)]}</span>`;
-  const confirmRow = (id, name) => `<div class="mrow" style="background:rgba(255,90,95,.08);border-radius:10px;padding:10px">
-      <div class="nm"><b>Smazat natrvalo „${esc(name)}“?</b><small>Všechny soutěže, kola a hodnocení. Nelze vrátit – pokud ji chcete zachovat, nejdřív ji exportujte.</small></div>
-      <button class="btn sm" data-m="cancel">Zrušit</button><button class="btn sm danger" data-m="confirmDel" data-id="${esc(id)}">Smazat natrvalo</button></div>`;
-  const list = mgr.list.map(c => c.id === comp && compExists ? { ...c, ...compDoc, id: c.id } : c);     // otevřená akce vždy s živým stavem
-  const rows = mgr.loading ? `<div class="hint">Načítám…</div>` : list.length ? list.map(c => mgr.confirm === c.id ? confirmRow(c.id, c.name || c.id) : `<div class="mrow ${c.id === comp ? "cur" : ""}">
-      <div class="nm"><b>${esc(c.name || c.id)}</b><small>ID ${esc(c.id)} · založeno ${fmtDT(c.createdAt)}${c.startedAt ? ` · zahájeno ${fmtDT(c.startedAt)}` : ""}${c.finishedAt ? ` · ukončeno ${fmtDT(c.finishedAt)}` : ""} · porota ${Object.keys(c.jury || {}).sort().join("") || "–"}</small></div>
-      ${badge(c)}
-      ${mgrState(c) === "ready" ? `<button class="btn sm" data-m="start" data-id="${esc(c.id)}">Zahájit</button>` : mgrState(c) === "live" ? `<button class="btn sm" data-m="finish" data-id="${esc(c.id)}">Ukončit</button>` : `<button class="btn sm" data-m="reopen" data-id="${esc(c.id)}">Znovu zahájit</button>`}
-      <button class="btn sm ${c.id === comp ? "" : "primary"}" data-m="open" data-id="${esc(c.id)}" ${c.id === comp ? "disabled" : ""}>${c.id === comp ? "Otevřená" : "Otevřít"}</button>
-      <button class="btn sm danger" data-m="del" data-id="${esc(c.id)}">Smazat</button></div>`).join("") : `<div class="hint">Žádné akce.</div>`;
-  const orphan = typeof mgr.confirm === "string" && mgr.confirm.startsWith("id:") ? mgr.confirm.slice(3) : null;
-  const scroll = body.scrollTop;
-  body.innerHTML = `
-    <div class="hint" style="margin-top:0">Porotcům se nabízejí akce, které nejsou ukončené a mají je v porotě. Probíhající akce je nutné před smazáním ukončit.</div>
-    ${mgr.msg ? `<div class="${mgr.msg.bad ? "warn" : "okbox"}" style="${mgr.msg.bad ? "border-color:rgba(255,90,95,.5);background:rgba(255,90,95,.1)" : ""}">${mgr.msg.text}</div>` : ""}
-    <div style="margin-top:10px">${rows}</div>
-    <div class="sec-t">Zbytková data</div>
-    <div class="hint" style="margin-top:0">Starší testovací data bez záznamu akce (např. ID „test“ z první verze) smažete podle ID.</div>
-    ${orphan ? confirmRow("id:" + orphan, orphan) : `<div class="row" style="margin-top:6px"><input class="in" id="mDelId" placeholder="ID akce" value="${esc(keepId)}"><button class="btn sm danger" data-m="delid">Smazat data</button></div>`}`;
-  body.scrollTop = scroll;
-}
 $("mgrBody").addEventListener("click", e => {
   const b = e.target.closest("[data-m]"); if (!b) return;
   runAction("manager", b, () => managerAction(b.dataset.m, b.dataset.id), "Správa akcí");
 });
 async function managerAction(m, id) {
-  const c = mgr.list.find(x => x.id === id);
+  // Otevřená akce se posuzuje podle živých dat (compDoc), ne podle seznamu načteného dříve –
+  // jinak by akce ukončená mimo tento seznam šla smazat až po obnovení stránky.
+  const base = mgr.list.find(x => x.id === id);
+  const c = base && id === comp && compExists ? { ...base, ...compDoc, id } : base;
   mgr.msg = null;
-  if (m === "open") { if (id !== comp) { comp = id; startComp(); } return; }
+  if (m === "new") { $("newCompBtn").click(); return; }
+  if (m === "more") { mgr.more = mgr.more === id ? null : id; mgr.confirm = null; return renderManager(); }
+  if (m === "open") {
+    if (id === comp) return;
+    if (unsavedWork() && !await confirmBox("Máte neuložené změny soutěže nebo zapnuté ruční úpravy. Přepnutím akce se zahodí. Přepnout?", "Přepnout akci")) return;
+    comp = id; startComp(); return;
+  }
   if (m === "cancel") { mgr.confirm = null; return renderManager(); }
-  if (["start", "finish", "reopen"].includes(m)) { await setCompState(id, m, false); return refreshManager(); }
+  if (["start", "finish", "reopen"].includes(m)) { await setCompState(id, m, false); mgr.more = null; return refreshManager(); }
   if (m === "del") {
     if (c && mgrState(c) === "live") { mgr.msg = { bad: true, text: `Akce <b>${esc(c.name || c.id)}</b> právě probíhá. Nejdřív ji ukončete tlačítkem Ukončit, potom ji půjde smazat.` }; return renderManager(); }
-    mgr.confirm = id; return renderManager();
+    mgr.confirm = id; mgr.more = null; return renderManager();
   }
   if (m === "delid") {
     const did = ($("mDelId")?.value || "").trim().toLowerCase(); if (!did) return;
+    if (!/^[a-z0-9-]{3,40}$/.test(did)) { mgr.msg = { bad: true, text: "ID akce tvoří 3–40 znaků: malá písmena bez diakritiky, číslice a pomlčka." }; return renderManager(); }
     const known = mgr.list.find(x => x.id === did);
     if (known && mgrState(known) === "live") { mgr.msg = { bad: true, text: `Akce ${esc(did)} právě probíhá. Nejdřív ji ukončete.` }; return renderManager(); }
     mgr.confirm = "id:" + did; return renderManager();
@@ -1306,7 +1781,7 @@ async function managerAction(m, id) {
     try { await deleteCompData(did); }
     catch (e) { mgr.msg = { bad: true, text: "Mazání se nezdařilo – část dat mohla zůstat, zkuste to znovu. (" + esc(errText(e)) + ")" }; return refreshManager(); }
     mgr.msg = { bad: false, text: `Akce ${esc(did)} byla smazána.` };
-    if (did === comp) startComp();
+    if (did === comp) { bootPick = true; startComp(); return; }      // otevře se jiná existující akce
     return refreshManager();
   }
 }
@@ -1317,17 +1792,25 @@ $("addJudgeBtn").onclick = () => {
   const jury = { ...(compDoc.jury || {}) };
   const free = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").find(l => !(l in jury));
   if (!free) return;
-  jury[free] = ""; saveComp({ jury });
+  saveComp({ [`jury.${free}`]: "" });
 };
 $("juryList").addEventListener("change", e => {
   const j = e.target.dataset.jn; if (!j) return;
-  saveComp({ jury: { ...(compDoc.jury || {}), [j]: e.target.value.trim() } });
+  if (!isLetter(j)) return;
+  saveComp({ [`jury.${j}`]: e.target.value.trim() });
 });
 $("juryList").addEventListener("click", async e => {
   const del = e.target.closest("[data-jdel]")?.dataset.jdel;
   if (del) {
     if (!await confirmBox(`Odebrat porotce ${del}${compDoc.jury?.[del] ? ` (${esc(compDoc.jury[del])})` : ""}? V již spuštěných kolech zůstane.`, "Odebrat", "danger")) return;
-    const jury = { ...(compDoc.jury || {}) }; delete jury[del]; saveComp({ jury }); return;
+    const jury = { ...(compDoc.jury || {}) }; delete jury[del];
+    runAction("jurydel", null, async () => {
+      const bt = writeBatch(db);
+      bt.update(compRef(), { jury });
+      for (const c of cats.values()) if ((c.judges || []).includes(del)) bt.update(doc(db, "competitions", comp, "categories", c.id), { judges: c.judges.filter(x => x !== del) });
+      await bt.commit();
+    }, "Odebrání porotce");
+    return;
   }
   const lj = e.target.closest("[data-jlink]")?.dataset.jlink;
   if (lj) showJudgeLink(lj);
@@ -1347,7 +1830,10 @@ function showJudgeLink(j) {
     `<div class="hint" style="margin-top:0">Porotce naskenuje kód fotoaparátem telefonu, nebo mu pošlete odkaz.</div>
      <div class="qrbox">${qrSvg(url)}</div>
      <input class="in" readonly value="${esc(url)}" onclick="this.select()">`,
-    [{ label: "Kopírovat odkaz", action: () => { navigator.clipboard?.writeText(url); } }, { label: "Zavřít", cls: "primary", value: true }]);
+    [{ label: "Kopírovat odkaz", action: async () => {
+      try { await navigator.clipboard.writeText(url); toast("Odkaz zkopírován", "", "ok"); }
+      catch { toast("Odkaz se nepodařilo zkopírovat", "Označte ho v poli a zkopírujte ručně."); }
+      return false; } }, { label: "Zavřít", cls: "primary", value: true }]);
 }
 
 // ----- nová akce -----
@@ -1431,7 +1917,16 @@ async function importCompetition(f) {
     const ref = doc(db, "competitions", id, "rounds", r.id); if (!keep.has(ref.path)) ops.push({ del: true, ref });
   }
   for (const c of exCats.docs) { const ref = doc(db, "competitions", id, "categories", c.id); if (!keep.has(ref.path)) ops.push({ del: true, ref }); }
-  try { await commitOps(ops); await updateDoc(doc(db, "competitions", id), { importPending: false }); }
+  try {
+    await commitOps(ops);
+    if (hasData) {                                   // staré potvrzení připravenosti patří ke kolům, která už nemusí existovat
+      const exJ = await getDocs(collection(db, "competitions", id, "judges"));
+      const bj = writeBatch(db); let nj = 0;
+      for (const x of exJ.docs) if (isLetter(x.id) && x.data().readyFor) { bj.update(doc(db, "competitions", id, "judges", x.id), { readyFor: null }); nj++; }
+      if (nj) await bj.commit();
+    }
+    await updateDoc(doc(db, "competitions", id), { importPending: false });
+  }
   catch (e) { await alertBox(`Import nebyl dokončen (${esc(errText(e))}).<br>Spusťte ho znovu se stejným souborem – opakování je bezpečné a import dokončí.`); return; }
   comp = id; startComp(); log(`Import akce ${id} dokončen (${ops.length} operací)`);
   toast("Import dokončen", `${data.categories.length} soutěží, ${data.rounds.length} kol`, "ok");
@@ -1490,69 +1985,6 @@ $("modalRoot").addEventListener("click", e => {
 const chipVals = (root, name) => [...root.querySelectorAll(`[data-chips="${name}"] .chip.on`)].map(c => c.dataset.v);
 const segVal = (root, name) => root.querySelector(`[data-seg="${name}"] button.on`)?.dataset.v;
 
-$("addCatBtn").onclick = () => editCategory(null);
-function editCategory(cid) {
-  const newCatId = nextId();
-  if (!compExists) { alertBox("Nejdřív založte akci (Nová akce…) nebo ji načtěte importem."); return; }
-  const c = cid ? cats.get(cid) : { name: "", dances: LAT, couples: [], key: [], groups: 1, judges: [] };
-  const hasRounds = cid && roundsOfCat(cid).length;
-  const buttons = [{ label: "Zrušit" }];
-  if (cid && !hasRounds) buttons.unshift({ label: "Smazat", cls: "danger", action: async () => {
-    if (!await confirmBox(`Smazat soutěž ${esc(c.name)}?`, "Smazat", "danger")) return false;
-    await deleteDoc(doc(db, "competitions", comp, "categories", cid)); if (selCat === cid) { selCat = null; selRound = null; store.set("ac_cat_" + comp, ""); }
-  } });
-  buttons.push({ label: cid ? "Uložit" : "Přidat", cls: "primary", action: async root => {
-    const name = root.querySelector("#cName").value.trim();
-    const dances = Object.keys(DANCES).filter(d => chipVals(root, "dance").includes(d));
-    const { couples, names } = parseStarters(root.querySelector("#cCouples").value);
-    const keyStr = root.querySelector("#cKey").value.trim();
-    const key = keyStr ? keyStr.split(/[,;\s–-]+/).filter(Boolean).map(x => { const n = Number(x); if (!Number.isInteger(n) || n < 1 || n > MAX_COUPLES) throw new Error(`Neplatné číslo v klíči: „${x}“`); return n; }) : [];
-    if (key.length > 10) throw new Error("Postupový klíč může mít nejvýše 10 kol.");
-    const groups = parseInt(segVal(root, "groups"), 10) || 1;
-    const judges = chipVals(root, "judge");
-    if (!name) throw new Error("Vyplňte název soutěže.");
-    if (!dances.length) throw new Error("Vyberte alespoň jeden tanec.");
-    if (couples.length === 1) throw new Error("Soutěž potřebuje alespoň 2 startující (nebo nechte prázdné a nahrajte je ze seznamu).");
-    for (let i = 1; i < key.length; i++) if (key[i] >= key[i - 1]) throw new Error("Postupový klíč musí klesat (např. 24, 12, 6).");
-    if (key.length && couples.length && key[0] >= couples.length) throw new Error(`První číslo klíče (${key[0]}) musí být menší než počet párů (${couples.length}).`);
-    if (!judges.length) throw new Error("Vyberte porotce, kteří soutěž hodnotí.");
-    const id = cid || newCatId;
-    if ([...cats.values()].some(x => x.id !== id && normName(x.name) === normName(name))) throw new Error("Soutěž s tímto názvem už v akci je. Zvolte jiný název (podle názvu se párují startující ze souboru).");
-    await setDoc(doc(db, "competitions", comp, "categories", id), { name, dances, couples, names: Object.keys(names).length ? names : null, key, groups, judges, created: c.created || Date.now(), order: c.order ?? cats.size });
-    if (!cid) { selCat = id; selRound = null; store.set("ac_cat_" + comp, id); watchRunSheets(null); }
-  } });
-  modal(cid ? "Upravit soutěž" : "Nová soutěž", `
-    <label class="lbl" style="margin-top:0">Název</label><input class="in" id="cName" value="${esc(c.name)}" placeholder="např. Junioři I LAT">
-    <label class="lbl">Tance</label>${danceChipsHtml(c.dances)}
-    <label class="lbl" for="cCouples">Startující</label>
-    <textarea class="in" id="cCouples" rows="7" spellcheck="false" placeholder="Na každý řádek jednoho startujícího:&#10;12 - Jan Novák – Eva Malá&#10;15 - Ondřej Marek&#10;&#10;Jen čísla bez jmen: 1-20, 25">${esc(startersText(c))}</textarea>
-    <div class="hint" id="cCoupleInfo"></div>
-    <div class="hint">Řádek = <b>číslo - jméno</b> (pár i sólista). Čísla bez jmen lze zapsat i hromadně (1-20, 25). Všechny soutěže najednou naplníte souborem ve Správě soutěží.</div>
-    <label class="lbl">Postupový klíč</label><input class="in" id="cKey" value="${esc((c.key || []).join(", "))}" placeholder="např. 24, 12, 6">
-    <div class="hint">Kolik párů postoupí z každého kola. Poslední číslo = počet finalistů. Prázdné = rovnou finále.</div>
-    <label class="lbl">Skupiny v postupových kolech</label>${segHtml("groups", [[1, "Bez skupin"], [2, "2 skupiny"], [3, "3 skupiny"], [4, "4 skupiny"]], c.groups || 1)}
-    <label class="lbl">Porota soutěže</label><div id="cJury">${judgeChipsHtml(c.judges || [])}</div>
-    ${hasRounds ? `<div class="hint" style="color:var(--orange)">Soutěž už má spuštěná kola – změny se projeví až v dalších kolech.</div>` : ""}
-    <div class="merr err"></div>`, buttons, root => {
-      const inp = root.querySelector("#cCouples"), info = root.querySelector("#cCoupleInfo");
-      const upd = () => { try { const r = parseStarters(inp.value), n = r.couples.length, k = Object.keys(r.names).length; info.style.color = ""; info.textContent = n ? `${n} startujících · jména ${k}/${n}` : "Zatím žádní startující."; } catch (er) { info.style.color = "#ff8a8d"; info.textContent = er.message; } };
-      inp.oninput = upd; upd();
-      // nový porotce rovnou z úpravy soutěže: přidá se do poroty akce a označí se pro tuto soutěž
-      root.querySelector("#cJury").addEventListener("click", async e => {
-        const b = e.target.closest("[data-newjudge]"); if (!b || b.disabled) return;
-        const box = root.querySelector("#cJury"), jury = { ...(compDoc.jury || {}) };
-        box.querySelectorAll('[data-chips="judge"] .chip').forEach(ch => { if (!(ch.dataset.v in jury)) jury[ch.dataset.v] = ""; });
-        const free = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").find(l => !(l in jury));
-        if (!free) return;
-        b.disabled = true;
-        try {
-          jury[free] = ""; await updateDoc(compRef(), { [`jury.${free}`]: "" });
-          if (box.isConnected) box.innerHTML = judgeChipsHtml([...chipVals(root, "judge"), free], jury);
-        } catch (er) { b.disabled = false; const m = root.querySelector(".merr"); if (m) m.textContent = errText(er); }
-      });
-    }).then(() => renderAll());
-}
-
 // plán dalšího kola podle postupového klíče
 function planNext(cat, rs = roundsOfCat(cat.id)) {
   const last = rs[rs.length - 1];
@@ -1563,13 +1995,16 @@ function planNext(cat, rs = roundsOfCat(cat.id)) {
   const key = cat.key || [];
   let ki = last ? (last.keyIndex ?? -1) + 1 : 0;
   while (ki < key.length && key[ki] >= couples.length) ki++;
-  const isFinal = ki >= key.length;
-  const label = isFinal ? "Finále" : (ki === key.length - 1 && rs.length > 0 ? "Semifinále" : `${rs.length + 1}. kolo`);
+  let isFinal = ki >= key.length, extra = null;
+  // po shodě na hranici může postoupit víc párů, než se vejde do finále → vložené postupové kolo
+  if (isFinal && couples.length > MAX_FINAL) { isFinal = false; extra = Math.min(key[key.length - 1] || 6, MAX_FINAL, couples.length - 1); }
+  const label = isFinal ? "Finále" : extra ? `${rs.length + 1}. kolo` : (ki === key.length - 1 && rs.length > 0 ? "Semifinále" : `${rs.length + 1}. kolo`);
   const groups = isFinal ? 1 : Math.min(cat.groups || 1, Math.max(1, Math.floor(couples.length / 4)));
-  return { couples, keyIndex: isFinal ? key.length : ki, type: isFinal ? "final" : "prelim", required: isFinal ? null : key[ki], label, groups, dances: cat.dances, judges: cat.judges };
+  return { couples, keyIndex: isFinal ? key.length : extra ? key.length - 1 : ki, type: isFinal ? "final" : "prelim", required: isFinal ? null : extra ?? key[ki], label, groups, dances: cat.dances, judges: cat.judges };
 }
 
 function startRoundModal(cat) {
+  if (compState() === "done") { alertBox("Akce je ukončená. Než spustíte další kolo, znovu ji otevřete ve Správě akcí."); return; }
   const p = planNext(cat);
   if (p.blocked) { alertBox(p.blocked); return; }
   const newId = nextId();            // stejné ID i při opakovaném kliknutí → nikdy dvě kola
@@ -1577,7 +2012,7 @@ function startRoundModal(cat) {
     <div class="row"><div class="grow"><label class="lbl" style="margin-top:0">Název kola</label><input class="in" id="rLabel" value="${esc(p.label)}"></div>
       <div><label class="lbl" style="margin-top:0">Typ</label>${segHtml("type", [["prelim", "Postupové"], ["final", "Finále"]], p.type)}</div></div>
     <label class="lbl">Páry v kole</label>
-    <div class="row"><input class="in" id="rCouples" value="${esc(fmtCouples(p.couples))}"><button type="button" class="btn sm" id="rImport">Ze souboru…</button></div>
+    <div class="row"><input class="in" id="rCouples" value="${esc(fmtCouples(p.couples))}"><button type="button" class="btn sm" id="rImport">Ze souboru</button></div>
     <div class="hint" id="rInfo">${pary(p.couples.length)}</div>
     <div id="rPrelim" style="${p.type === "final" ? "display:none" : ""}">
       <div class="row"><div class="grow"><label class="lbl">Postupuje (počet křížků)</label><input class="in" id="rReq" type="number" min="1" value="${p.required ?? ""}"></div>
@@ -1601,6 +2036,11 @@ function startRoundModal(cat) {
     if (type === "prelim" && (!required || required >= couples.length)) throw new Error("Počet postupujících musí být menší než počet párů.");
     if (type === "final" && couples.length > MAX_FINAL) throw new Error(`Finále může mít nejvýše ${MAX_FINAL} párů.`);
     if (judges.some(j => !(j in (compDoc.jury || {})))) throw new Error("Vybraný porotce už v porotě akce není.");
+    if (compState() === "done") throw new Error("Akce je ukončená. Znovu ji otevřete ve Správě akcí.");
+    const foreign = couples.filter(c => !cat.couples.includes(c));
+    if (foreign.length) throw new Error(`Čísla ${fmtCouples(foreign)} nejsou mezi startujícími soutěže. Doplňte je nejdřív ve Správě soutěží.`);
+    const gone = couples.filter(c => isWd(cat.id, c));
+    if (gone.length) throw new Error(`Startující ${fmtCouples(gone)} odstoupil. Vyjměte ho z kola, nebo ho vraťte do soutěže.`);
     const id = newId;
     await setDoc(roundRef(id), { categoryId: cat.id, category: cat.name, label, keyIndex: p.keyIndex, type, dances, couples, judges, required,
       groups: splitGroups(couples, g), status: "open", created: Date.now() });
@@ -1730,6 +2170,8 @@ $("runMain").addEventListener("click", e => {
   runAction(`round:${r.id}`, btn, async () => {
     if (act === "toggleLock") {
       const next = r.status === "open" ? "locked" : "open";
+      const edN = [...runSheets.values()].filter(x => x.edited || x.source === "manual").length;
+      if (next === "open" && edN && !await confirmBox(`Kolo obsahuje ${edN} ručně ${edN === 1 ? "opravený lístek" : "opravené lístky"}. Po otevření je porotci mohou novým odesláním přepsat. Znovu otevřít?`, "Znovu otevřít", "danger")) return;
       await updateDoc(roundRef(r.id), { status: next, ...(next === "locked" ? { lockedAt: Date.now() } : {}) });
       audit(next === "locked" ? "uzavření kola" : "otevření kola", { round: r.id });
       log(`${titleOf(r)}: ${statusText(next)}`);
@@ -1867,7 +2309,8 @@ function renderEvalMain(force) {
   const ae = document.activeElement, scrollY = window.scrollY;
   const focusKey = ae && el.contains(ae) ? (ae.dataset?.edit ? `[data-edit="${ae.dataset.edit}"]` : ae.id ? `#${ae.id}` : null) : null;
   let selStart = null; try { selStart = ae?.selectionStart ?? null; } catch {}
-  const canEdit = r.status !== "evaluated";
+  const canEdit = r.status === "locked";             // ruční úpravy jen v uzavřeném kole – telefon je pak nemůže přepsat
+  if (!canEdit) editMode = false;
   el.innerHTML = `
     <div class="head"><h1>${esc(r.category || "")} <span class="faint">·</span> ${esc(r.label)}</h1><span class="badge ${r.status}">${statusText(r.status)}</span><span class="sp"></span>
       <span class="row no-print" style="gap:6px;${canEdit ? "" : "display:none"}"><span class="muted">Ruční úpravy</span><label class="switch"><input type="checkbox" id="editSw" ${editMode ? "checked" : ""}><span></span></label></span>
@@ -1876,7 +2319,7 @@ function renderEvalMain(force) {
     <div class="meta">${r.type === "final" ? "Finále" : `Postupové kolo · porotci dávali ${r.required} křížků`} · ${pary(r.couples.length)} · porota ${r.judges.map(j => compDoc.jury?.[j] ? `${j} (${esc(compDoc.jury[j])})` : j).join(", ")}${r.evaluatedAt ? ` · vyhodnoceno ${fmtDT(r.evaluatedAt)}` : ""}</div>
     ${r.type === "prelim" ? prelimView(r) : finalView(r)}`;
   const issues = r.type === "prelim" ? prelimData(r).issues : finalData(r).issues;
-  $("evalIssues").innerHTML = (r.status === "open" ? `<div class="ed">Kolo ještě probíhá – lístky se průběžně doplňují.</div>` : "")
+  $("evalIssues").innerHTML = (r.status === "open" ? `<div class="ed">Kolo ještě probíhá – lístky se průběžně doplňují. Ruční úpravy půjdou zapnout po uzavření kola.</div>` : "")
     + (editMode ? `<div class="ed"><b>Ruční úpravy zapnuté.</b><br>${r.type === "prelim" ? "Kliknutím do tabulky přidáte nebo odeberete křížek." : "Přepište umístění v tabulce tance (Tab = další pár téhož porotce)."} Změny se ukládají hned, lístek se označí ✎.</div>` : "")
     + (issues.length ? `<div class="sec-t" style="margin:14px 0 0">Kontrola lístků</div>` + issues.map(i => `<div class="it">${i}</div>`).join("") : `<div class="ok">✓ Všechny lístky jsou v pořádku</div>`);
   if (focusKey) { const inp = el.querySelector(focusKey); if (inp) { inp.focus(); if (selStart != null) try { inp.setSelectionRange(selStart, selStart); } catch {} } }
@@ -1918,7 +2361,7 @@ function prelimView(r) {
   const n = advanceDraft.get(r.id) ?? r.qualified?.length ?? r.required;
   const cut = prelimCut(r, totals, n);
   const qualified = new Set(cut.tie ? cut.sorted.slice(0, cut.down) : cut.sorted.slice(0, cut.n));
-  const tieSet = new Set(cut.tie ? cut.sorted.filter(c => totals[c] === cut.value) : []);
+  const tieSet = new Set(cut.tie ? cut.sorted.filter(c => totals[c] === cut.value && !isWd(r.categoryId, c)) : []);
   const evaluated = r.status === "evaluated" && Array.isArray(r.qualified);
   const groupOf = {}; (r.groups || []).forEach(g => g.couples.forEach(c => groupOf[c] = g.n));
   const multiG = (r.groups || []).length > 1;
@@ -2041,7 +2484,7 @@ async function writeEdited(r, d, j, patch) {
 $("evalMain").addEventListener("change", e => {
   if (e.target.id === "editSw") { editMode = e.target.checked; renderEvalMain(true); return; }
   const ed = e.target.dataset.edit; if (!ed) return;
-  const r = rounds.get(evalRid); if (!r) return;
+  const r = rounds.get(evalRid); if (!r || r.status !== "locked") return;
   const [c, d, j] = ed.split("|");
   const v = e.target.value.trim() === "" ? null : Number(e.target.value);
   if (v !== null && (!Number.isInteger(v) || v < 1 || v > r.couples.length)) {
@@ -2061,6 +2504,7 @@ $("evalMain").addEventListener("click", e => {
   const r = rounds.get(evalRid); if (!r) return;
   const tog = e.target.closest("[data-tog]")?.dataset.tog;
   if (tog) {
+    if (r.status !== "locked") return;
     runAction(`tog:${r.id}:${tog}`, null, async () => {
       const [c, d, j] = tog.split("|"); const prev = evalSheets.get(`${d}_${j}`);
       const set = new Set(Array.isArray(prev?.marks) ? prev.marks.filter(Number.isInteger) : []); const n = +c; set.has(n) ? set.delete(n) : set.add(n);
@@ -2080,7 +2524,10 @@ $("evalMain").addEventListener("click", e => {
   if (act === "nextRound") { const c = cats.get(r.categoryId); if (c) startRoundModal(c); else alertBox("Kolo nepatří k žádné soutěži."); return; }
   runAction(`eval:${r.id}`, btn, async () => {
     if (act === "unEval") {
-      if (!await confirmBox("Vrátit kolo do stavu před vyhodnocením? Potvrzený postup nebo výsledky se zruší.", "Upravit znovu")) return;
+      const later = roundsOfCat(r.categoryId).filter(x => (x.created || 0) > (r.created || 0));
+      if (!await confirmBox(later.length
+        ? `Na toto kolo už navazuje <b>${esc(later[0].label)}</b>. Změna postupu se do něj nepromítne – jeho páry i lístky zůstanou beze změny. Přesto vrátit kolo do stavu před vyhodnocením?`
+        : "Vrátit kolo do stavu před vyhodnocením? Potvrzený postup nebo výsledky se zruší.", "Upravit znovu", later.length ? "danger" : "primary")) return;
       await updateDoc(roundRef(r.id), { status: "locked", evaluatedAt: null, qualified: null, result: null });
       audit("zrušení vyhodnocení", { round: r.id });
     }
@@ -2307,6 +2754,8 @@ $("namesUpBtn").onclick = () => {
 };
 $("namesFile").onchange = async e => {
   const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  if (!compExists) { alertBox("Nejdřív založte nebo otevřete akci."); return; }
+  if (!cats.size) { alertBox("Akce zatím nemá žádné soutěže. Nejdřív je založte tlačítkem Přidat soutěž, pak nahrajte startující."); return; }
   if (f.size > 1000000) { alertBox("Soubor je příliš velký (max. 1 MB)."); return; }
   let text; try { text = await readTextFile(f); } catch { alertBox("Soubor se nepodařilo přečíst."); return; }
   const { sections, errors } = parseStartList(text);
@@ -2338,8 +2787,10 @@ $("namesFile").onchange = async e => {
       if (!map.length) throw new Error("Žádný oddíl není přiřazený k soutěži.");
       const b = writeBatch(db);
       for (const { s, cid } of map) {
-        const started = roundsOfCat(cid).length > 0;
+        const started = roundsOfCat(cid).length > 0, cat = cats.get(cid);
         const nums = Object.keys(s.names).map(Number).sort((a, b2) => a - b2);
+        if (!started && nums.length < 2) throw new Error(`Soutěž „${cat?.name}“ potřebuje alespoň 2 startující.`);
+        if (!started && cat?.key?.length && cat.key[0] >= nums.length) throw new Error(`Soutěž „${cat.name}“: postupový klíč začíná ${cat.key[0]}, startujících musí být víc. Upravte nejdřív klíč.`);
         b.update(doc(db, "competitions", comp, "categories", cid), started ? { names: s.names } : { names: s.names, couples: nums });
       }
       await b.commit();
@@ -2432,12 +2883,15 @@ function renderRoster() {
 const isWd = (cid, c) => !!compDoc.withdrawn?.[cid]?.[String(c)];
 $("roster").addEventListener("click", e => {
   const row = e.target.closest("[data-wd]"); if (!row) return;
-  const [cid, cs] = row.dataset.wd.split("|"), c = Number(cs), cat = cats.get(cid); if (!cat) return;
+  const [cid, cs] = row.dataset.wd.split("|"); withdrawToggle(cid, Number(cs));
+});
+function withdrawToggle(cid, c) {
+  const cat = cats.get(cid); if (!cat) return;
   const wd = isWd(cid, c), who = `<b>${c}</b>${nm(c, cid) ? " – " + esc(nm(c, cid)) : ""}`;
   const cur = roundsOfCat(cid).filter(r => r.couples.includes(c)).pop();
   if (!wd) {
     modal("Odstoupení", `<p style="line-height:1.5;margin:4px 0 0">${who} v soutěži <b>${esc(cat.name)}</b> odstoupil?</p>
-      <div class="hint">Nebude zařazen do dalších kol a nemůže postoupit. V otevřeném kole ho porotci uvidí přeškrtnutého a nepůjde označit. Ve výsledcích bude uveden jako „odstoupil“. Lístky, které už porotci odeslali, se nemění.</div><div class="merr err"></div>`,
+      <div class="hint">Nebude zařazen do dalších kol a nemůže postoupit. V otevřeném postupovém kole ho porotci uvidí přeškrtnutého a nepůjde označit; ve finále ho porotci hodnotí dál. Ve výsledcích bude uveden jako „odstoupil“. Lístky, které už porotci odeslali, se nemění.</div><div class="merr err"></div>`,
       [{ label: "Zrušit" }, { label: "Odstoupil", cls: "danger", action: async () => {
         await updateDoc(compRef(), { [`withdrawn.${cid}.${c}`]: { at: Date.now(), round: cur?.id || null } });
         audit("odstoupení", { category: cid, couple: c, round: cur?.id || null }); log(`Odstoupil: ${c} (${cat.name})`);
@@ -2450,7 +2904,7 @@ $("roster").addEventListener("click", e => {
         audit("zrušení odstoupení", { category: cid, couple: c }); log(`Vrácen do soutěže: ${c} (${cat.name})`);
       } }]);
   }
-});
+}
 
 // ===================== v4.1: SPRÁVA ZAŘÍZENÍ =====================
 // Každý telefon porotce zapisuje svůj záznam do judges/{L}.devices.<id> = { at, phase, model, ver, kicked }
@@ -2466,9 +2920,11 @@ function devState(k) {
   if (age < 600000) return { cls: "idle", text: `před ${Math.max(2, Math.round(age / 60000))} min`, st: "idle" };
   return { cls: "bad", text: `naposledy ${fmtTime(h.at)}`, st: "off" };
 }
+let showHiddenDev = false;
+const hiddenDevCount = () => [...presence.values()].reduce((n, p) => n + Object.values(p.devices || {}).filter(d => d && d.hidden).length, 0);
 function devicesOf(L) {
   const p = presence.get(L) || {};
-  return Object.entries(p.devices || {}).filter(([, d]) => d && typeof d === "object")
+  return Object.entries(p.devices || {}).filter(([, d]) => d && typeof d === "object" && (showHiddenDev || !d.hidden))
     .map(([id, d]) => ({ id, L, ...d, holder: p.deviceId === id, s: devState(`${L}|${id}`) }))
     .sort((a, b) => (b.holder - a.holder) || (tsMs(b.at) || 0) - (tsMs(a.at) || 0));
 }
@@ -2496,9 +2952,11 @@ function renderSupport() {
       </div>`).join("") : `<div class="faint" style="font-size:12px;padding:6px 0">Zatím se nepřihlásilo žádné zařízení.</div>`}
     </div></div>`;
   }).join("") : `<div class="hint">Akce nemá porotu.</div>`;
-  $("devSum").textContent = `${total} zařízení · aktivních ${act}`;
+  const hid = hiddenDevCount();
+  $("devSum").innerHTML = `${total} zařízení · aktivních ${act}${hid ? ` · <button class="btn sm plain" data-dev="hid">${showHiddenDev ? "Skrýt odebraná odpojená" : `Odebraná odpojená (${hid})`}</button>` : ""}`;
   $("diagBox").innerHTML = diagTable();
 }
+$("devSum").addEventListener("click", e => { if (e.target.closest('[data-dev="hid"]')) { showHiddenDev = !showHiddenDev; renderSupport(); } });
 $("devList").addEventListener("click", async e => {
   const b = e.target.closest("[data-dev]"); if (!b) return;
   const [L, id] = b.dataset.k.split("|"), act = b.dataset.dev, d = devicesOf(L).find(x => x.id === id); if (!d) return;
@@ -2511,10 +2969,11 @@ $("devList").addEventListener("click", async e => {
     }, "Odpojení zařízení");
   }
   if (act === "allow") runAction(`dev:${b.dataset.k}`, b, async () => {
-    await updateDoc(ref, { [`devices.${id}.kicked`]: false });
+    await updateDoc(ref, { [`devices.${id}.kicked`]: false, [`devices.${id}.hidden`]: false });
     audit("povolení zařízení", { judge: L, device: id }); log(`Povoleno zařízení ${d.model || id} (porotce ${L})`);
   }, "Povolení zařízení");
-  if (act === "remove") runAction(`dev:${b.dataset.k}`, b, async () => { await updateDoc(ref, { [`devices.${id}`]: null }); }, "Odebrání zařízení");
+  // odpojené zařízení se jen skryje – zákaz platí dál, i kdyby telefon zůstal otevřený
+  if (act === "remove") runAction(`dev:${b.dataset.k}`, b, async () => { await updateDoc(ref, d.kicked ? { [`devices.${id}.hidden`]: true } : { [`devices.${id}`]: null }); }, "Odebrání zařízení");
 });
 setInterval(() => { if (page === "support") renderSupport(); renderSupBadge(); }, 20000);
 
@@ -2734,7 +3193,9 @@ function unlock() { unlocked = true; $("lock").classList.add("hidden"); try { se
 $("lockForm").onsubmit = async e => {
   e.preventDefault();
   let ok = false;
-  try { ok = (await sha256($("lockPw").value.trim())) === PW_HASH; } catch { ok = $("lockPw").value.trim() === "mioner"; }
+  const pw = $("lockPw").value.trim();
+  try { ok = (await sha256(pw)) === PW_HASH; }
+  catch { let h = 0x811c9dc5; for (const ch of pw) { h ^= ch.charCodeAt(0); h = Math.imul(h, 0x01000193) >>> 0; } ok = h === 3857414057; }   // prohlížeč bez SHA-256
   if (ok) unlock();
   else { $("lockErr").textContent = "Nesprávné heslo."; const b = $("lockForm"); b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake"); $("lockPw").select(); }
 };
@@ -2745,9 +3206,12 @@ let started = false, sessionBooted = false;
 function bootSession() {
   if (sessionBooted) return; sessionBooted = true;
   onAuthStateChanged(auth, user => { if (user && !started) { started = true; startComp(); } });
-  signInAnonymously(auth).catch(e => { setConn("bad", "Přihlášení selhalo"); log("CHYBA přihlášení: " + e.code); });
+  const trySign = () => signInAnonymously(auth).catch(e => { setConn("bad", "Přihlášení selhalo – zkouším znovu"); log("CHYBA přihlášení: " + e.code); setTimeout(trySign, 8000); });
+  trySign();
 }
 if (unlocked) unlock(); else setTimeout(() => $("lockPw").focus(), 50);
+// v5.2: start bez internetu – funguje, když je vedle index.html nahraný soubor sw.js
+if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
 </script>
 </body>
 </html>
