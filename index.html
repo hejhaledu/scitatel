@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ArtimoCounter – Sčitatel – verze v5.2 – sestaveno 2026-11-16 – created by Martin Hejhal -->
+<!-- ArtimoCounter – Sčitatel – verze v5.3 – sestaveno 2026-11-19 – created by Martin Hejhal -->
 <html lang="cs">
 <head>
 <meta charset="utf-8">
@@ -442,6 +442,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
   body.printres .paper{font-size:10.5px}
   body.printres .pp-dances{grid-template-columns:1fr 1fr}
 }
+.jwarn{color:#ff8a8d;font-size:11.5px;font-weight:600;line-height:1.3}
 </style>
 </head>
 <body>
@@ -454,7 +455,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
     <button class="btn primary lg full" style="margin-top:12px" type="submit">Vstoupit</button>
     <div class="err" id="lockErr" style="text-align:center;min-height:16px"></div>
   </form>
-  <div class="credit" style="position:absolute;bottom:0;left:0;right:0">ArtimoCounter, created by Martin Hejhal, 2026, v5.2</div>
+  <div class="credit" style="position:absolute;bottom:0;left:0;right:0">ArtimoCounter, created by Martin Hejhal, 2026, v5.3</div>
 </div>
 <header>
   <img class="logo" src="data:image/png;base64,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" alt="Artimo">
@@ -618,7 +619,7 @@ header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px
   </div>
 </div>
 
-<div class="credit">ArtimoCounter, created by Martin Hejhal, 2026, v5.2</div>
+<div class="credit">ArtimoCounter, created by Martin Hejhal, 2026, v5.3</div>
 <div id="modalRoot"></div>
 <div id="printArea"></div>
 <div class="toasts" id="toasts"></div>
@@ -1257,7 +1258,7 @@ function fillSelect(sel, opts, value) {
 }
 const stateWord = st => ({ live: "probíhá", done: "ukončená", ready: "připravená" }[st]);
 function akceOptions() {
-  const list = mgr.list.map(c => c.id === comp && compExists ? { ...c, name: compDoc.name, startedAt: compDoc.startedAt, finishedAt: compDoc.finishedAt } : c);
+  const list = mgr.list.filter(c => !c.deleting && !mgr.del.has(c.id)).map(c => c.id === comp && compExists ? { ...c, name: compDoc.name, startedAt: compDoc.startedAt, finishedAt: compDoc.finishedAt } : c);
   if (!list.some(c => c.id === comp)) list.unshift(compExists ? { id: comp, ...compDoc } : { id: comp, missing: true });
   const rank = c => c.missing ? 3 : { live: 0, ready: 1, done: 2 }[mgrState(c)];
   return list.sort((a, b) => rank(a) - rank(b) || (b.startedAt || b.createdAt || 0) - (a.startedAt || a.createdAt || 0))
@@ -1381,6 +1382,13 @@ function renderManager() {
       nums = `<span><b>${cats.size}</b> soutěží</span>` + nums + `<span><b>${sortedCats().reduce((a, x) => a + x.couples.length, 0)}</b> startujících</span>`;
       prog = `<div class="col" style="gap:6px"><div class="pbar"><span style="width:${pct(ev, rl.length)}%"></span></div><span class="muted" style="font-size:11.5px">${rl.length ? `vyhodnoceno ${ev} z ${rl.length} kol` : "zatím žádné kolo"}</span></div>`;
     }
+    if (c.deleting || mgr.del.has(c.id)) {           // mazaná akce: jen průběh, nebo dokončení přerušeného mazání
+      const pr = mgr.del.get(c.id);
+      return `<article class="card ak del"><span class="stag warn"><i></i>${pr ? "maže se" : "mazání nedokončeno"}</span><div><h3 title="${name}">${name}</h3><div class="muted" style="font-size:12px">ID ${id}</div></div>
+        ${pr ? `<div class="col" style="gap:6px"><div class="pbar"><span style="width:${pct(pr.done, pr.total || 1)}%"></span></div><span class="muted" style="font-size:11.5px">${pr.total ? `Mažu ${pr.done} / ${pr.total} záznamů` : "Připravuji mazání"}</span></div>`
+          : `<div class="confirm"><span>Mazání této akce nebylo dokončeno. Část dat už může chybět.</span><div class="row" style="gap:8px;justify-content:flex-end"><button class="btn danger" data-m="finishDel" data-id="${id}">Dokončit mazání</button></div></div>`}
+      </article>`;
+    }
     const date = st === "done" ? `ukončeno ${fmtDT(c.finishedAt)}` : st === "live" ? `zahájeno ${fmtDT(c.startedAt)}` : `založeno ${fmtDT(c.createdAt)}`;
     if (mgr.confirm === c.id) return `<article class="card ak del">${pill}<div><h3>${name}</h3><div class="muted" style="font-size:12px">ID ${id}</div></div>
       <div class="confirm"><span>Smazat akci <b>${name}</b> se všemi soutěžemi, lístky a výsledky? Nejde to vrátit – pokud ji chcete zachovat, nejdřív ji exportujte.</span>
@@ -1396,7 +1404,8 @@ function renderManager() {
     </article>`;
   };
   const orphan = typeof mgr.confirm === "string" && mgr.confirm.startsWith("id:") ? mgr.confirm.slice(3) : null;
-  body.innerHTML = `${mgr.msg ? `<div class="${mgr.msg.bad ? "warn" : "okbox"}" style="margin:0 0 14px;${mgr.msg.bad ? "border-color:rgba(255,90,95,.5);background:rgba(255,90,95,.1)" : ""}">${mgr.msg.text}</div>` : ""}
+  const orphanDel = [...mgr.del].filter(([k]) => !list.some(c => c.id === k)).map(([k, pr]) => `<div class="okbox" style="margin:0 0 14px">Mažu data s ID <b>${esc(k)}</b>${pr.total ? `: ${pr.done} / ${pr.total} záznamů` : ""}</div>`).join("");
+  body.innerHTML = orphanDel + `${mgr.msg ? `<div class="${mgr.msg.bad ? "warn" : "okbox"}" style="margin:0 0 14px;${mgr.msg.bad ? "border-color:rgba(255,90,95,.5);background:rgba(255,90,95,.1)" : ""}">${mgr.msg.text}</div>` : ""}
     <div class="akgrid">${mgr.loading ? `<div class="hint">Načítám akce</div>` : shown.map(card).join("")}
       <button type="button" class="newcard" data-m="new"><span class="plus">${ICO.plus}</span><b style="font-size:15px">Nová akce</b><span class="muted" style="font-size:12px">název, ID a porota</span></button></div>
     ${!mgr.loading && !shown.length && list.length ? `<div class="hint">V tomto filtru žádná akce není.</div>` : ""}
@@ -1725,8 +1734,47 @@ async function deleteCompData(id) {
   try { const bk = readBackups(id).slice(0, 1); if (bk.length) localStorage.setItem(`ac_bk_${id}`, JSON.stringify(bk)); else localStorage.removeItem(`ac_bk_${id}`); localStorage.removeItem("ac_cat_" + id); } catch {}
   log(`Smazána akce ${id} (${ops.length} záznamů)`);
 }
+// v5.3: mazání akce – nejdřív označit (telefony ji hned skryjí), načíst vše najednou, mazat po dávkách s průběhem v kartě.
+// Přerušené mazání zůstane v seznamu jako „Mazání nedokončeno“ s tlačítkem Dokončit mazání.
+async function startDelete(rawId) {
+  const did = String(rawId || "").startsWith("id:") ? rawId.slice(3) : rawId;
+  if (!did || mgr.del.has(did)) return;
+  const st = { done: 0, total: 0 }; mgr.del.set(did, st); mgr.confirm = null; mgr.more = null; mgr.msg = null;
+  const known = mgr.list.find(x => x.id === did);
+  if (did === comp) {                                // otevřená akce: nejdřív přepnout jinam (odpojit sledování jejích dat)
+    const other = mgr.list.filter(x => x.id !== did && !x.deleting && !mgr.del.has(x.id));
+    const pick = other.find(x => mgrState(x) === "live") || other.find(x => mgrState(x) === "ready") || other[0];
+    if (pick) { comp = pick.id; startComp(); }
+    else {
+      unsubs.forEach(u => u()); unsubs = []; unsubRun?.(); unsubEval?.(); unsubRun = unsubEval = null;
+      ackWatch.forEach(u => u()); ackWatch.clear(); compExists = false; compDoc = {}; cats.clear(); rounds.clear(); selCat = selRound = evalRid = null; renderAll();
+    }
+  }
+  renderManager();
+  try {
+    if (known) updateDoc(doc(db, "competitions", did), { deleting: Date.now() }).catch(() => {});
+    const sub = name => getDocs(collection(db, "competitions", did, name));
+    const [rs, ...rest] = await Promise.all(["rounds", "categories", "judges", "log"].map(sub));
+    const shs = await Promise.all(rs.docs.map(r => getDocs(collection(db, "competitions", did, "rounds", r.id, "sheets"))));
+    const refs = [];
+    shs.forEach((sh, i) => { const rid = rs.docs[i].id; for (const x of sh.docs) refs.push(doc(db, "competitions", did, "rounds", rid, "sheets", x.id)); refs.push(doc(db, "competitions", did, "rounds", rid)); });
+    ["categories", "judges", "log"].forEach((name, i) => { for (const x of rest[i].docs) refs.push(doc(db, "competitions", did, name, x.id)); });
+    refs.push(doc(db, "competitions", did));           // záznam akce až nakonec – do té doby zůstává označená jako mazaná
+    st.total = refs.length; renderManager();
+    for (let i = 0; i < refs.length; i += 400) {
+      const b = writeBatch(db); refs.slice(i, i + 400).forEach(r => b.delete(r)); await b.commit();
+      st.done = Math.min(refs.length, i + 400); renderManager();
+    }
+    try { const bk = readBackups(did).slice(0, 1); if (bk.length) localStorage.setItem(`ac_bk_${did}`, JSON.stringify(bk)); else localStorage.removeItem(`ac_bk_${did}`); localStorage.removeItem("ac_cat_" + did); } catch {}
+    log(`Smazána akce ${did} (${refs.length} záznamů)`);
+    mgr.msg = { bad: false, text: `Akce ${esc(known?.name || did)} byla smazána.` };
+  } catch (e) {
+    mgr.msg = { bad: true, text: `Mazání akce ${esc(did)} se přerušilo (${esc(errText(e))}). Akce zůstává v seznamu jako „Mazání nedokončeno“ – dokončete ji tlačítkem Dokončit mazání.` };
+    log(`CHYBA mazání akce ${did}: ${errText(e)}`);
+  } finally { mgr.del.delete(did); refreshManager(); }
+}
 // Seznam akcí žije na stránce Správa akcí; potvrzení mazání je přímo v řádku (žádná vnořená okna).
-const mgr = { list: [], confirm: null, msg: null, loading: true, filter: "all", more: null };
+const mgr = { list: [], confirm: null, msg: null, loading: true, filter: "all", more: null, del: new Map() };   // del: probíhající mazání (id → průběh)
 const mgrState = c => c.finishedAt ? "done" : c.startedAt ? "live" : "ready";
 let bootPick = !new URLSearchParams(location.search).get("c");     // bez ?c= smí aplikace po startu sama otevřít existující akci
 let mgrSeq = 0;
@@ -1740,13 +1788,16 @@ async function refreshManager() {
     // Uložená akce už neexistuje (smazaná, první spuštění) → otevřít probíhající, jinak nejnovější.
     if (bootPick) {
       bootPick = false;
-      if (mgr.list.length && !mgr.list.some(c => c.id === comp)) { comp = (mgr.list.find(c => mgrState(c) === "live") || mgr.list.find(c => mgrState(c) === "ready") || mgr.list[0]).id; startComp(); return; }
+      const av = mgr.list.filter(c => !c.deleting);
+      if (av.length && !av.some(c => c.id === comp)) { comp = (av.find(c => mgrState(c) === "live") || av.find(c => mgrState(c) === "ready") || av[0]).id; startComp(); return; }
     }
   } catch (e) { if (seq !== mgrSeq) return; mgr.loading = false; mgr.msg = { bad: true, text: "Seznam akcí se nenačetl: " + esc(errText(e)) }; }
   renderManager(); if (page === "run") renderSide();
 }
 $("mgrBody").addEventListener("click", e => {
   const b = e.target.closest("[data-m]"); if (!b) return;
+  // mazání běží samostatně s vlastním průběhem – nezamyká ostatní tlačítka Správy akcí
+  if (b.dataset.m === "confirmDel" || b.dataset.m === "finishDel") { startDelete(b.dataset.id); return; }
   runAction("manager", b, () => managerAction(b.dataset.m, b.dataset.id), "Správa akcí");
 });
 async function managerAction(m, id) {
@@ -2114,9 +2165,13 @@ function roundDetailHtml(r) {
     <div class="jcards">${r.judges.map(j => {
       const p = presence.get(j), ps = presenceState(j), ready = p?.readyFor === r.id;
       const n = r.dances.filter(d => runSheets.has(`${d}_${j}`)).length;
+      const out = Number(p?.devices?.[p?.deviceId]?.out) || 0;
+      const warn = r.status !== "open" || n >= r.dances.length ? ""
+        : out ? `<span class="jwarn">${out} ${out === 1 ? "lístek čeká" : out < 5 ? "lístky čekají" : "lístků čeká"} v zařízení</span>`
+        : ready && ps.st !== "active" ? `<span class="jwarn">bez spojení – lístky mohou čekat v zařízení</span>` : "";
       return `<div class="jcard ${ready ? "ready" : ""}"><span class="jl">${j}</span><div class="info"><b>${esc(jury[j] || "Porotce " + j)}</b>
         <span class="row" style="gap:5px"><span class="dot ${ps.cls}"></span>${ps.text}</span>
-        ${ready ? "připraven" : "nepotvrdil"} · ${n}/${r.dances.length}</div></div>`;
+        ${ready ? "připraven" : "nepotvrdil"} · ${n}/${r.dances.length}${warn ? `<br>${warn}` : ""}</div></div>`;
     }).join("")}</div>
 
     <div class="sec-t">Lístky</div>
